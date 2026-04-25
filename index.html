@@ -790,9 +790,9 @@ table { border-collapse: collapse; width: 100%; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 28px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .page-title {
@@ -816,6 +816,7 @@ table { border-collapse: collapse; width: 100%; }
 /* ========== SECTION PAGES (content sections) ========== */
 .section-page {
   display: none;
+  min-height: auto;
 }
 
 .section-page.active {
@@ -1453,7 +1454,7 @@ table { border-collapse: collapse; width: 100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 30px 20px;
   gap: 12px;
 }
 
@@ -1788,7 +1789,7 @@ table { border-collapse: collapse; width: 100%; }
   }
 
   .content-wrapper {
-    padding: 24px 16px;
+    padding: 12px;
   }
 
   .stats-grid {
@@ -1952,7 +1953,7 @@ table { border-collapse: collapse; width: 100%; }
 </div>
 
 <!-- ===== IMAGE PREVIEW OVERLAY ===== -->
-<div class="img-preview-overlay" id="img-preview-overlay">
+<div class="img-preview-overlay" id="img-preview-overlay" onclick="this.style.display='none'" style="cursor:pointer;">
   <img src="" alt="Preview" id="img-preview-img">
 </div>
 
@@ -1964,7 +1965,7 @@ table { border-collapse: collapse; width: 100%; }
 
   <!-- ===== TOPBAR (Mobile) ===== -->
   <div class="topbar">
-    <!-- hamburger removed - use swipe gesture instead -->
+    <button class="topbar-hamburger" id="topbar-hamburger" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button>
     <div class="topbar-title" id="topbar-title">Dashboard</div>
     <button id="topbar-refresh" onclick="refreshCurrentSection()" title="Refresh" style="background:transparent;border:1px solid rgba(255,215,0,0.3);border-radius:8px;color:var(--primary);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='transparent'">↻</button>
   </div>
@@ -2886,12 +2887,22 @@ table { border-collapse: collapse; width: 100%; }
             <div class="settings-title">⚙ Game Settings</div>
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label">Kill Reward (coins per kill)</label>
-                <input type="number" class="form-input" id="settings-kill-reward" placeholder="5" min="0">
+                <label class="form-label">Referrer Reward (coins to referrer)</label>
+                <input type="number" class="form-input" id="settings-referrer-coins" placeholder="50" min="0">
               </div>
+              <div class="form-group">
+                <label class="form-label">Referee Reward (coins to new user)</label>
+                <input type="number" class="form-input" id="settings-referee-coins" placeholder="25" min="0">
+              </div>
+            </div>
+            <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Daily Claim Coins</label>
                 <input type="number" class="form-input" id="settings-daily-coins" placeholder="10" min="0">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kill Reward (coins per kill)</label>
+                <input type="number" class="form-input" id="settings-kill-reward" placeholder="5" min="0">
               </div>
             </div>
           </div>
@@ -3295,7 +3306,7 @@ function sanitize(s) {
 
 function showConfirm(msg, cb) {
   document.getElementById('confirm-message').textContent = msg;
-  document.getElementById('confirm-modal').classList.add('active');
+  document.getElementById('confirm-overlay').classList.add('active');
   confirmCallback = cb;
 }
 
@@ -3789,14 +3800,20 @@ function renderUsers(data) {
   document.getElementById('users-info').textContent = 'Showing '+filtered.length+' users';
   tbody.innerHTML = filtered.map(u=>`
     <tr>
-      <td><strong>${sanitize(u.displayName||'-')}</strong><br><small style="color:var(--text-muted)">${sanitize(u.email||'-')}</small></td>
-      <td>${sanitize(u.ign||'-')}<br><small style="color:var(--text-muted)">${sanitize(u.ffuid||'-')}</small></td>
-      <td style="color:var(--yellow)">◎ ${u.coins||0}</td>
-      <td>₹${((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0)}</td>
-      <td>${u.approved?'<span class="badge badge-success">✓ Active</span>':'<span class="badge badge-warning">⏳ Pending</span>'}</td>
-      <td>
-        <button class="btn btn-outline btn-xs" onclick="openEditUser('${u.uid}')">✎ Edit</button>
-        <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.uid}','${sanitize(u.displayName||u.email)}')">✕</button>
+      <td style="min-width:120px;">
+        <strong style="color:var(--primary);font-size:13px;">${sanitize(u.displayName||'Player')}</strong><br>
+        <small style="color:var(--text-muted);font-size:10px;">${sanitize(u.email||'-')}</small>
+      </td>
+      <td style="min-width:80px;">
+        <span style="color:#0f0;font-weight:600;">${sanitize(u.ign||'-')}</span><br>
+        <small style="color:var(--text-muted);font-family:monospace;font-size:10px;">${sanitize(u.ffuid||'-')}</small>
+      </td>
+      <td style="color:var(--yellow);font-weight:700;">◎ ${u.coins||0}</td>
+      <td style="font-weight:700;">₹${((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0)}</td>
+      <td>${u.approved?'<span class="badge badge-success" style="white-space:nowrap;">✓ Active</span>':'<span class="badge badge-warning" style="white-space:nowrap;">⏳ Pending</span>'}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-outline btn-xs" onclick="openEditUser('${u.uid}')" style="margin-bottom:2px;">✎ Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.uid}','${sanitize(u.displayName||u.email||u.uid)}')">✕</button>
       </td>
     </tr>`).join('');
 }
@@ -4077,16 +4094,22 @@ function renderWalletAdd() {
   showEmpty('wallet-add-empty',false); showTable('wallet-add-table',true); showFooter('wallet-add-footer',true);
   document.getElementById('wallet-add-info').textContent = 'Showing '+walletAddData.length+' requests';
   tbody.innerHTML = walletAddData.map(r=>`
-    <tr>
-      <td>${sanitize(r.ign||r.uid||'-')}</td>
-      <td style="color:var(--yellow)">₹${r.amount||0}</td>
-      <td>${sanitize(r.upiRef||'-')}</td>
-      <td>${r.screenshotBase64?`<img src="${r.screenshotBase64}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="window.open('${r.screenshotBase64}')">`:'-'}</td>
-      <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
-      <td>${statusBadge(r.status||'pending')}</td>
+    <tr style="${r.status==='pending'?'background:rgba(255,215,0,0.03);':r.status==='approved'?'opacity:0.7;':'opacity:0.6;'}">
       <td>
-        ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveAddMoney('${r.id}','${r.uid}',${r.amount||0})">✓</button>
-        <button class="btn btn-danger btn-xs" onclick="rejectWallet('${r.id}','addMoneyRequests')">✕</button>`:''}
+        <strong style="color:var(--primary);font-size:12px;">${sanitize(r.ign||'Player')}</strong><br>
+        <small style="color:var(--text-muted);font-size:10px;word-break:break-all;">${sanitize((r.uid||'-').slice(0,12))}...</small>
+      </td>
+      <td style="color:var(--primary);font-weight:800;font-size:14px;">₹${r.amount||0}</td>
+      <td style="font-family:monospace;font-size:11px;">${sanitize(r.utr||r.upiRef||'-')}</td>
+      <td>${r.screenshotBase64?`<img src="${r.screenshotBase64}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,215,0,0.2);" onclick="document.getElementById('img-preview-img').src='${r.screenshotBase64}';document.getElementById('img-preview-overlay').style.display='flex'">`:'-'}</td>
+      <td style="font-size:11px;color:var(--text-muted);">${fmtDate(r.createdAt)}</td>
+      <td>${statusBadge(r.status||'pending')}</td>
+      <td style="white-space:nowrap;">
+        ${r.status==='pending'
+          ?`<button class="btn btn-primary btn-xs" style="padding:8px 12px;font-size:12px;font-weight:700;" onclick="approveAddMoney('${r.id}','${r.uid}',${r.amount||0})">✓ Approve</button>
+            <button class="btn btn-danger btn-xs" style="margin-top:3px;padding:6px 10px;" onclick="rejectWallet('${r.id}','addMoneyRequests')">✕</button>`
+          :'<span style="color:var(--text-muted);font-size:11px;">'+r.status+'</span>'
+        }
       </td>
     </tr>`).join('');
 }
@@ -4112,12 +4135,16 @@ function renderWalletWithdraw() {
 
 async function approveAddMoney(id, uid, amount) {
   try {
-    const snap = await db.ref('users/'+uid+'/realMoney/deposited').once('value');
-    await db.ref('users/'+uid+'/realMoney/deposited').set((snap.val()||0)+amount);
-    await db.ref('addMoneyRequests/'+id).update({status:'approved'});
-    await sendNotifToUser(uid,'Money Added! ₹','₹'+amount+' has been added to your wallet.');
-    toast('Add money approved!'); loadWalletRequests();
-  } catch(e) { toast('Failed',true); }
+    // Use transaction for atomic update
+    const ref = db.ref('users/'+uid+'/realMoney/deposited');
+    const snap = await ref.once('value');
+    await ref.set((snap.val()||0)+amount);
+    await db.ref('addMoneyRequests/'+id).update({status:'approved', approvedAt: Date.now()});
+    await sendNotifToUser(uid,'💰 Money Added!','₹'+amount+' has been added to your wallet. Happy Gaming!');
+    await logAudit('approve_add_money', 'Approved ₹'+amount+' for user '+uid);
+    toast('✓ Add money approved!');
+    loadWalletRequests();
+  } catch(e) { toast('Failed: '+e.message, true); }
 }
 
 async function approveWithdraw(id, uid, amount) {
@@ -4449,6 +4476,8 @@ async function loadSettings() {
       const c = cSnap.val();
       document.getElementById('settings-kill-reward').value = c.killReward||5;
       document.getElementById('settings-daily-coins').value = c.dailyCoins||10;
+      document.getElementById('settings-referrer-coins').value = c.referrerCoins||50;
+      document.getElementById('settings-referee-coins').value = c.refereeCoins||25;
     }
     if(tSnap.exists()) document.getElementById('settings-ticker').value = tSnap.val().text||tSnap.val()||'';
   } catch(e) { toast('Failed to load settings',true); }
@@ -4474,6 +4503,8 @@ document.getElementById('save-settings-btn')?.addEventListener('click', async ()
     await db.ref('appConfig').update({
       killReward: parseInt(document.getElementById('settings-kill-reward').value)||5,
       dailyCoins: parseInt(document.getElementById('settings-daily-coins').value)||10,
+      referrerCoins: parseInt(document.getElementById('settings-referrer-coins').value)||50,
+      refereeCoins: parseInt(document.getElementById('settings-referee-coins').value)||25,
       updatedAt: Date.now()
     });
     const ticker = document.getElementById('settings-ticker').value.trim();
@@ -4856,7 +4887,16 @@ document.querySelectorAll('[data-section]').forEach(item=>{
   item.addEventListener('click', ()=>showSection(item.dataset.section));
 });
 document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
-// hamburger removed
+
+// Confirm modal event listeners
+document.getElementById('confirm-ok')?.addEventListener('click', async () => {
+  document.getElementById('confirm-overlay').classList.remove('active');
+  if(confirmCallback) { try { await confirmCallback(); } catch(e) { toast('Error: '+e.message, true); } confirmCallback = null; }
+});
+document.getElementById('confirm-cancel')?.addEventListener('click', () => {
+  document.getElementById('confirm-overlay').classList.remove('active');
+  confirmCallback = null;
+});
 
 </script>
 </body>
