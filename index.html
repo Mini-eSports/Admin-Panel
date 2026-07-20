@@ -3372,6 +3372,19 @@ class DbRef {
   }
 
   async once(type) {
+    try {
+      return await this._onceInner(type);
+    } catch(e) {
+      // Auto-retry once on transient PostgREST schema-cache errors (common right after DB migrations)
+      if(/schema cache|PGRST/i.test(e.message||'')) {
+        await new Promise(r=>setTimeout(r, 900));
+        try { return await this._onceInner(type); } catch(e2) { throw e2; }
+      }
+      throw e;
+    }
+  }
+
+  async _onceInner(type) {
     const info = this._parseTable();
     try {
       if(info.isSettings) {
