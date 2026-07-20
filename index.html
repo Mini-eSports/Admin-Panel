@@ -124,6 +124,49 @@ table { border-collapse: collapse; width: 100%; }
   to { transform: rotate(360deg); }
 }
 
+.spinner-sm {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(0,0,0,0.25);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.chat-bubble-row { display:flex; }
+.chat-bubble-row.mine { justify-content:flex-end; }
+.chat-bubble-row.theirs { justify-content:flex-start; }
+.chat-bubble {
+  max-width: 78%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.chat-bubble-row.mine .chat-bubble {
+  background: var(--primary, #FFD700);
+  color: #1a1400;
+  border-bottom-right-radius: 3px;
+}
+.chat-bubble-row.theirs .chat-bubble {
+  background: #1c1c1c;
+  color: #eee;
+  border: 1px solid rgba(255,215,0,0.15);
+  border-bottom-left-radius: 3px;
+}
+.chat-bubble-time {
+  font-size: 9px;
+  opacity: 0.6;
+  margin-top: 3px;
+  text-align: right;
+}
+
 @keyframes livePulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 8px #00ff88; }
   50% { opacity: 0.4; box-shadow: 0 0 3px #00ff88; }
@@ -1751,12 +1794,6 @@ table { border-collapse: collapse; width: 100%; }
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
 }
 
-.kill-reward {
-  font-size: 13px;
-  color: var(--primary);
-  font-weight: 600;
-}
-
 /* ========== NOTIFICATION FORM ========== */
 .notif-form {
   background: var(--card-bg-alt);
@@ -2712,10 +2749,8 @@ table { border-collapse: collapse; width: 100%; }
                 <tr>
                   <th>Player</th>
                   <th>Issue Type</th>
-                  <th>Message</th>
                   <th>Date</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>View</th>
                 </tr>
               </thead>
               <tbody id="support-requests-tbody"></tbody>
@@ -2885,10 +2920,6 @@ table { border-collapse: collapse; width: 100%; }
                 <label class="form-label">Daily Claim Coins</label>
                 <input type="number" class="form-input" id="settings-daily-coins" placeholder="10" min="0">
               </div>
-              <div class="form-group">
-                <label class="form-label">Kill Reward (coins per kill)</label>
-                <input type="number" class="form-input" id="settings-kill-reward" placeholder="5" min="0">
-              </div>
             </div>
           </div>
 
@@ -3049,10 +3080,6 @@ table { border-collapse: collapse; width: 100%; }
           <label class="form-label">Bonus (₹)</label>
           <input type="number" class="form-input" id="edit-user-bonus" min="0" step="0.01">
         </div>
-        <div class="form-group">
-          <label class="form-label">Kill Reward</label>
-          <input type="number" class="form-input" id="edit-user-kill-reward" min="0">
-        </div>
       </div>
       <div class="form-group">
         <label class="form-toggle">
@@ -3130,23 +3157,6 @@ table { border-collapse: collapse; width: 100%; }
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Room ID</label>
-          <input type="text" class="form-input" id="tournament-room-id" placeholder="Room ID">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Room Password</label>
-          <input type="text" class="form-input" id="tournament-room-pass" placeholder="Room Password">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-toggle">
-            <input type="checkbox" id="tournament-room-locked" checked>
-            <span class="toggle-switch"></span>
-            <span class="toggle-label">Room Locked (hide from users)</span>
-          </label>
-        </div>
-        <div class="form-group">
           <label class="form-toggle">
             <input type="checkbox" id="tournament-special">
             <span class="toggle-switch"></span>
@@ -3162,42 +3172,54 @@ table { border-collapse: collapse; width: 100%; }
   </div>
 </div>
 
-<!-- ===== MODAL: SUPPORT TICKET VIEW ===== -->
-<div class="modal-overlay" id="modal-support-view">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 class="modal-title">⊛ Support Ticket</h3>
-      <button class="modal-close" data-close-modal="modal-support-view">✕</button>
+<!-- Room Details Modal (separate from create form, per-tournament) -->
+<div class="modal" id="modal-room-details">
+  <div class="modal-content">
+    <div class="modal-bar"></div>
+    <h3>🔑 Room Details</h3>
+    <input type="hidden" id="room-details-tid">
+    <div class="form-group">
+      <label class="form-label">Room ID</label>
+      <input type="text" class="form-input" id="room-details-id" placeholder="Room ID">
     </div>
-    <div class="modal-body">
-      <div style="margin-bottom:16px;">
-        <div class="form-label" style="margin-bottom:4px;">Player</div>
-        <div id="support-view-player" style="font-weight:600; font-size:15px;"></div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <div class="form-label" style="margin-bottom:4px;">Issue Type</div>
-        <div id="support-view-type" style="font-weight:600; font-size:15px;"></div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <div class="form-label" style="margin-bottom:4px;">Message</div>
-        <div id="support-view-message" style="font-weight:500; font-size:14px; color:var(--text-secondary); background:var(--bg-primary); border:1px solid var(--border-yellow); border-radius:var(--radius); padding:16px; line-height:1.7; white-space:pre-wrap;"></div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <div class="form-label" style="margin-bottom:4px;">Status</div>
-        <div id="support-view-status"></div>
-      </div>
-      <hr style="border:none; border-top:1px solid var(--border-yellow); margin:20px 0;">
-      <div class="form-group">
-        <label class="form-label">Reply to User</label>
-        <textarea class="form-textarea" id="support-reply-message" placeholder="Type your reply..." rows="3"></textarea>
-      </div>
-      <input type="hidden" id="support-view-id">
-      <input type="hidden" id="support-view-uid">
+    <div class="form-group">
+      <label class="form-label">Room Password</label>
+      <input type="text" class="form-input" id="room-details-pass" placeholder="Room Password">
+    </div>
+    <div class="form-group">
+      <label class="form-toggle">
+        <input type="checkbox" id="room-details-locked" checked>
+        <span class="toggle-switch"></span>
+        <span class="toggle-label">Room Locked (hide from users until you unlock)</span>
+      </label>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-outline" data-close-modal="modal-room-details">Cancel</button>
+      <button class="btn btn-primary" id="save-room-details-btn">⊙ Save Room Details</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: SUPPORT CHAT (WhatsApp-style) ===== -->
+<div class="modal-overlay" id="modal-support-view">
+  <div class="modal" style="display:flex;flex-direction:column;max-height:88vh;">
+    <div class="modal-header" style="flex-shrink:0;">
+      <div>
+        <h3 class="modal-title" id="support-chat-header" style="margin-bottom:2px;">⊛ Player</h3>
+        <div id="support-chat-subheader" style="font-size:11px;color:var(--text-muted);"></div>
+      </div>
+      <button class="modal-close" data-close-modal="modal-support-view">✕</button>
+    </div>
+    <div id="support-chat-messages" style="flex:1;overflow-y:auto;padding:14px;background:var(--bg-primary);display:flex;flex-direction:column;gap:8px;min-height:280px;max-height:50vh;"></div>
+    <div style="flex-shrink:0;padding:10px 12px;border-top:1px solid var(--border-yellow);display:flex;gap:8px;align-items:center;">
+      <input type="hidden" id="support-view-id">
+      <input type="hidden" id="support-view-uid">
+      <input type="text" class="form-input" id="support-chat-input" placeholder="Type a message..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendAdminChatMessage();}">
+      <button class="btn btn-primary btn-sm" id="support-chat-send-btn" onclick="sendAdminChatMessage()" style="flex-shrink:0;">➤</button>
+    </div>
+    <div class="modal-footer" style="flex-shrink:0;">
       <button class="btn btn-outline" data-close-modal="modal-support-view">Close</button>
       <button class="btn btn-primary btn-sm" id="support-resolve-btn">✓ Mark Resolved</button>
-      <button class="btn btn-primary btn-sm" id="support-reply-btn">↑ Send Reply</button>
     </div>
   </div>
 </div>
@@ -3270,7 +3292,7 @@ function toSnake(obj) {
     currentIGN:'current_ign', newIGN:'new_ign', newFFUID:'new_ffuid', teammateFFUID:'teammate_ffuid',
     userUpiId:'user_upi_id', screenshotBase64:'screenshot_base64', adminEmail:'admin_email',
     upiId:'upi_id', minWithdraw:'min_withdraw', maxWithdraw:'max_withdraw', minDeposit:'min_deposit',
-    maxDeposit:'max_deposit', killReward:'kill_reward', dailyCoins:'daily_coins',
+    maxDeposit:'max_deposit', dailyCoins:'daily_coins',
     referrerCoins:'referrer_coins', refereeCoins:'referee_coins', isRead:'is_read', isGlobal:'is_global',
   };
   const result = {};
@@ -3295,7 +3317,7 @@ function toCamel(obj) {
     current_ign:'currentIGN', new_ign:'newIGN', new_ffuid:'newFFUID', teammate_ffuid:'teammateFFUID',
     user_upi_id:'userUpiId', screenshot_base64:'screenshotBase64', admin_email:'adminEmail',
     upi_id:'upiId', min_withdraw:'minWithdraw', max_withdraw:'maxWithdraw', min_deposit:'minDeposit',
-    max_deposit:'maxDeposit', kill_reward:'killReward', daily_coins:'dailyCoins',
+    max_deposit:'maxDeposit', daily_coins:'dailyCoins',
     referrer_coins:'referrerCoins', referee_coins:'refereeCoins', is_read:'isRead', is_global:'isGlobal',
   };
   const result = {};
@@ -3418,11 +3440,13 @@ class DbRef {
   async set(value) {
     const info = this._parseTable();
     if(info.isSettings) {
-      await _sb.from('app_settings').upsert({key: info.id, value});
+      const {error} = await _sb.from('app_settings').upsert({key: info.id, value});
+      if(error) throw error;
       return;
     }
     if(info.isConfig && info.id) {
-      await _sb.from('app_config').upsert({key: info.id, value});
+      const {error} = await _sb.from('app_config').upsert({key: info.id, value});
+      if(error) throw error;
       return;
     }
     if(info.id && info.subPath) {
@@ -3434,14 +3458,16 @@ class DbRef {
         let obj = camel;
         for(let i=0;i<parts.length-1;i++) { if(!obj[parts[i]]) obj[parts[i]]={}; obj=obj[parts[i]]; }
         obj[parts[parts.length-1]] = value;
-        await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+        const {error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+        if(error) throw error;
       }
       return;
     }
     if(info.id) {
       const snake = toSnake(typeof value==='object'?value:{value});
       if(!snake.id) snake.id = info.id;
-      await _sb.from(info.table).upsert(snake);
+      const {error} = await _sb.from(info.table).upsert(snake);
+      if(error) throw error;
       return;
     }
   }
@@ -3451,22 +3477,23 @@ class DbRef {
     if(info.isSettings) {
       const {data:existing} = await _sb.from('app_settings').select('value').eq('key', info.id).single();
       const merged = {...(existing?.value||{}), ...data};
-      await _sb.from('app_settings').upsert({key: info.id, value: merged});
+      const {error} = await _sb.from('app_settings').upsert({key: info.id, value: merged});
+      if(error) throw error;
       return;
     }
     if(info.isConfig && !info.id) {
-      for(const k in data) { await _sb.from('app_config').upsert({key:k, value:data[k]}); }
+      for(const k in data) { const {error} = await _sb.from('app_config').upsert({key:k, value:data[k]}); if(error) throw error; }
       return;
     }
     if(info.table === 'notifications' && !info.id) {
       // Bulk update for notifications
-      const updates = {};
       for(const k in data) {
         const parts = k.split('/');
         // notifications/users/uid/key = {title,body,...}
         if(parts[0]==='notifications' && parts[1]==='users' && parts[2] && parts[3]) {
           const uid = parts[2];
-          await _sb.from('notifications').insert({uid, is_global:false, ...toSnake(data[k])});
+          const {error} = await _sb.from('notifications').insert({uid, is_global:false, ...toSnake(data[k])});
+          if(error) throw error;
         }
       }
       return;
@@ -3484,12 +3511,14 @@ class DbRef {
         for(let i=0;i<parts.length-1;i++) { if(!obj[parts[i]]) obj[parts[i]]={}; obj=obj[parts[i]]; }
         obj[parts[parts.length-1]] = data[k];
       }
-      await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+      const {error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+      if(error) throw error;
       return;
     }
 
     const snake = toSnake(data);
-    await _sb.from(info.table).update(snake).eq('id', info.id);
+    const {error} = await _sb.from(info.table).update(snake).eq('id', info.id);
+    if(error) throw error;
   }
 
   async remove() {
@@ -3503,11 +3532,13 @@ class DbRef {
         let obj = camel;
         for(let i=0;i<parts.length-1;i++) { obj=obj?.[parts[i]]; }
         if(obj) delete obj[parts[parts.length-1]];
-        await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+        const {error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+        if(error) throw error;
       }
       return;
     }
-    await _sb.from(info.table).delete().eq('id', info.id);
+    const {error} = await _sb.from(info.table).delete().eq('id', info.id);
+    if(error) throw error;
   }
 
   async push(data) {
@@ -3517,14 +3548,16 @@ class DbRef {
       const row = {id, ...toSnake(data||{})};
       if(info.isGlobal) row.is_global = true;
       if(info.uid) row.uid = info.uid;
-      await _sb.from('notifications').insert(row);
+      const {error} = await _sb.from('notifications').insert(row);
+      if(error) throw error;
       return {key: id};
     }
     if(info.table === 'users' && info.id && info.subPath) {
       // coinHistory push: stored in coin_history table
       if(info.subPath === 'coinHistory') {
         const row = {id, uid: info.id, ...toSnake(data||{})};
-        await _sb.from('coin_history').insert(row);
+        const {error} = await _sb.from('coin_history').insert(row);
+        if(error) throw error;
         return {key: id};
       }
       // Team member push: stored in user's team JSON
@@ -3535,19 +3568,22 @@ class DbRef {
         const parts = teamKey.split('/');
         if(!camel[parts[0]]) camel[parts[0]] = {};
         camel[parts[0]][id] = data;
-        await _sb.from('users').update(toSnake(camel)).eq('id', info.id);
+        const {error} = await _sb.from('users').update(toSnake(camel)).eq('id', info.id);
+        if(error) throw error;
         return {key: id};
       }
     }
     // audit_log push
     if(info.table === 'audit_log') {
       const row = {id, ...toSnake(data||{})};
-      await _sb.from('audit_log').insert(row);
+      const {error} = await _sb.from('audit_log').insert(row);
+      if(error) throw error;
       return {key: id};
     }
     const snake = toSnake(data||{});
     snake.id = id;
-    await _sb.from(info.table).insert(snake);
+    const {error} = await _sb.from(info.table).insert(snake);
+    if(error) throw error;
     return {key: id};
   }
 
@@ -3879,21 +3915,20 @@ function setupBadgeListeners() {
       if(el) { el.textContent = count; el.style.display = count>0?'flex':'none'; }
     });
   });
-  // Wallet badge: add + withdraw pending
-  function updateWalletBadge() {
-    let total = 0;
-    Promise.all([
-      db.ref('addMoneyRequests').once('value'),
-      db.ref('withdrawRequests').once('value')
-    ]).then(([a,w])=>{
-      if(a.exists()) a.forEach(c=>{ if(c.val().status==='pending') total++; });
-      if(w.exists()) w.forEach(c=>{ if(c.val().status==='pending') total++; });
+  // Wallet badge: add + withdraw pending (single consolidated poll, avoids duplicate queries)
+  async function updateWalletBadge() {
+    try {
+      const [a, w] = await Promise.all([
+        _sb.from('add_money_requests').select('status').eq('status','pending'),
+        _sb.from('withdraw_requests').select('status').eq('status','pending')
+      ]);
+      const total = (a.data?.length||0) + (w.data?.length||0);
       const el = document.getElementById('badge-wallet-requests');
       if(el) { el.textContent = total; el.style.display = total>0?'flex':'none'; }
-    });
+    } catch(e) { console.error('wallet badge error', e); }
   }
-  db.ref('addMoneyRequests').on('value', updateWalletBadge);
-  db.ref('withdrawRequests').on('value', updateWalletBadge);
+  updateWalletBadge();
+  setInterval(updateWalletBadge, 8000);
 }
 
 // ═══════════════════════════════════════════
@@ -4108,17 +4143,17 @@ function renderPU(data) {
       <td>${fmtDate(r.createdAt)}</td>
       <td>${statusBadge(r.status||'pending')}</td>
       <td>
-        ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveProfileUpdate('${r.id}','${r.uid}','${sanitize(r.newIGN)}','${sanitize(r.newFFUID)}')">✓ Approve</button>
+        ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveProfileUpdate('${r.id}','${r.uid}','${sanitize(r.newIGN)}')">✓ Approve</button>
         <button class="btn btn-danger btn-xs" onclick="rejectRequest('${r.id}','${r.uid}','profileUpdateRequests','profileUpdate')">✕ Reject</button>`:''}
       </td>
     </tr>`).join('');
 }
 
-async function approveProfileUpdate(id, uid, newIGN, newFFUID) {
+async function approveProfileUpdate(id, uid, newIGN) {
   try {
-    await db.ref('users/'+uid).update({ign:newIGN, ffuid:newFFUID, profileUpdatePending:false});
+    await db.ref('users/'+uid).update({ign:newIGN, profileUpdatePending:false});
     await db.ref('profileUpdateRequests/'+id).update({status:'approved'});
-    await sendNotifToUser(uid,'Profile Updated! ✓','Your profile update has been approved.');
+    await sendNotifToUser(uid,'Profile Updated! ✓','Your IGN has been updated to '+newIGN+'.');
     toast('Profile update approved!');
     loadProfileUpdates();
   } catch(e) { toast('Failed: '+e.message,true); }
@@ -4153,18 +4188,14 @@ function renderUsers(data) {
   document.getElementById('users-info').textContent = 'Showing '+filtered.length+' users';
   tbody.innerHTML = filtered.map(u=>`
     <tr>
-      <td style="min-width:120px;">
-        <strong style="color:var(--primary);font-size:13px;">${sanitize(u.displayName||'Player')}</strong><br>
-        <small style="color:var(--text-muted);font-size:10px;">${sanitize(u.email||'-')}</small>
-      </td>
-      <td style="min-width:80px;">
-        <span style="color:#0f0;font-weight:600;">${sanitize(u.ign||'-')}</span><br>
-        <small style="color:var(--text-muted);font-family:monospace;font-size:10px;">${sanitize(u.ffuid||'-')}</small>
-      </td>
-      <td style="color:var(--yellow);font-weight:700;">◎ ${u.coins||0}</td>
-      <td style="font-weight:700;">₹${((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0)}</td>
-      <td>${u.approved?'<span class="badge badge-success" style="white-space:nowrap;">✓ Active</span>':'<span class="badge badge-warning" style="white-space:nowrap;">⏳ Pending</span>'}</td>
-      <td style="white-space:nowrap;">
+      <td style="min-width:130px;"><strong style="color:var(--primary);font-size:13px;">${sanitize(u.displayName||'Player')}</strong></td>
+      <td style="min-width:150px;color:var(--text-muted);font-size:12px;word-break:break-all;">${sanitize(u.email||'-')}</td>
+      <td style="min-width:90px;color:#0f0;font-weight:600;">${sanitize(u.ign||'-')}</td>
+      <td style="min-width:100px;font-family:monospace;font-size:12px;">${sanitize(u.ffuid||'-')}</td>
+      <td style="min-width:70px;color:var(--yellow);font-weight:700;white-space:nowrap;">◎ ${u.coins||0}</td>
+      <td style="min-width:80px;font-weight:700;white-space:nowrap;">₹${((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0)}</td>
+      <td style="min-width:90px;">${u.approved?'<span class="badge badge-success" style="white-space:nowrap;">✓ Active</span>':'<span class="badge badge-warning" style="white-space:nowrap;">⏳ Pending</span>'}</td>
+      <td style="min-width:120px;white-space:nowrap;">
         <button class="btn btn-outline btn-xs" onclick="openEditUser('${u.uid}')" style="margin-bottom:2px;">✎ Edit</button>
         <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.uid}','${sanitize(u.displayName||u.email||u.uid)}')">✕</button>
       </td>
@@ -4182,7 +4213,6 @@ async function openEditUser(uid) {
   document.getElementById('edit-user-deposited').value = u.realMoney?.deposited||0;
   document.getElementById('edit-user-winnings').value = u.realMoney?.winnings||0;
   document.getElementById('edit-user-bonus').value = u.realMoney?.bonus||0;
-  document.getElementById('edit-user-kill-reward').value = u.killReward||5;
   document.getElementById('edit-user-approved').checked = u.approved||false;
   document.getElementById('modal-edit-user').classList.add('active');
 }
@@ -4197,7 +4227,6 @@ document.getElementById('save-edit-user-btn')?.addEventListener('click', async (
         winnings: parseFloat(document.getElementById('edit-user-winnings').value)||0,
         bonus: parseFloat(document.getElementById('edit-user-bonus').value)||0
       },
-      killReward: parseInt(document.getElementById('edit-user-kill-reward').value)||5,
       approved: document.getElementById('edit-user-approved').checked
     });
     toast('User updated!');
@@ -4283,6 +4312,7 @@ function renderTournaments(data) {
       <td>${t.roomLocked?'⊠ Locked':'▲ Open'}</td>
       <td>
         <button class="btn btn-outline btn-xs" onclick="openEditTournament('${t.id}')">✏️</button>
+        <button class="btn btn-outline btn-xs" onclick="openRoomDetails('${t.id}')" title="Set Room ID/Password">🔑</button>
         <button class="btn btn-danger btn-xs" onclick="deleteTournament('${t.id}','${sanitize(t.name)}')">✕</button>
       </td>
     </tr>`).join('');
@@ -4302,9 +4332,6 @@ function openCreateTournament() {
   document.getElementById('tournament-prize').value = '';
   document.getElementById('tournament-slots').value = '12';
   document.getElementById('tournament-datetime').value = '';
-  document.getElementById('tournament-room-id').value = '';
-  document.getElementById('tournament-room-pass').value = '';
-  document.getElementById('tournament-room-locked').checked = true;
   document.getElementById('tournament-special').checked = false;
   document.getElementById('modal-tournament').classList.add('active');
 }
@@ -4326,12 +4353,44 @@ async function openEditTournament(id) {
     const d = new Date(t.matchTime);
     document.getElementById('tournament-datetime').value = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
   }
-  document.getElementById('tournament-room-id').value = t.roomId||'';
-  document.getElementById('tournament-room-pass').value = t.roomPassword||'';
-  document.getElementById('tournament-room-locked').checked = t.roomLocked!==false;
   document.getElementById('tournament-special').checked = t.isSpecial||false;
   document.getElementById('modal-tournament').classList.add('active');
 }
+
+// ---- Room Details (separate small modal, per-tournament) ----
+async function openRoomDetails(id) {
+  const snap = await db.ref('tournaments/'+id).once('value');
+  if(!snap.exists()) { toast('Tournament not found',true); return; }
+  const t = snap.val();
+  document.getElementById('room-details-tid').value = id;
+  document.getElementById('room-details-id').value = t.roomId||'';
+  document.getElementById('room-details-pass').value = t.roomPassword||'';
+  document.getElementById('room-details-locked').checked = t.roomLocked!==false;
+  document.getElementById('modal-room-details').classList.add('active');
+}
+
+let _savingRoomDetails=false;
+document.getElementById('save-room-details-btn')?.addEventListener('click', async ()=>{
+  if(_savingRoomDetails) return;
+  const id = document.getElementById('room-details-tid').value;
+  if(!id) return;
+  _savingRoomDetails=true;
+  const btn = document.getElementById('save-room-details-btn');
+  const origHTML = btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<span class="spinner-sm"></span> Saving...';
+  try {
+    await db.ref('tournaments/'+id).update({
+      roomId: document.getElementById('room-details-id').value.trim(),
+      roomPassword: document.getElementById('room-details-pass').value.trim(),
+      roomLocked: document.getElementById('room-details-locked').checked,
+      updatedAt: Date.now()
+    });
+    toast('Room details saved!');
+    closeModal('modal-room-details');
+    loadTournaments();
+  } catch(e) { toast('Failed: '+(e.message||'Unknown error'),true); }
+  finally { _savingRoomDetails=false; btn.disabled=false; btn.innerHTML=origHTML; }
+});
 
 let _savingTourney=false;
 document.getElementById('save-tournament-btn')?.addEventListener('click', async ()=>{
@@ -4342,8 +4401,8 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
   const name = document.getElementById('tournament-name').value.trim();
   const dtVal = document.getElementById('tournament-datetime').value;
   const fee = parseInt(document.getElementById('tournament-entry-fee').value)||0;
-  if(!name) { toast('Tournament name required',true); return; }
-  if(!dtVal) { toast('Match time required',true); return; }
+  if(!name) { toast('Tournament name required',true); _savingTourney=false; if(_savBtn){_savBtn.disabled=false;_savBtn.textContent='⊙ Save Tournament';} return; }
+  if(!dtVal) { toast('Match time required',true); _savingTourney=false; if(_savBtn){_savBtn.disabled=false;_savBtn.textContent='⊙ Save Tournament';} return; }
   const matchTime = new Date(dtVal).getTime();
   const data = {
     name, gameMode: document.getElementById('tournament-mode').value,
@@ -4353,15 +4412,12 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     prizePool: parseInt(document.getElementById('tournament-prize').value)||0,
     maxSlots: parseInt(document.getElementById('tournament-slots').value)||12,
     matchTime, status: computeStatus(matchTime),
-    roomId: document.getElementById('tournament-room-id').value.trim(),
-    roomPassword: document.getElementById('tournament-room-pass').value.trim(),
-    roomLocked: document.getElementById('tournament-room-locked').checked,
     isSpecial: document.getElementById('tournament-special').checked,
     updatedAt: Date.now()
   };
   try {
     if(id) { await db.ref('tournaments/'+id).update(data); toast('Tournament updated!'); }
-    else { data.filledSlots=0; data.createdAt=Date.now(); await db.ref('tournaments').push(data); toast('Tournament created!'); }
+    else { data.filledSlots=0; data.createdAt=Date.now(); data.roomLocked=true; await db.ref('tournaments').push(data); toast('Tournament created!'); }
     closeModal('modal-tournament'); loadTournaments(); loadDashboard();
   } catch(e) { toast('Failed: '+e.message,true); }
   finally { _savingTourney=false; const _sb=document.getElementById('save-tournament-btn'); if(_sb){_sb.disabled=false;_sb.textContent='⊙ Save Tournament';} }
@@ -4659,13 +4715,9 @@ document.getElementById('match-result-tournament-select')?.addEventListener('cha
   showLoading('match-results-loading',false);
 });
 
-let killRewardGlobal = 5;
-_sb.from('app_config').select('value').eq('key','killReward').single().then(({data})=>{ if(data) killRewardGlobal=data.value; });
-
 function calcReward(uid) {
-  const kills = parseInt(document.getElementById('kills-'+uid)?.value)||0;
   const isWinner = document.getElementById('winner-'+uid)?.checked;
-  const reward = (kills*killRewardGlobal) + (isWinner?50:0);
+  const reward = isWinner?50:0;
   const el = document.getElementById('reward-'+uid);
   if(el) el.textContent = '₹'+reward;
 }
@@ -4680,7 +4732,7 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
     for(const p of players) {
       const kills = parseInt(document.getElementById('kills-'+p.uid)?.value)||0;
       const isWinner = document.getElementById('winner-'+p.uid)?.checked||false;
-      const reward = (kills*killRewardGlobal)+(isWinner?50:0);
+      const reward = isWinner?50:0;
       const uSnap = await db.ref('users/'+p.uid).once('value');
       if(!uSnap.exists()) continue;
       const u = uSnap.val();
@@ -4699,7 +4751,7 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
 });
 
 // ═══════════════════════════════════════════
-// SUPPORT REQUESTS
+// SUPPORT REQUESTS — WhatsApp-style chat
 // ═══════════════════════════════════════════
 let supportData = [];
 async function loadSupportRequests() {
@@ -4714,32 +4766,97 @@ async function loadSupportRequests() {
     showEmpty('support-requests-empty',false); showTable('support-requests-table',true); showFooter('support-requests-footer',true);
     document.getElementById('support-requests-info').textContent = 'Showing '+supportData.length+' requests';
     tbody.innerHTML = supportData.map(r=>`
-      <tr>
-        <td>${sanitize(r.ign||r.uid||'-')}</td>
+      <tr style="${r.unreadByAdmin?'background:rgba(255,215,0,0.05);':''}">
+        <td><strong>${sanitize(r.ign||r.uid||'-')}</strong>${r.unreadByAdmin?' <span class="badge badge-warning" style="font-size:9px;">NEW</span>':''}</td>
         <td><span class="badge" style="background:rgba(255,215,0,0.1);color:var(--yellow)">${sanitize(r.type||'-')}</span></td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(r.message||'-')}</td>
         <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
-        <td>${statusBadge(r.status||'pending')}</td>
-        <td>
-          <button class="btn btn-outline btn-xs" onclick="openSupportView('${r.id}')">⊙ View</button>
-          ${r.status!=='resolved'?`<button class="btn btn-primary btn-xs" onclick="resolveSupport('${r.id}','${r.uid}')">✓</button>`:''}
-        </td>
+        <td><button class="btn btn-outline btn-xs" onclick="openSupportChat('${r.id}')">⊙ View</button></td>
       </tr>`).join('');
   } catch(e) { toast('Failed',true); }
   showLoading('support-requests-loading',false);
 }
 
-function openSupportView(id) {
+let _chatPollInterval = null;
+let _currentChatTicketId = null;
+
+async function openSupportChat(id) {
   const r = supportData.find(x=>x.id===id);
   if(!r) return;
-  document.getElementById('support-view-player').textContent = r.ign||r.uid||'-';
-  document.getElementById('support-view-type').textContent = r.type||'-';
-  document.getElementById('support-view-message').textContent = r.message||'-';
-  document.getElementById('support-view-status').innerHTML = statusBadge(r.status||'pending');
+  _currentChatTicketId = id;
+  document.getElementById('support-chat-header').textContent = '⊛ '+(r.ign||r.uid||'Player');
+  document.getElementById('support-chat-subheader').textContent = (r.type||'General')+' · '+fmtDate(r.createdAt);
   document.getElementById('support-view-id').value = id;
   document.getElementById('support-view-uid').value = r.uid||'';
-  document.getElementById('support-reply-message').value = '';
+  document.getElementById('support-chat-input').value = '';
   document.getElementById('modal-support-view').classList.add('active');
+
+  // Mark as read by admin
+  try { await db.ref('supportRequests/'+id).update({unreadByAdmin:false}); } catch(e){}
+
+  await loadChatMessages(id, true);
+  if(_chatPollInterval) clearInterval(_chatPollInterval);
+  _chatPollInterval = setInterval(()=>loadChatMessages(id,false), 3000);
+}
+
+function closeSupportChat() {
+  if(_chatPollInterval) { clearInterval(_chatPollInterval); _chatPollInterval = null; }
+  _currentChatTicketId = null;
+}
+document.getElementById('modal-support-view')?.addEventListener('click', (e)=>{
+  if(e.target.id==='modal-support-view' || e.target.classList.contains('modal-close') || e.target.dataset.closeModal==='modal-support-view') closeSupportChat();
+});
+
+let _lastChatMsgCount = 0;
+async function loadChatMessages(ticketId, forceScroll) {
+  try {
+    const { data, error } = await _sb.from('support_messages').select('*').eq('ticket_id', ticketId).order('created_at', {ascending:true});
+    if(error) throw error;
+    const msgs = data||[];
+    const container = document.getElementById('support-chat-messages');
+    if(!container) return;
+    const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+    if(msgs.length !== _lastChatMsgCount || forceScroll) {
+      container.innerHTML = msgs.length ? msgs.map(m=>`
+        <div class="chat-bubble-row ${m.sender==='admin'?'mine':'theirs'}">
+          <div>
+            <div class="chat-bubble">${sanitize(m.message)}</div>
+            <div class="chat-bubble-time">${fmtChatTime(m.created_at)}</div>
+          </div>
+        </div>`).join('') : '<div style="text-align:center;color:var(--text-muted);font-size:12px;margin-top:30px;">No messages yet. Say hello 👋</div>';
+      if(forceScroll || wasAtBottom) container.scrollTop = container.scrollHeight;
+      _lastChatMsgCount = msgs.length;
+    }
+  } catch(e) { console.error('chat load error', e); }
+}
+
+function fmtChatTime(ts) {
+  if(!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+}
+
+let _sendingAdminChat = false;
+async function sendAdminChatMessage() {
+  if(_sendingAdminChat) return;
+  const ticketId = document.getElementById('support-view-id').value;
+  const input = document.getElementById('support-chat-input');
+  const msg = (input?.value||'').trim();
+  if(!ticketId || !msg) return;
+  _sendingAdminChat = true;
+  const btn = document.getElementById('support-chat-send-btn');
+  if(btn) btn.disabled = true;
+  if(input) input.value = '';
+  try {
+    const { error } = await _sb.from('support_messages').insert({
+      id: crypto.randomUUID(), ticket_id: ticketId, sender: 'admin', message: msg, created_at: Date.now()
+    });
+    if(error) throw error;
+    await _sb.from('support_requests').update({ last_message_at: Date.now(), unread_by_user: true }).eq('id', ticketId);
+    await loadChatMessages(ticketId, true);
+  } catch(e) {
+    toast('Failed to send: '+(e.message||'Unknown error'), true);
+    if(input) input.value = msg; // restore on failure
+  } finally { _sendingAdminChat = false; if(btn) btn.disabled = false; }
 }
 
 async function resolveSupport(id, uid) {
@@ -4754,16 +4871,8 @@ document.getElementById('support-resolve-btn')?.addEventListener('click', async 
   const id = document.getElementById('support-view-id').value;
   const uid = document.getElementById('support-view-uid').value;
   await resolveSupport(id, uid);
+  closeSupportChat();
   closeModal('modal-support-view');
-});
-
-document.getElementById('support-reply-btn')?.addEventListener('click', async ()=>{
-  const uid = document.getElementById('support-view-uid').value;
-  const msg = document.getElementById('support-reply-message').value.trim();
-  if(!msg) { toast('Enter reply message',true); return; }
-  await sendNotifToUser(uid,'Admin Reply ✉', msg);
-  toast('Reply sent!');
-  document.getElementById('support-reply-message').value = '';
 });
 
 // ═══════════════════════════════════════════
@@ -4856,7 +4965,6 @@ async function loadSettings() {
     }
     if(cSnap.exists()) {
       const c = cSnap.val();
-      document.getElementById('settings-kill-reward').value = c.killReward||5;
       document.getElementById('settings-daily-coins').value = c.dailyCoins||10;
       document.getElementById('settings-referrer-coins').value = c.referrerCoins||50;
       document.getElementById('settings-referee-coins').value = c.refereeCoins||25;
@@ -4866,13 +4974,23 @@ async function loadSettings() {
 }
 
 document.getElementById('save-settings-btn')?.addEventListener('click', async ()=>{
+  const btn = document.getElementById('save-settings-btn');
   const upiId = document.getElementById('settings-upi-id').value.trim();
   if(!upiId) { toast('UPI ID required',true); return; }
+  const upiPattern = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+  if(!upiPattern.test(upiId)) { toast('Enter a valid UPI ID (e.g. name@bank)',true); return; }
+  const minW = parseInt(document.getElementById('settings-min-withdraw-limit').value)||50;
+  const maxW = parseInt(document.getElementById('settings-max-withdraw-limit').value)||10000;
+  const minD = parseInt(document.getElementById('settings-min-deposit').value)||10;
+  const maxD = parseInt(document.getElementById('settings-max-deposit').value)||50000;
+  if(minW<=0 || maxW<=0 || minD<=0 || maxD<=0) { toast('Limits must be greater than 0',true); return; }
+  if(minW>maxW) { toast('Min withdraw cannot exceed max withdraw',true); return; }
+  if(minD>maxD) { toast('Min deposit cannot exceed max deposit',true); return; }
+
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-sm"></span> Saving...';
   try {
-    const minW = parseInt(document.getElementById('settings-min-withdraw-limit').value)||50;
-    const maxW = parseInt(document.getElementById('settings-max-withdraw-limit').value)||10000;
-    const minD = parseInt(document.getElementById('settings-min-deposit').value)||10;
-    const maxD = parseInt(document.getElementById('settings-max-deposit').value)||50000;
     const payData = {
       upiId,
       minWithdraw: minW,
@@ -4883,7 +5001,6 @@ document.getElementById('save-settings-btn')?.addEventListener('click', async ()
     };
     await db.ref('appSettings/payment').update(payData);
     await db.ref('appConfig').update({
-      killReward: parseInt(document.getElementById('settings-kill-reward').value)||5,
       dailyCoins: parseInt(document.getElementById('settings-daily-coins').value)||10,
       referrerCoins: parseInt(document.getElementById('settings-referrer-coins').value)||50,
       refereeCoins: parseInt(document.getElementById('settings-referee-coins').value)||25,
@@ -4892,8 +5009,16 @@ document.getElementById('save-settings-btn')?.addEventListener('click', async ()
     const ticker = document.getElementById('settings-ticker').value.trim();
     if(ticker) await db.ref('appSettings/ticker').set({ text: ticker, updatedAt: Date.now() });
     pendingQrBase64 = null;
-    toast('Settings saved!');
-  } catch(e) { toast('Failed: '+e.message,true); }
+    await loadSettings(); // reload from DB to confirm persisted values
+    toast('Settings saved successfully!');
+  } catch(e) {
+    console.error('Settings save failed:', e);
+    if(!navigator.onLine) toast('No internet connection. Please try again.',true);
+    else toast('Failed to save: '+(e.message||'Unknown error'),true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origHTML;
+  }
 });
 
 // QR upload removed
@@ -5297,16 +5422,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!filtered.length) { showEmpty('support-requests-empty', true); showTable('support-requests-table', false); return; }
       showEmpty('support-requests-empty', false); showTable('support-requests-table', true);
       tbody.innerHTML = filtered.map(r=>`
-        <tr>
-          <td>${sanitize(r.ign||r.uid||'-')}</td>
+        <tr style="${r.unreadByAdmin?'background:rgba(255,215,0,0.05);':''}">
+          <td><strong>${sanitize(r.ign||r.uid||'-')}</strong>${r.unreadByAdmin?' <span class="badge badge-warning" style="font-size:9px;">NEW</span>':''}</td>
           <td><span class="badge" style="background:rgba(255,215,0,0.1);color:var(--yellow)">${sanitize(r.type||'-')}</span></td>
-          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(r.message||'-')}</td>
           <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
-          <td>${statusBadge(r.status||'pending')}</td>
-          <td>
-            <button class="btn btn-outline btn-xs" onclick="openSupportView('${r.id}')">⊙ View</button>
-            ${r.status!=='resolved'?`<button class="btn btn-primary btn-xs" onclick="resolveSupport('${r.id}','${r.uid}')">✓</button>`:''}
-          </td>
+          <td><button class="btn btn-outline btn-xs" onclick="openSupportChat('${r.id}')">⊙ View</button></td>
         </tr>`).join('');
     });
   });
