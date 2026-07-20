@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚡ Mini eSports Admin Panel</title>
@@ -3898,37 +3901,34 @@ document.getElementById('logout-btn')?.addEventListener('click', ()=>{
 // BADGE LISTENERS (real-time counts)
 // ═══════════════════════════════════════════
 function setupBadgeListeners() {
-  const badges = [
-    ['profileRequests', 'badge-profile-verification'],
-    ['profileUpdateRequests', 'badge-profile-updates'],
-    ['joinRequests', 'badge-join-requests'],
-    ['teamRequests', 'badge-team-requests'],
-    ['supportRequests', 'badge-support-requests']
+  const countBadges = [
+    ['profile_requests', 'badge-profile-verification'],
+    ['profile_update_requests', 'badge-profile-updates'],
+    ['join_requests', 'badge-join-requests'],
+    ['team_requests', 'badge-team-requests'],
+    ['support_requests', 'badge-support-requests']
   ];
-  badges.forEach(([path, id])=>{
-    db.ref(path).on('value', snap=>{
-      let count = 0;
-      if(snap.exists()) {
-        snap.forEach(c=>{ if((c.val().status||'pending')==='pending') count++; });
-      }
-      const el = document.getElementById(id);
-      if(el) { el.textContent = count; el.style.display = count>0?'flex':'none'; }
-    });
-  });
-  // Wallet badge: add + withdraw pending (single consolidated poll, avoids duplicate queries)
-  async function updateWalletBadge() {
+  async function pollAllBadges() {
     try {
+      const results = await Promise.all(
+        countBadges.map(([table]) => _sb.from(table).select('id', {count:'exact', head:true}).eq('status','pending'))
+      );
+      countBadges.forEach(([,id], i) => {
+        const count = results[i]?.count || 0;
+        const el = document.getElementById(id);
+        if(el) { el.textContent = count; el.style.display = count>0?'flex':'none'; }
+      });
       const [a, w] = await Promise.all([
-        _sb.from('add_money_requests').select('status').eq('status','pending'),
-        _sb.from('withdraw_requests').select('status').eq('status','pending')
+        _sb.from('add_money_requests').select('id', {count:'exact', head:true}).eq('status','pending'),
+        _sb.from('withdraw_requests').select('id', {count:'exact', head:true}).eq('status','pending')
       ]);
-      const total = (a.data?.length||0) + (w.data?.length||0);
-      const el = document.getElementById('badge-wallet-requests');
-      if(el) { el.textContent = total; el.style.display = total>0?'flex':'none'; }
-    } catch(e) { console.error('wallet badge error', e); }
+      const walletTotal = (a.count||0) + (w.count||0);
+      const wEl = document.getElementById('badge-wallet-requests');
+      if(wEl) { wEl.textContent = walletTotal; wEl.style.display = walletTotal>0?'flex':'none'; }
+    } catch(e) { console.error('badge poll error', e); }
   }
-  updateWalletBadge();
-  setInterval(updateWalletBadge, 8000);
+  pollAllBadges();
+  setInterval(pollAllBadges, 20000); // single consolidated poll, lightweight count-only queries
 }
 
 // ═══════════════════════════════════════════
@@ -5376,6 +5376,17 @@ document.getElementById('confirm-cancel')?.addEventListener('click', () => {
 // ═══════════════════════════════════════════
 // DOM CONTENT LOADED - All event bindings
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// GLOBAL BUTTON CLICK GUARD — prevents double/rapid clicks on ANY button
+// ═══════════════════════════════════════════
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('button');
+  if(!btn || btn.disabled) return;
+  if(btn.dataset.locked === '1') { e.stopImmediatePropagation(); e.preventDefault(); return; }
+  btn.dataset.locked = '1';
+  setTimeout(()=>{ btn.dataset.locked = ''; }, 700);
+}, true);
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── Modal close buttons (data-close-modal) ──
