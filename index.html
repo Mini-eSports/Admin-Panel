@@ -3176,25 +3176,29 @@ table { border-collapse: collapse; width: 100%; }
 </div>
 
 <!-- Room Details Modal (separate from create form, per-tournament) -->
-<div class="modal" id="modal-room-details">
-  <div class="modal-content">
-    <div class="modal-bar"></div>
-    <h3>🔑 Room Details</h3>
-    <input type="hidden" id="room-details-tid">
-    <div class="form-group">
-      <label class="form-label">Room ID</label>
-      <input type="text" class="form-input" id="room-details-id" placeholder="Room ID">
+<div class="modal-overlay" id="modal-room-details">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">🔑 Room Details</h3>
+      <button class="modal-close" data-close-modal="modal-room-details">✕</button>
     </div>
-    <div class="form-group">
-      <label class="form-label">Room Password</label>
-      <input type="text" class="form-input" id="room-details-pass" placeholder="Room Password">
-    </div>
-    <div class="form-group">
-      <label class="form-toggle">
-        <input type="checkbox" id="room-details-locked" checked>
-        <span class="toggle-switch"></span>
-        <span class="toggle-label">Room Locked (hide from users until you unlock)</span>
-      </label>
+    <div class="modal-body">
+      <input type="hidden" id="room-details-tid">
+      <div class="form-group">
+        <label class="form-label">Room ID</label>
+        <input type="text" class="form-input" id="room-details-id" placeholder="Room ID">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Room Password</label>
+        <input type="text" class="form-input" id="room-details-pass" placeholder="Room Password">
+      </div>
+      <div class="form-group">
+        <label class="form-toggle">
+          <input type="checkbox" id="room-details-locked" checked>
+          <span class="toggle-switch"></span>
+          <span class="toggle-label">Room Locked (hide from users until you unlock)</span>
+        </label>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" data-close-modal="modal-room-details">Cancel</button>
