@@ -3262,6 +3262,7 @@ table { border-collapse: collapse; width: 100%; }
 const SUPABASE_URL = 'https://qgmgaouvjavpzbbjuqye.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_hhFcscXkGSX_keKTauxSdA_eagVd_Dv';
 const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _processingReq = {}; // shared in-flight guard: prevents double-click/race double-processing on approve/reject actions
 
 // ═══════════════════════════════════════════
 // DB HELPER - Firebase jaisi API Supabase ke liye
@@ -4108,7 +4109,11 @@ function renderPV(data) {
 }
 
 async function approveProfile(id, uid, ign, ffuid) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
+    const {data: reqRow} = await _sb.from('profile_requests').select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('Already processed.', true); loadProfileVerification(); return; }
     await db.ref('users/'+uid).update({
       approved: true,
       ign: ign,
@@ -4121,6 +4126,7 @@ async function approveProfile(id, uid, ign, ffuid) {
     loadProfileVerification();
     loadDashboard();
   } catch(e) { toast('Failed: '+e.message,true); }
+  finally { delete _processingReq[id]; }
 }
 
 document.getElementById('search-profile-verification')?.addEventListener('input', ()=>renderPV(pvData));
@@ -4167,13 +4173,18 @@ function renderPU(data) {
 }
 
 async function approveProfileUpdate(id, uid, newIGN) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
+    const {data: reqRow} = await _sb.from('profile_update_requests').select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('Already processed.', true); loadProfileUpdates(); return; }
     await db.ref('users/'+uid).update({ign:newIGN, profileUpdatePending:false});
     await db.ref('profileUpdateRequests/'+id).update({status:'approved'});
     await sendNotifToUser(uid,'Profile Updated! ✓','Your IGN has been updated to '+newIGN+'.');
     toast('Profile update approved!');
     loadProfileUpdates();
   } catch(e) { toast('Failed: '+e.message,true); }
+  finally { delete _processingReq[id]; }
 }
 
 document.getElementById('search-profile-updates')?.addEventListener('input', ()=>renderPU(puData));
@@ -4485,7 +4496,11 @@ function renderJR() {
 }
 
 async function approveJoin(id) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
+    const {data: reqRow} = await _sb.from('join_requests').select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadJoinRequests(); return; }
     const snap = await db.ref('joinRequests/'+id).once('value');
     if(!snap.exists()) return;
     const r = snap.val();
@@ -4509,6 +4524,7 @@ async function approveJoin(id) {
     await sendNotifToUser(uid,'Join Request Approved! ✓','Your request to join '+sanitize(r.tournamentName||'the tournament')+' has been approved. Good luck!');
     toast('Join approved!'); loadJoinRequests();
   } catch(e) { toast('Failed: '+e.message,true); }
+  finally { delete _processingReq[id]; }
 }
 
 // Filter tabs for join requests
@@ -4589,8 +4605,12 @@ function renderWalletWithdraw() {
 }
 
 async function approveAddMoney(id, uid, amount) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
-    // Use transaction for atomic update
+    // Re-check status is still pending to prevent double-credit from double-click/race
+    const {data: reqRow} = await _sb.from('add_money_requests').select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
     const ref = db.ref('users/'+uid+'/realMoney/deposited');
     const snap = await ref.once('value');
     await ref.set((snap.val()||0)+amount);
@@ -4600,10 +4620,15 @@ async function approveAddMoney(id, uid, amount) {
     toast('✓ Add money approved!');
     loadWalletRequests();
   } catch(e) { toast('Failed: '+e.message, true); }
+  finally { delete _processingReq[id]; }
 }
 
 async function approveWithdraw(id, uid, amount) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
+    const {data: reqRow} = await _sb.from('withdraw_requests').select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
     const snap = await db.ref('users/'+uid+'/realMoney/winnings').once('value');
     const win = snap.val()||0;
     if(win < amount) { toast('Insufficient winnings balance',true); return; }
@@ -4612,14 +4637,21 @@ async function approveWithdraw(id, uid, amount) {
     await sendNotifToUser(uid,'Withdrawal Approved! ₹','₹'+amount+' withdrawal has been processed.');
     toast('Withdrawal approved!'); loadWalletRequests();
   } catch(e) { toast('Failed',true); }
+  finally { delete _processingReq[id]; }
 }
 
 async function rejectWallet(id, path) {
+  if(_processingReq[id]) return;
+  _processingReq[id] = true;
   try {
     const pathMap={'addMoneyRequests':'add_money_requests','withdrawRequests':'withdraw_requests'};
-    await _sb.from(pathMap[path]||path).update({status:'rejected'}).eq('id', id);
+    const table = pathMap[path]||path;
+    const {data: reqRow} = await _sb.from(table).select('status').eq('id', id).single();
+    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
+    await _sb.from(table).update({status:'rejected'}).eq('id', id);
     toast('Rejected'); loadWalletRequests();
   } catch(e) { toast('Failed',true); }
+  finally { delete _processingReq[id]; }
 }
 
 // Wallet tabs
@@ -4739,13 +4771,22 @@ function calcReward(uid) {
   if(el) el.textContent = '₹'+reward;
 }
 
+let _submittingResults = false;
 document.getElementById('submit-results-btn')?.addEventListener('click', async ()=>{
+  if(_submittingResults) return;
   const tid = document.getElementById('match-result-tournament-select').value;
   if(!tid) { toast('Select a tournament first',true); return; }
   const playersRaw = document.getElementById('match-results-table').dataset.players;
   if(!playersRaw) return;
   const players = JSON.parse(playersRaw);
+  const btn = document.getElementById('submit-results-btn');
+  const origHTML = btn.innerHTML;
+  _submittingResults = true;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Submitting...';
   try {
+    // Re-check results weren't already submitted (prevents double-credit on double-click/race)
+    const tSnap = await db.ref('tournaments/'+tid).once('value');
+    if(tSnap.val()?.resultSubmitted) { toast('Results were already submitted for this tournament.', true); return; }
     for(const p of players) {
       const kills = parseInt(document.getElementById('kills-'+p.uid)?.value)||0;
       const isWinner = document.getElementById('winner-'+p.uid)?.checked||false;
@@ -4765,6 +4806,7 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
     await db.ref('tournaments/'+tid).update({resultSubmitted:true});
     toast('Results submitted!'); loadMatchResults();
   } catch(e) { toast('Failed: '+e.message,true); }
+  finally { _submittingResults = false; btn.disabled = false; btn.innerHTML = origHTML; }
 });
 
 // ═══════════════════════════════════════════
@@ -5460,7 +5502,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── Confirm Reject Button ──
+  let _rejectingReq = false;
   document.getElementById('confirm-reject-btn')?.addEventListener('click', async () => {
+    if(_rejectingReq) return;
+    _rejectingReq = true;
     const id = document.getElementById('reject-reason-id').value;
     const uid = document.getElementById('reject-reason-uid').value;
     const type = document.getElementById('reject-reason-type').value;
@@ -5488,6 +5533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else if(type==='join') loadJoinRequests();
       else if(type==='team') loadTeamRequests();
     } catch(e) { toast('Failed: '+e.message, true); }
+    finally { _rejectingReq = false; }
   });
 
 });
