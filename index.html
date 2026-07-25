@@ -2653,12 +2653,10 @@ table { border-collapse: collapse; width: 100%; }
             <table class="data-table" id="team-requests-table" style="display:none;">
               <thead>
                 <tr>
-                  <th>Player</th>
+                  <th>Request (From → To)</th>
                   <th>Mode</th>
-                  <th>Teammate UID</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="team-requests-tbody"></tbody>
@@ -2695,6 +2693,8 @@ table { border-collapse: collapse; width: 100%; }
               </select>
             </div>
           </div>
+          <div id="match-results-prizepool-note" style="padding:0 16px 8px;font-size:12px;color:var(--yellow);"></div>
+          <div id="match-results-rank-warning" style="display:none;margin:0 16px 10px;padding:8px 12px;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:8px;color:var(--red);font-size:12px;">⚠ Two players have the same rank assigned. Please fix before submitting.</div>
           <div class="table-wrapper">
             <div id="match-results-loading" class="table-loading" style="display:none;">
               <div class="table-loading-spinner"></div>
@@ -2704,11 +2704,10 @@ table { border-collapse: collapse; width: 100%; }
               <thead>
                 <tr>
                   <th>Player</th>
-                  <th>IGN</th>
                   <th>FF UID</th>
                   <th>Kills</th>
+                  <th>Rank</th>
                   <th>Reward</th>
-                  <th>Winner</th>
                 </tr>
               </thead>
               <tbody id="match-results-tbody"></tbody>
@@ -2863,18 +2862,6 @@ table { border-collapse: collapse; width: 100%; }
         </div>
 
         <div class="panel">
-          <!-- Payment Settings -->
-          <div class="settings-section">
-            <div class="settings-title">$ Payment Settings</div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">UPI ID *</label>
-                <input type="text" class="form-input" id="settings-upi-id" placeholder="yourname@upi">
-              </div>
-            </div>
-
-          </div>
-
           <!-- Withdraw Settings -->
           <div class="settings-section">
             <div class="settings-title">⚙ Withdrawal Limits (₹)</div>
@@ -3147,7 +3134,8 @@ table { border-collapse: collapse; width: 100%; }
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Prize Pool</label>
-          <input type="number" class="form-input" id="tournament-prize" placeholder="0" min="0">
+          <input type="number" class="form-input" id="tournament-prize" placeholder="0" min="0" oninput="updatePrizePreview()">
+          <div id="tournament-prize-preview" style="font-size:10px;color:var(--dim);margin-top:5px;">🥇 50% · 🥈 30% · 🥉 20% (auto-calculated)</div>
         </div>
         <div class="form-group">
           <label class="form-label">Max Slots</label>
@@ -3479,8 +3467,9 @@ class DbRef {
         let obj = camel;
         for(let i=0;i<parts.length-1;i++) { if(!obj[parts[i]]) obj[parts[i]]={}; obj=obj[parts[i]]; }
         obj[parts[parts.length-1]] = value;
-        const {error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+        const {data: updRows, error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id).select('id');
         if(error) throw error;
+        if(!updRows || updRows.length === 0) throw new Error('Update failed: record not found or permission denied (0 rows affected)');
       }
       return;
     }
@@ -3532,14 +3521,16 @@ class DbRef {
         for(let i=0;i<parts.length-1;i++) { if(!obj[parts[i]]) obj[parts[i]]={}; obj=obj[parts[i]]; }
         obj[parts[parts.length-1]] = data[k];
       }
-      const {error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id);
+      const {data: updRows, error} = await _sb.from(info.table).update(toSnake(camel)).eq('id', info.id).select('id');
       if(error) throw error;
+      if(!updRows || updRows.length === 0) throw new Error('Update failed: record not found or permission denied (0 rows affected)');
       return;
     }
 
     const snake = toSnake(data);
-    const {error} = await _sb.from(info.table).update(snake).eq('id', info.id);
+    const {data: updRows, error} = await _sb.from(info.table).update(snake).eq('id', info.id).select('id');
     if(error) throw error;
+    if(!updRows || updRows.length === 0) throw new Error('Update failed: record not found or permission denied (0 rows affected)');
   }
 
   async remove() {
@@ -3957,7 +3948,7 @@ async function loadDashboard() {
     const today = new Date(); today.setHours(0,0,0,0);
     const todayTs = today.getTime();
 
-    const [users, tours, pv, pu, jr, addMoney, wdMoney, tr, sr] = await Promise.all([
+    const [users, tours, pv, pu, jr, addMoney, wdMoney, teamMembersRes, sr] = await Promise.all([
       db.ref('users').once('value'),
       db.ref('tournaments').once('value'),
       db.ref('profileRequests').once('value'),
@@ -3965,9 +3956,11 @@ async function loadDashboard() {
       db.ref('joinRequests').once('value'),
       db.ref('addMoneyRequests').once('value'),
       db.ref('withdrawRequests').once('value'),
-      db.ref('teamRequests').once('value'),
+      _sb.from('team_members').select('uid,mode'),
       db.ref('supportRequests').once('value')
     ]);
+    const teamModeByUid = {};
+    (teamMembersRes.data||[]).forEach(m=>{ if(!teamModeByUid[m.uid] || m.mode==='squad') teamModeByUid[m.uid]=m.mode; });
 
     // --- Users ---
     let totalUsers=0, soloCount=0, duoCount=0, squadCount=0, newToday=0, bannedCount=0;
@@ -3977,8 +3970,8 @@ async function loadDashboard() {
         totalUsers++;
         if(v.banned) bannedCount++;
         if(v.createdAt && v.createdAt >= todayTs) newToday++;
-        const hasDuo = v.duoTeam && Object.keys(v.duoTeam).length > 0;
-        const hasSquad = v.squadTeam && Object.keys(v.squadTeam).length > 0;
+        const hasDuo = teamModeByUid[u.key]==='duo';
+        const hasSquad = teamModeByUid[u.key]==='squad';
         if(hasSquad) squadCount++;
         else if(hasDuo) duoCount++;
         else soloCount++;
@@ -4349,6 +4342,13 @@ function renderTournaments(data) {
 document.getElementById('search-tournaments')?.addEventListener('input', ()=>renderTournaments(toursData));
 document.getElementById('create-tournament-btn')?.addEventListener('click', ()=>openCreateTournament());
 
+function updatePrizePreview(){
+  const pool = parseInt(document.getElementById('tournament-prize')?.value)||0;
+  const el = document.getElementById('tournament-prize-preview');
+  if(!el) return;
+  if(!pool) { el.textContent = '🥇 50% · 🥈 30% · 🥉 20% (auto-calculated)'; return; }
+  el.innerHTML = `🥇 ₹${Math.round(pool*0.5)} · 🥈 ₹${Math.round(pool*0.3)} · 🥉 ₹${Math.round(pool*0.2)}`;
+}
 function openCreateTournament() {
   document.getElementById('modal-tournament-title').textContent = '★ Create Tournament';
   document.getElementById('tournament-edit-id').value = '';
@@ -4358,6 +4358,7 @@ function openCreateTournament() {
   document.getElementById('tournament-entry-type').value = 'paid';
   document.getElementById('tournament-entry-fee').value = '';
   document.getElementById('tournament-prize').value = '';
+  updatePrizePreview();
   document.getElementById('tournament-slots').value = '12';
   document.getElementById('tournament-datetime').value = '';
   document.getElementById('tournament-special').checked = false;
@@ -4376,6 +4377,7 @@ async function openEditTournament(id) {
   document.getElementById('tournament-entry-type').value = t.entryType||'paid';
   document.getElementById('tournament-entry-fee').value = t.entryFee||0;
   document.getElementById('tournament-prize').value = t.prizePool||0;
+  updatePrizePreview();
   document.getElementById('tournament-slots').value = t.maxSlots||12;
   if(t.matchTime) {
     const d = new Date(t.matchTime);
@@ -4538,10 +4540,11 @@ async function loadWalletRequests() {
   // Add Money
   showLoading('wallet-add-loading',true); showTable('wallet-add-table',false); showEmpty('wallet-add-empty',false);
   try {
-    db.ref('addMoneyRequests').once('value').then(snap=>{
+    db.ref('addMoneyRequests').once('value').then(async snap=>{
       walletAddData = [];
       if(snap.exists()) snap.forEach(c=>walletAddData.push({id:c.key,...c.val()}));
       walletAddData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      await enrichWithUserNames(walletAddData);
       showLoading('wallet-add-loading',false);
       renderWalletAdd();
     }).catch(()=>showLoading('wallet-add-loading',false));
@@ -4549,14 +4552,32 @@ async function loadWalletRequests() {
   // Withdraw
   showLoading('wallet-withdraw-loading',true); showTable('wallet-withdraw-table',false); showEmpty('wallet-withdraw-empty',false);
   try {
-    db.ref('withdrawRequests').once('value').then(snap2=>{
+    db.ref('withdrawRequests').once('value').then(async snap2=>{
       walletWithdrawData = [];
       if(snap2.exists()) snap2.forEach(c=>walletWithdrawData.push({id:c.key,...c.val()}));
       walletWithdrawData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      await enrichWithUserNames(walletWithdrawData);
       showLoading('wallet-withdraw-loading',false);
       renderWalletWithdraw();
     }).catch(()=>showLoading('wallet-withdraw-loading',false));
   } catch(e) { showLoading('wallet-withdraw-loading',false); }
+}
+
+// Attaches each request's CURRENT display name/email/IGN from the users table
+// (never a frozen snapshot — always reflects the latest profile info)
+async function enrichWithUserNames(requests) {
+  const uids = [...new Set(requests.map(r=>r.uid).filter(Boolean))];
+  if(!uids.length) return;
+  try {
+    const { data } = await _sb.from('users').select('id,ign,display_name,email').in('id', uids);
+    const map = {};
+    (data||[]).forEach(u=>{ map[u.id] = u; });
+    requests.forEach(r=>{
+      const u = map[r.uid];
+      r._playerName = u?.ign || u?.display_name || u?.email || (r.uid ? r.uid.slice(0,10)+'…' : 'Unknown');
+      r._playerSub = u?.email || '';
+    });
+  } catch(e) { /* fall back silently to uid-based label in render */ }
 }
 
 function renderWalletAdd() {
@@ -4567,8 +4588,8 @@ function renderWalletAdd() {
   tbody.innerHTML = walletAddData.map(r=>`
     <tr style="${r.status==='pending'?'background:rgba(255,215,0,0.03);':r.status==='approved'?'opacity:0.7;':'opacity:0.6;'}">
       <td>
-        <strong style="color:var(--primary);font-size:12px;">${sanitize(r.ign||'Player')}</strong><br>
-        <small style="color:var(--text-muted);font-size:10px;word-break:break-all;">${sanitize((r.uid||'-').slice(0,12))}...</small>
+        <strong style="color:var(--primary);font-size:12px;">${sanitize(r._playerName||'Unknown')}</strong><br>
+        <small style="color:var(--text-muted);font-size:10px;word-break:break-all;">${sanitize(r._playerSub||(r.uid||'-').slice(0,12)+'…')}</small>
       </td>
       <td style="color:var(--primary);font-weight:800;font-size:14px;">₹${r.amount||0}</td>
       <td style="font-family:monospace;font-size:11px;">${sanitize(r.utr||r.upiRef||'-')}</td>
@@ -4592,7 +4613,10 @@ function renderWalletWithdraw() {
   document.getElementById('wallet-withdraw-info').textContent = 'Showing '+walletWithdrawData.length+' requests';
   tbody.innerHTML = walletWithdrawData.map(r=>`
     <tr>
-      <td>${sanitize(r.ign||r.uid||'-')}</td>
+      <td>
+        <strong style="color:var(--primary);font-size:12px;">${sanitize(r._playerName||'Unknown')}</strong><br>
+        <small style="color:var(--text-muted);font-size:10px;">${sanitize(r._playerSub||'')}</small>
+      </td>
       <td style="color:var(--red)">₹${r.amount||0}</td>
       <td>${sanitize(r.userUpiId||'-')}</td>
       <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
@@ -4664,50 +4688,32 @@ let teamData = [];
 async function loadTeamRequests() {
   showLoading('team-requests-loading',true); showTable('team-requests-table',false); showEmpty('team-requests-empty',false);
   try {
-    const snap = await db.ref('teamRequests').once('value');
-    teamData = [];
-    if(snap.exists()) snap.forEach(c=>teamData.push({id:c.key,...c.val()}));
-    teamData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    const { data, error } = await _sb.from('team_requests').select('*').order('created_at',{ascending:false}).limit(200);
+    if(error) throw error;
+    teamData = data||[];
     const tbody = document.getElementById('team-requests-tbody');
     if(!teamData.length) { showEmpty('team-requests-empty',true); showTable('team-requests-table',false); showFooter('team-requests-footer',false); return; }
     showEmpty('team-requests-empty',false); showTable('team-requests-table',true); showFooter('team-requests-footer',true);
-    document.getElementById('team-requests-info').textContent = 'Showing '+teamData.length+' requests';
+    document.getElementById('team-requests-info').textContent = 'Showing '+teamData.length+' requests (read-only — players accept/reject directly)';
+
+    // Enrich with player names
+    const uids = [...new Set(teamData.flatMap(r=>[r.requester_uid, r.target_uid]))];
+    const { data: users } = await _sb.from('users').select('id,ign,display_name').in('id', uids);
+    const umap = {}; (users||[]).forEach(u=>umap[u.id]=u);
+    const nameOf = (uid)=> umap[uid]?.ign || umap[uid]?.display_name || (uid||'').slice(0,10)+'…';
+
     tbody.innerHTML = teamData.map(r=>`
       <tr>
-        <td>${sanitize(r.ign||r.uid||'-')}</td>
+        <td>${sanitize(nameOf(r.requester_uid))} → ${sanitize(nameOf(r.target_uid))}</td>
         <td><span class="badge" style="background:rgba(255,215,0,0.1);color:var(--yellow)">${sanitize(r.mode||'-')}</span></td>
-        <td>${sanitize(r.teammateFFUID||'-')}</td>
-        <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
+        <td style="font-size:12px">${fmtDate(r.created_at)}</td>
         <td>${statusBadge(r.status||'pending')}</td>
-        <td>
-          ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveTeam('${r.id}')">✓</button>
-          <button class="btn btn-danger btn-xs" onclick="rejectRequest('${r.id}','${r.uid}','teamRequests','team')">✕</button>`:''}
-        </td>
       </tr>`).join('');
-  } catch(e) { toast('Failed',true); }
+  } catch(e) { toast('Failed: '+(e.message||'Could not load'),true); }
   showLoading('team-requests-loading',false);
 }
-
-async function approveTeam(id) {
-  try {
-    const snap = await db.ref('teamRequests/'+id).once('value');
-    if(!snap.exists()) return;
-    const r = snap.val();
-    const uid = r.uid, mode = r.mode, tmUID = r.teammateFFUID;
-    // Find teammate by ffuid
-    const usersSnap = await db.ref('users').orderByChild('ffuid').equalTo(tmUID).once('value');
-    let tmName = tmUID;
-    if(usersSnap.exists()) {
-      usersSnap.forEach(u=>{ tmName = u.val().ign||u.val().displayName||tmUID; });
-    }
-    const teamKey = mode==='duo' ? 'duoTeam' : 'squadTeam';
-    const newKey = crypto.randomUUID();
-    await db.ref('users/'+uid+'/'+teamKey+'/'+newKey).set({name:tmName, ffuid:tmUID});
-    await db.ref('teamRequests/'+id).update({status:'approved'});
-    await sendNotifToUser(uid,'Team Request Approved! ⊕','Your '+mode+' teammate has been added.');
-    toast('Team approved!'); loadTeamRequests();
-  } catch(e) { toast('Failed: '+e.message,true); }
-}
+// Note: Approve/Reject removed intentionally — players accept/reject their own team
+// requests directly via secure Supabase RPC functions. This page is monitoring-only.
 
 // ═══════════════════════════════════════════
 // MATCH RESULTS
@@ -4740,35 +4746,64 @@ document.getElementById('match-result-tournament-select')?.addEventListener('cha
       db.ref('joinRequests').orderByChild('tournamentId').equalTo(tid).once('value'),
       db.ref('tournaments/'+tid).once('value')
     ]);
+    const prizePool = tSnap.val()?.prizePool || 0;
     const players = [];
     if(jrSnap.exists()) jrSnap.forEach(c=>{ const v=c.val(); if(v.status==='approved') players.push({id:c.key,...v}); });
     const tbody = document.getElementById('match-results-tbody');
     if(!players.length) { showEmpty('match-results-empty',true); showTable('match-results-table',false); showFooter('match-results-footer',false); return; }
     showEmpty('match-results-empty',false); showTable('match-results-table',true); showFooter('match-results-footer',true);
+    document.getElementById('match-results-prizepool-note').textContent = 'Total Prize Pool: ₹'+prizePool+' · Auto-distributed 1st=50% · 2nd=30% · 3rd=20%';
     tbody.innerHTML = players.map(p=>`
       <tr>
         <td><strong>${sanitize(p.ign||p.uid||'-')}</strong></td>
         <td>${sanitize(p.ffuid||'-')}</td>
         <td><input type="number" class="form-input" style="width:70px;padding:4px 8px" min="0" id="kills-${p.uid}" placeholder="0"></td>
-        <td><input type="checkbox" id="winner-${p.uid}" style="width:18px;height:18px;accent-color:var(--yellow)"></td>
+        <td>
+          <select class="form-input" style="width:120px;padding:4px 8px;" id="rank-${p.uid}">
+            <option value="">Not Ranked</option>
+            <option value="1">🥇 1st (50%)</option>
+            <option value="2">🥈 2nd (30%)</option>
+            <option value="3">🥉 3rd (20%)</option>
+          </select>
+        </td>
         <td id="reward-${p.uid}" style="color:var(--yellow)">₹0</td>
       </tr>`).join('');
     // Live calc reward
     players.forEach(p=>{
-      document.getElementById('kills-'+p.uid)?.addEventListener('input', ()=>calcReward(p.uid));
-      document.getElementById('winner-'+p.uid)?.addEventListener('change', ()=>calcReward(p.uid));
+      document.getElementById('kills-'+p.uid)?.addEventListener('input', ()=>calcReward(p.uid, prizePool));
+      document.getElementById('rank-'+p.uid)?.addEventListener('change', ()=>{ calcReward(p.uid, prizePool); checkDuplicateRanks(); });
     });
     // Store for submit
     document.getElementById('match-results-table').dataset.players = JSON.stringify(players.map(p=>({uid:p.uid,ign:p.ign||'-'})));
+    document.getElementById('match-results-table').dataset.prizePool = prizePool;
   } catch(e) { toast('Failed',true); }
   showLoading('match-results-loading',false);
 });
 
-function calcReward(uid) {
-  const isWinner = document.getElementById('winner-'+uid)?.checked;
-  const reward = isWinner?50:0;
+function rewardForRank(rank, prizePool){
+  const pctByRank = {1:50, 2:30, 3:20};
+  const pct = pctByRank[rank];
+  if(!pct) return 0;
+  return Math.round((prizePool||0) * pct/100);
+}
+function calcReward(uid, prizePool) {
+  const rank = parseInt(document.getElementById('rank-'+uid)?.value)||0;
+  const reward = rewardForRank(rank, prizePool);
   const el = document.getElementById('reward-'+uid);
   if(el) el.textContent = '₹'+reward;
+}
+function checkDuplicateRanks(){
+  const playersRaw = document.getElementById('match-results-table').dataset.players;
+  if(!playersRaw) return;
+  const players = JSON.parse(playersRaw);
+  const seen = {};
+  let dup = false;
+  players.forEach(p=>{
+    const rank = document.getElementById('rank-'+p.uid)?.value;
+    if(rank){ if(seen[rank]) dup = true; seen[rank] = true; }
+  });
+  const warnEl = document.getElementById('match-results-rank-warning');
+  if(warnEl) warnEl.style.display = dup ? 'block' : 'none';
 }
 
 let _submittingResults = false;
@@ -4779,6 +4814,15 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
   const playersRaw = document.getElementById('match-results-table').dataset.players;
   if(!playersRaw) return;
   const players = JSON.parse(playersRaw);
+  const prizePool = parseFloat(document.getElementById('match-results-table').dataset.prizePool)||0;
+
+  // Block submission if two players share the same rank
+  const seenRanks = {};
+  for(const p of players) {
+    const rank = document.getElementById('rank-'+p.uid)?.value;
+    if(rank) { if(seenRanks[rank]) { toast('Two players have the same rank. Fix before submitting.',true); return; } seenRanks[rank]=true; }
+  }
+
   const btn = document.getElementById('submit-results-btn');
   const origHTML = btn.innerHTML;
   _submittingResults = true;
@@ -4789,19 +4833,22 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
     if(tSnap.val()?.resultSubmitted) { toast('Results were already submitted for this tournament.', true); return; }
     for(const p of players) {
       const kills = parseInt(document.getElementById('kills-'+p.uid)?.value)||0;
-      const isWinner = document.getElementById('winner-'+p.uid)?.checked||false;
-      const reward = isWinner?50:0;
+      const rank = parseInt(document.getElementById('rank-'+p.uid)?.value)||0;
+      const reward = rewardForRank(rank, prizePool);
       const uSnap = await db.ref('users/'+p.uid).once('value');
       if(!uSnap.exists()) continue;
       const u = uSnap.val();
       await db.ref('users/'+p.uid).update({
         'stats/kills': (u.stats?.kills||0)+kills,
-        'stats/wins': (u.stats?.wins||0)+(isWinner?1:0),
+        'stats/wins': (u.stats?.wins||0)+(rank===1?1:0),
         'stats/matches': (u.stats?.matches||0)+1,
         'stats/earnings': (u.stats?.earnings||0)+reward,
         'realMoney/winnings': (u.realMoney?.winnings||0)+reward
       });
-      if(reward>0) await sendNotifToUser(p.uid,'Match Result ★','You earned ₹'+reward+' in '+kills+' kills'+(isWinner?' — Winner! ①':'')+'.');
+      if(reward>0) {
+        const rankLabel = {1:'🥇 1st Place',2:'🥈 2nd Place',3:'🥉 3rd Place'}[rank]||'';
+        await sendNotifToUser(p.uid,'Match Result ★','You finished '+rankLabel+' and earned ₹'+reward+' ('+kills+' kills)!');
+      }
     }
     await db.ref('tournaments/'+tid).update({resultSubmitted:true});
     toast('Results submitted!'); loadMatchResults();
@@ -5016,7 +5063,6 @@ async function loadSettings() {
     ]);
     if(pSnap.exists()) {
       const p = pSnap.val();
-      document.getElementById('settings-upi-id').value = p.upiId||'';
       document.getElementById('settings-min-withdraw-limit').value = p.minWithdraw||50;
       document.getElementById('settings-max-withdraw-limit').value = p.maxWithdraw||10000;
       document.getElementById('settings-min-deposit').value = p.minDeposit||10;
@@ -5034,10 +5080,6 @@ async function loadSettings() {
 
 document.getElementById('save-settings-btn')?.addEventListener('click', async ()=>{
   const btn = document.getElementById('save-settings-btn');
-  const upiId = document.getElementById('settings-upi-id').value.trim();
-  if(!upiId) { toast('UPI ID required',true); return; }
-  const upiPattern = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
-  if(!upiPattern.test(upiId)) { toast('Enter a valid UPI ID (e.g. name@bank)',true); return; }
   const minW = parseInt(document.getElementById('settings-min-withdraw-limit').value)||50;
   const maxW = parseInt(document.getElementById('settings-max-withdraw-limit').value)||10000;
   const minD = parseInt(document.getElementById('settings-min-deposit').value)||10;
@@ -5051,7 +5093,6 @@ document.getElementById('save-settings-btn')?.addEventListener('click', async ()
   btn.innerHTML = '<span class="spinner-sm"></span> Saving...';
   try {
     const payData = {
-      upiId,
       minWithdraw: minW,
       maxWithdraw: maxW,
       minDeposit: minD,
