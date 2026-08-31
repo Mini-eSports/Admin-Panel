@@ -3199,9 +3199,16 @@ table { border-collapse: collapse; width: 100%; }
           <input type="number" class="form-input" id="tournament-slots" placeholder="12" min="1" value="12">
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Match Date & Time *</label>
-        <input type="datetime-local" class="form-input" id="tournament-datetime">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">💀 Per Kill Reward (₹) — optional</label>
+          <input type="number" class="form-input" id="tournament-kill-reward" placeholder="0" min="0" step="0.01">
+          <div style="font-size:10px;color:var(--dim);margin-top:5px;">Paid per kill on top of rank prize when results are submitted</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Match Date & Time *</label>
+          <input type="datetime-local" class="form-input" id="tournament-datetime">
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -3372,7 +3379,7 @@ function toSnake(obj) {
     displayName:'display_name', tournamentId:'tournament_id', tournamentName:'tournament_name',
     entryType:'entry_type', entryFee:'entry_fee', prizePool:'prize_pool', maxSlots:'max_slots',
     filledSlots:'filled_slots', matchTime:'match_time', roomId:'room_id', roomPassword:'room_password',
-    roomLocked:'room_locked', isSpecial:'is_special', gameMode:'game_mode', createdAt:'created_at', matchCategory:'match_category',
+    roomLocked:'room_locked', isSpecial:'is_special', gameMode:'game_mode', createdAt:'created_at', matchCategory:'match_category', killReward:'kill_reward',
     updatedAt:'updated_at', approvedAt:'approved_at', usedBy:'used_by', usedAt:'used_at',
     photoURL:'photo_url', profileUpdatePending:'profile_update_pending', lastDailyClaim:'last_daily_claim',
     realMoney:'real_money', soloTeam:'solo_team', duoTeam:'duo_team', squadTeam:'squad_team',
@@ -3399,7 +3406,7 @@ function toCamel(obj) {
     display_name:'displayName', tournament_id:'tournamentId', tournament_name:'tournamentName',
     entry_type:'entryType', entry_fee:'entryFee', prize_pool:'prizePool', max_slots:'maxSlots',
     filled_slots:'filledSlots', match_time:'matchTime', room_id:'roomId', room_password:'roomPassword',
-    room_locked:'roomLocked', is_special:'isSpecial', game_mode:'gameMode', created_at:'createdAt', match_category:'matchCategory',
+    room_locked:'roomLocked', is_special:'isSpecial', game_mode:'gameMode', created_at:'createdAt', match_category:'matchCategory', kill_reward:'killReward',
     updated_at:'updatedAt', approved_at:'approvedAt', used_by:'usedBy', used_at:'usedAt',
     photo_url:'photoURL', profile_update_pending:'profileUpdatePending', last_daily_claim:'lastDailyClaim',
     real_money:'realMoney', solo_team:'soloTeam', duo_team:'duoTeam', squad_team:'squadTeam',
@@ -4861,6 +4868,7 @@ function openCreateTournament() {
   document.getElementById('tournament-entry-fee').value = '';
   document.getElementById('tournament-prize').value = '';
   updatePrizePreview();
+  document.getElementById('tournament-kill-reward').value = '';
   document.getElementById('tournament-slots').value = '12';
   document.getElementById('tournament-datetime').value = '';
   document.getElementById('tournament-special').checked = false;
@@ -4881,6 +4889,7 @@ async function openEditTournament(id) {
   document.getElementById('tournament-entry-fee').value = t.entryFee||0;
   document.getElementById('tournament-prize').value = t.prizePool||0;
   updatePrizePreview();
+  document.getElementById('tournament-kill-reward').value = t.killReward||'';
   document.getElementById('tournament-slots').value = t.maxSlots||12;
   if(t.matchTime) {
     const d = new Date(t.matchTime);
@@ -4968,6 +4977,7 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     entryType: document.getElementById('tournament-entry-type').value,
     entryFee: fee,
     prizePool: parseInt(document.getElementById('tournament-prize').value)||0,
+    killReward: parseFloat(document.getElementById('tournament-kill-reward').value)||0,
     maxSlots: parseInt(document.getElementById('tournament-slots').value)||12,
     matchTime, status: computeStatus(matchTime),
     isSpecial: document.getElementById('tournament-special').checked,
@@ -5383,12 +5393,13 @@ document.getElementById('match-result-tournament-select')?.addEventListener('cha
       db.ref('tournaments/'+tid).once('value')
     ]);
     const prizePool = tSnap.val()?.prizePool || 0;
+    const killReward = tSnap.val()?.killReward || 0;
     const players = [];
     if(jrSnap.exists()) jrSnap.forEach(c=>{ const v=c.val(); if(v.status==='approved') players.push({id:c.key,...v}); });
     const tbody = document.getElementById('match-results-tbody');
     if(!players.length) { showEmpty('match-results-empty',true); showTable('match-results-table',false); showFooter('match-results-footer',false); return; }
     showEmpty('match-results-empty',false); showTable('match-results-table',true); showFooter('match-results-footer',true);
-    document.getElementById('match-results-prizepool-note').textContent = 'Total Prize Pool: ₹'+prizePool+' · Auto-distributed 1st=50% · 2nd=30% · 3rd=20%';
+    document.getElementById('match-results-prizepool-note').textContent = 'Total Prize Pool: ₹'+prizePool+' · Auto-distributed 1st=50% · 2nd=30% · 3rd=20%'+(killReward>0?' · Per Kill: ₹'+killReward:'');
     tbody.innerHTML = players.map(p=>`
       <tr>
         <td><strong>${sanitize(p.ign||p.uid||'-')}</strong></td>
@@ -5406,12 +5417,13 @@ document.getElementById('match-result-tournament-select')?.addEventListener('cha
       </tr>`).join('');
     // Live calc reward
     players.forEach(p=>{
-      document.getElementById('kills-'+p.uid)?.addEventListener('input', ()=>calcReward(p.uid, prizePool));
-      document.getElementById('rank-'+p.uid)?.addEventListener('change', ()=>{ calcReward(p.uid, prizePool); checkDuplicateRanks(); });
+      document.getElementById('kills-'+p.uid)?.addEventListener('input', ()=>calcReward(p.uid, prizePool, killReward));
+      document.getElementById('rank-'+p.uid)?.addEventListener('change', ()=>{ calcReward(p.uid, prizePool, killReward); checkDuplicateRanks(); });
     });
     // Store for submit
     document.getElementById('match-results-table').dataset.players = JSON.stringify(players.map(p=>({uid:p.uid,ign:p.ign||'-',id:p.id})));
     document.getElementById('match-results-table').dataset.prizePool = prizePool;
+    document.getElementById('match-results-table').dataset.killReward = killReward;
   } catch(e) { toast('Failed',true); }
   showLoading('match-results-loading',false);
 });
@@ -5422,9 +5434,10 @@ function rewardForRank(rank, prizePool){
   if(!pct) return 0;
   return Math.round((prizePool||0) * pct/100);
 }
-function calcReward(uid, prizePool) {
+function calcReward(uid, prizePool, killReward) {
+  const kills = parseInt(document.getElementById('kills-'+uid)?.value)||0;
   const rank = parseInt(document.getElementById('rank-'+uid)?.value)||0;
-  const reward = rewardForRank(rank, prizePool);
+  const reward = rewardForRank(rank, prizePool) + (kills*(killReward||0));
   const el = document.getElementById('reward-'+uid);
   if(el) el.textContent = '₹'+reward;
 }
@@ -5451,6 +5464,7 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
   if(!playersRaw) return;
   const players = JSON.parse(playersRaw);
   const prizePool = parseFloat(document.getElementById('match-results-table').dataset.prizePool)||0;
+  const killReward = parseFloat(document.getElementById('match-results-table').dataset.killReward)||0;
 
   // Block submission if two players share the same rank
   const seenRanks = {};
@@ -5470,7 +5484,7 @@ document.getElementById('submit-results-btn')?.addEventListener('click', async (
     for(const p of players) {
       const kills = parseInt(document.getElementById('kills-'+p.uid)?.value)||0;
       const rank = parseInt(document.getElementById('rank-'+p.uid)?.value)||0;
-      const reward = rewardForRank(rank, prizePool);
+      const reward = rewardForRank(rank, prizePool) + (kills*killReward);
       const uSnap = await db.ref('users/'+p.uid).once('value');
       if(!uSnap.exists()) continue;
       const u = uSnap.val();
