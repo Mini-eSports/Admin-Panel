@@ -3876,6 +3876,20 @@ function refreshCurrentSection() {
   if(fn) fn();
 }
 
+// Phase A performance guard: prevent rapid repeated taps from starting duplicate
+// read/render jobs for the same admin section. This does not cache data or bypass
+// the section loader; explicit Refresh continues to call the loader directly.
+const _sectionLoadsInFlight = new Map();
+function runSectionLoaderOnce(id, loader) {
+  if (_sectionLoadsInFlight.has(id)) return _sectionLoadsInFlight.get(id);
+  const task = Promise.resolve().then(() => loader());
+  _sectionLoadsInFlight.set(id, task);
+  task.finally(() => {
+    if (_sectionLoadsInFlight.get(id) === task) _sectionLoadsInFlight.delete(id);
+  }).catch(() => {});
+  return task;
+}
+
 function showSection(id) {
   // Show section page
   document.querySelectorAll('.section-page').forEach(s => s.classList.remove('active'));
@@ -3898,7 +3912,7 @@ function showSection(id) {
   closeSidebar();
   // Load data
   const fn = getSectionLoader(id);
-  if(fn) fn();
+  if(fn) runSectionLoaderOnce(id, fn);
 }
 
 function toggleSidebar() {
