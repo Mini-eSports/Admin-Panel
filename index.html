@@ -3348,7 +3348,7 @@ table { border-collapse: collapse; width: 100%; }
 // ═══════════════════════════════════════════
 const SUPABASE_URL = 'https://qgmgaouvjavpzbbjuqye.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_hhFcscXkGSX_keKTauxSdA_eagVd_Dv';
-const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'mini-esports-admin-auth-v1', persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 let _processingReq = {}; // shared in-flight guard: prevents double-click/race double-processing on approve/reject actions
 
 // ═══════════════════════════════════════════
@@ -3876,9 +3876,8 @@ function refreshCurrentSection() {
   if(fn) fn();
 }
 
-// Phase A performance guard: prevent rapid repeated taps from starting duplicate
-// read/render jobs for the same admin section. This does not cache data or bypass
-// the section loader; explicit Refresh continues to call the loader directly.
+// Change #1 — conservative performance guard: deduplicate overlapping section loads.
+// Does not cache data or change the loader's authorization/business logic.
 const _sectionLoadsInFlight = new Map();
 function runSectionLoaderOnce(id, loader) {
   if (_sectionLoadsInFlight.has(id)) return _sectionLoadsInFlight.get(id);
