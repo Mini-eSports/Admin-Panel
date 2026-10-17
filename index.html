@@ -1987,6 +1987,15 @@ table { border-collapse: collapse; width: 100%; }
 /* 3D Coin */
 .coin-3d { display:inline-block; filter:drop-shadow(0 2px 4px rgba(255,180,0,0.7)) drop-shadow(0 0 6px rgba(255,215,0,0.4)); animation:coinFlip 4s ease-in-out infinite; }
 @keyframes coinFlip { 0%,100%{transform:perspective(80px) rotateY(-15deg) scale(1);} 50%{transform:perspective(80px) rotateY(15deg) scale(1.06);} }
+
+/* Joined Players match selector */
+.joined-match-slider{display:flex;gap:9px;overflow-x:auto;overscroll-behavior-x:contain;padding:3px 2px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.joined-match-chip{flex:0 0 auto;max-width:230px;min-width:135px;padding:11px 14px;border:1px solid var(--border,rgba(255,215,0,.2));border-radius:12px;background:var(--card,#101010);color:var(--text,#ddd);text-align:left;scroll-snap-align:start;cursor:pointer}
+.joined-match-chip strong{display:block;font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.joined-match-chip small{display:block;margin-top:5px;font-size:10px;color:var(--dim,#888);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.joined-match-chip.active{border-color:var(--primary,#ffd700);background:rgba(255,215,0,.12);box-shadow:0 0 0 1px rgba(255,215,0,.15);color:var(--primary,#ffd700)}
+.joined-match-loading{padding:10px;color:var(--dim,#888);font-size:12px}
+
 </style>
 </head>
 <body>
@@ -2184,7 +2193,6 @@ table { border-collapse: collapse; width: 100%; }
         <div class="page-header">
           <h1 class="page-title"><span class="page-title-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--primary)" style="vertical-align:middle"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" id="refresh-dashboard" style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 0-2.12-9.36L23 10"/></svg>Refresh</button>
           </div>
         </div>
 
@@ -2512,14 +2520,12 @@ table { border-collapse: collapse; width: 100%; }
         </div>
 
         <div class="panel">
-          <div class="panel-header">
-            <h3 class="panel-title">Tournament Join Requests</h3>
-            <div class="filter-tabs" id="join-filter-tabs">
-              <button class="filter-tab active" data-filter="all">All</button>
-              <button class="filter-tab" data-filter="pending">Pending</button>
-              <button class="filter-tab" data-filter="approved">Approved</button>
-              <button class="filter-tab" data-filter="rejected">Rejected</button>
+          <div class="panel-header" style="display:block;">
+            <h3 class="panel-title" style="margin-bottom:14px;">Select Match</h3>
+            <div id="joined-match-slider" class="joined-match-slider" role="group" aria-label="Select tournament match">
+              <div class="joined-match-loading">Loading matches…</div>
             </div>
+            <div id="joined-match-selection-label" style="margin-top:10px;color:var(--dim);font-size:12px;">Select a match to view its joined players.</div>
           </div>
           <div class="table-wrapper">
             <div id="join-requests-loading" class="table-loading">
@@ -2835,17 +2841,17 @@ table { border-collapse: collapse; width: 100%; }
 
       <!-- ========== SECTION: COIN TO MONEY HISTORY (READ ONLY) ========== -->
       <div class="section-page" id="section-coin-to-money">
-        <div class="page-header"><h1 class="page-title">🪙 Coin to Money History</h1><p style="color:var(--dim);font-size:12px">Read-only conversion history. This page does not change balances.</p></div>
-        <div class="panel"><div class="panel-header"><h3 class="panel-title">Coin Transactions</h3><button class="btn btn-outline btn-sm" onclick="loadCoinToMoneyHistory()">Refresh</button></div>
+        <div class="page-header"><h1 class="page-title">🪙 Coin to Money History</h1><p style="color:var(--dim);font-size:12px">Read-only conversion history. Shows coins converted and estimated money received using the configured conversion rate. This page does not change balances.</p></div>
+        <div class="panel"><div class="panel-header"><h3 class="panel-title">Coin Transactions</h3></div>
         <div class="table-wrapper"><div id="coin-to-money-loading" class="table-loading">Loading history…</div>
-        <table class="data-table" id="coin-to-money-table" style="display:none"><thead><tr><th>User UID</th><th>Type</th><th>Coins</th><th>Reference</th><th>Date</th></tr></thead><tbody id="coin-to-money-tbody"></tbody></table>
+        <table class="data-table" id="coin-to-money-table" style="display:none"><thead><tr><th>User UID</th><th>Type</th><th>Coins</th><th>Money Received (₹)</th><th>Reference</th><th>Date</th></tr></thead><tbody id="coin-to-money-tbody"></tbody></table>
         <div class="table-empty" id="coin-to-money-empty" style="display:none">No coin history found or access unavailable.</div></div></div>
       </div>
 
       <!-- ========== SECTION: TICKET MANAGEMENT (READ ONLY) ========== -->
       <div class="section-page" id="section-ticket-management">
         <div class="page-header"><h1 class="page-title">🎟️ Ticket Management</h1><p style="color:var(--dim);font-size:12px">Read-only ticket audit. Claim/cancel/refund is not performed from this screen.</p></div>
-        <div class="panel"><div class="panel-header"><h3 class="panel-title">Wallet Tickets</h3><button class="btn btn-outline btn-sm" onclick="loadTicketManagement()">Refresh</button></div>
+        <div class="panel"><div class="panel-header"><h3 class="panel-title">Wallet Tickets</h3></div>
         <div class="table-wrapper"><div id="ticket-management-loading" class="table-loading">Loading tickets…</div>
         <table class="data-table" id="ticket-management-table" style="display:none"><thead><tr><th>Ticket ID</th><th>Sender UID</th><th>Receiver UID</th><th>Type</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead><tbody id="ticket-management-tbody"></tbody></table>
         <div class="table-empty" id="ticket-management-empty" style="display:none">No tickets found or access unavailable.</div></div></div>
@@ -2858,6 +2864,19 @@ table { border-collapse: collapse; width: 100%; }
         </div>
 
         <div class="panel">
+          <!-- Maintenance Mode (kept at the top of Settings) -->
+          <div class="settings-section" id="maintenance-settings-section">
+            <div class="settings-title">🛠 Maintenance</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+              <div><div style="font-weight:700;color:var(--text-primary);">Maintenance Mode</div><div style="font-size:12px;color:var(--dim);margin-top:4px;">Block User Panel access while maintenance is enabled.</div></div>
+              <label class="maintenance-switch" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="checkbox" id="settings-maintenance-mode" style="width:22px;height:22px;accent-color:var(--primary);">
+                <span id="settings-maintenance-status" style="font-size:12px;font-weight:700;color:var(--text-muted);">OFF</span>
+              </label>
+            </div>
+            <div id="settings-maintenance-note" style="margin-top:12px;font-size:12px;color:var(--text-muted);">User access is currently enabled.</div>
+          </div>
+
           <!-- Withdraw Settings -->
           <div class="settings-section">
             <div class="settings-title">⚙ Withdrawal Limits (₹)</div>
@@ -2957,7 +2976,6 @@ table { border-collapse: collapse; width: 100%; }
         <div class="page-header">
           <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">⊛</span>Referral Management</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" onclick="loadReferrals()">↻ Refresh</button>
           </div>
         </div>
         <div class="panel">
@@ -2979,7 +2997,6 @@ table { border-collapse: collapse; width: 100%; }
         <div class="page-header">
           <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">₹</span>Financial Report</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" onclick="loadFinancialReport()">↻ Refresh</button>
             <button class="btn btn-primary btn-sm" onclick="exportFinancialCSV()">↓ Export CSV</button>
           </div>
         </div>
@@ -3020,7 +3037,6 @@ table { border-collapse: collapse; width: 100%; }
         <div class="page-header">
           <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">≡</span>Audit Log</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" onclick="loadAuditLog()">↻ Refresh</button>
             <button class="btn btn-primary btn-sm" onclick="exportAuditCSV()">↓ Export CSV</button>
           </div>
         </div>
@@ -4096,7 +4112,7 @@ async function loadDashboard() {
     const today = new Date(); today.setHours(0,0,0,0);
     const todayTs = today.getTime();
 
-    const [users, tours, pv, pu, jr, addMoney, wdMoney, teamMembersRes, sr] = await Promise.all([
+    const [users, tours, pv, pu, jr, addMoney, wdMoney, teamMembersRes] = await Promise.all([
       db.ref('users').once('value'),
       db.ref('tournaments').once('value'),
       db.ref('profileRequests').once('value'),
@@ -4104,8 +4120,7 @@ async function loadDashboard() {
       db.ref('joinRequests').once('value'),
       db.ref('addMoneyRequests').once('value'),
       db.ref('withdrawRequests').once('value'),
-      _sb.from('team_members').select('uid,mode'),
-      db.ref('supportRequests').once('value')
+      _sb.from('team_members').select('uid,mode')
     ]);
     const teamModeByUid = {};
     (teamMembersRes.data||[]).forEach(m=>{ if(!teamModeByUid[m.uid] || m.mode==='squad') teamModeByUid[m.uid]=m.mode; });
@@ -5120,37 +5135,76 @@ function deleteTournament(id, name) {
 // ═══════════════════════════════════════════
 // JOIN REQUESTS
 // ═══════════════════════════════════════════
-let jrData = [], jrFilter = 'all';
+let jrData = [], jrSelectedTournamentId = null, jrTournamentOptions = [];
 async function loadJoinRequests() {
   showLoading('join-requests-loading',true); showTable('join-requests-table',false); showEmpty('join-requests-empty',false);
   try {
-    const snap = await db.ref('joinRequests').once('value');
+    // Use the same tournament source as the Matches/Tournaments section.
+    const [requestsSnap, tournamentsSnap] = await Promise.all([
+      db.ref('joinRequests').once('value'),
+      db.ref('tournaments').once('value')
+    ]);
     jrData = [];
-    if(snap.exists()) snap.forEach(c=>{ const v=c.val(); jrData.push({id:c.key,...v}); });
+    if(requestsSnap.exists()) requestsSnap.forEach(c=>{ const v=c.val(); jrData.push({id:c.key,...v}); });
     jrData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    jrTournamentOptions = [];
+    if(tournamentsSnap.exists()) tournamentsSnap.forEach(c=>jrTournamentOptions.push({id:c.key,...c.val()}));
+    jrTournamentOptions.sort((a,b)=>(a.matchTime||0)-(b.matchTime||0));
+    // Keep the current selection when refreshing, unless that tournament was removed.
+    if(!jrTournamentOptions.some(t=>String(t.id)===String(jrSelectedTournamentId))) jrSelectedTournamentId = null;
+    renderJoinedMatchSlider();
     renderJR();
-  } catch(e) { toast('Failed to load join requests: '+e.message,true); }
+  } catch(e) { toast('Failed to load joined players: '+e.message,true); }
   showLoading('join-requests-loading',false);
 }
 
+function renderJoinedMatchSlider() {
+  const slider = document.getElementById('joined-match-slider');
+  if(!slider) return;
+  if(!jrTournamentOptions.length) {
+    slider.innerHTML = '<div class="joined-match-loading">No matches found. Create a match in Tournaments first.</div>';
+    const label=document.getElementById('joined-match-selection-label'); if(label) label.textContent='';
+    return;
+  }
+  slider.innerHTML = jrTournamentOptions.map(t=>{
+    const active=String(t.id)===String(jrSelectedTournamentId);
+    const mode=[t.gameMode,t.matchCategory].filter(Boolean).join(' · ');
+    const time=t.matchTime?fmtDate(t.matchTime):'Time not set';
+    return `<button type="button" class="joined-match-chip${active?' active':''}" data-tournament-id="${sanitize(String(t.id))}" aria-pressed="${active}"><strong>${sanitize(t.name||'Untitled Match')}</strong><small>${sanitize(mode||((t.entryType||'paid')==='paid'?'Paid Match':'Coin Match'))} · ${sanitize(time)}</small></button>`;
+  }).join('');
+  slider.querySelectorAll('[data-tournament-id]').forEach(btn=>btn.addEventListener('click',()=>{
+    jrSelectedTournamentId=btn.getAttribute('data-tournament-id');
+    renderJoinedMatchSlider();
+    renderJR();
+  }));
+  const selected=jrTournamentOptions.find(t=>String(t.id)===String(jrSelectedTournamentId));
+  const label=document.getElementById('joined-match-selection-label');
+  if(label) label.textContent=selected ? `Showing players for: ${selected.name||'Untitled Match'}` : 'Select a match above to view only its joined players.';
+}
+
 function renderJR() {
-  const filtered = jrFilter==='all' ? jrData : jrData.filter(r=>r.status===jrFilter);
   const tbody = document.getElementById('join-requests-tbody');
-  if(!filtered.length) { showEmpty('join-requests-empty',true); showTable('join-requests-table',false); showFooter('join-requests-footer',false); return; }
+  if(!tbody) return;
+  const filtered = jrSelectedTournamentId===null ? [] : jrData.filter(r=>String(r.tournamentId||'')===String(jrSelectedTournamentId));
+  if(!filtered.length) {
+    showEmpty('join-requests-empty',true); showTable('join-requests-table',false); showFooter('join-requests-footer',false);
+    const empty=document.getElementById('join-requests-empty');
+    if(empty){ const title=empty.querySelector('div:nth-child(2)'); const msg=empty.querySelector('div:nth-child(3)'); if(title)title.textContent=jrSelectedTournamentId===null?'Select a Match':'No Players Joined'; if(msg)msg.textContent=jrSelectedTournamentId===null?'Choose a match from the slider above.':'No join requests found for this match.'; }
+    return;
+  }
   showEmpty('join-requests-empty',false); showTable('join-requests-table',true); showFooter('join-requests-footer',true);
-  document.getElementById('join-requests-info').textContent = 'Showing '+filtered.length+' requests';
+  document.getElementById('join-requests-info').textContent = 'Showing '+filtered.length+' players';
   tbody.innerHTML = filtered.map(r=>`
     <tr>
-      <td><strong>${sanitize(r.ign||r.uid||'-')}</strong></td>
-      <td>${sanitize(r.ffuid||'-')}</td>
-      <td>${sanitize(r.tournamentName||'-')}</td>
-      <td>${r.entryType==='paid'?'₹'+r.entryFee:'◎'+r.entryFee}</td>
+      <td><strong>${sanitize(r.playerName||r.ign||r.uid||'-')}</strong></td>
+      <td>${sanitize(r.ign||'-')}</td>
+      <td>${sanitize(r.ffuid||r.ffUid||'-')}</td>
+      <td>${sanitize(r.tournamentName||jrTournamentOptions.find(t=>String(t.id)===String(r.tournamentId))?.name||'-')}</td>
+      <td>${(r.entryType||'paid')==='paid'?'Paid':'Coins'}</td>
+      <td>${(r.entryType||'paid')==='paid'?'₹':'🪙'}${Number(r.entryFee)||0}</td>
       <td>${fmtDate(r.createdAt)}</td>
       <td>${statusBadge(r.status||'pending')}</td>
-      <td>
-        ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveJoin('${r.id}')">✓</button>
-        <button class="btn btn-danger btn-xs" onclick="rejectRequest('${r.id}','${r.uid}','joinRequests','join')">✕</button>`:''}
-      </td>
+      <td>${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveJoin('${sanitize(r.id)}')">✓</button> <button class="btn btn-danger btn-xs" onclick="rejectRequest('${sanitize(r.id)}','${sanitize(r.uid||'')}','joinRequests','join')">✕</button>`:'—'}</td>
     </tr>`).join('');
 }
 
@@ -5552,23 +5606,33 @@ let supportData = [];
 async function loadSupportRequests() {
   showLoading('support-requests-loading',true); showTable('support-requests-table',false); showEmpty('support-requests-empty',false);
   try {
-    const snap = await db.ref('supportRequests').once('value');
-    supportData = [];
-    if(snap.exists()) snap.forEach(c=>supportData.push({id:c.key,...c.val()}));
-    supportData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    // One-time safe bridge for legacy Firebase tickets: copy only missing ticket metadata;
+    // existing Supabase records are never overwritten by stale legacy values.
+    try {
+      const legacySnap = await db.ref('supportRequests').once('value');
+      const legacyRows = [];
+      if(legacySnap.exists()) legacySnap.forEach(c=>{
+        const v=c.val()||{};
+        if(v.uid) legacyRows.push({id:c.key,uid:String(v.uid),ign:String(v.ign||''),player_name:String(v.playerName||v.player_name||''),type:String(v.type||'other'),message:String(v.message||''),status:String(v.status||'pending'),created_at:Number(v.createdAt||Date.now()),last_message_at:Number(v.lastMessageAt||v.createdAt||Date.now()),unread_by_admin:!!v.unreadByAdmin,unread_by_user:!!v.unreadByUser});
+      });
+      if(legacyRows.length){ const {error:importError}=await _sb.from('support_requests').upsert(legacyRows,{onConflict:'id',ignoreDuplicates:true}); if(importError) console.warn('Legacy support import skipped',importError); }
+    } catch(legacyError) { console.warn('Legacy support lookup unavailable',legacyError); }
+    const {data,error} = await _sb.from('support_requests').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    supportData = (data||[]).map(r=>({...r,createdAt:r.created_at,playerName:r.player_name,unreadByAdmin:r.unread_by_admin}));
     const tbody = document.getElementById('support-requests-tbody');
     if(!supportData.length) { showEmpty('support-requests-empty',true); showTable('support-requests-table',false); showFooter('support-requests-footer',false); return; }
     showEmpty('support-requests-empty',false); showTable('support-requests-table',true); showFooter('support-requests-footer',true);
     document.getElementById('support-requests-info').textContent = 'Showing '+supportData.length+' requests';
     tbody.innerHTML = supportData.map(r=>`
       <tr style="${r.unreadByAdmin?'background:rgba(255,215,0,0.05);':''}">
-        <td><strong>${sanitize(r.ign||r.uid||'-')}</strong>${r.unreadByAdmin?' <span class="badge badge-warning" style="font-size:9px;">NEW</span>':''}</td>
+        <td><strong>${sanitize(r.ign||r.player_name||r.uid||'-')}</strong>${r.unreadByAdmin?' <span class="badge badge-warning" style="font-size:9px;">NEW</span>':''}</td>
         <td><span class="badge" style="background:rgba(255,215,0,0.1);color:var(--yellow)">${sanitize(r.type||'-')}</span></td>
-        <td style="font-size:12px">${fmtDate(r.createdAt)}</td>
+        <td style="font-size:12px">${fmtDate(r.created_at)}</td>
         <td><button class="btn btn-outline btn-xs" onclick="openSupportChat('${r.id}')">⊙ View</button></td>
       </tr>`).join('');
-  } catch(e) { toast('Failed',true); }
-  showLoading('support-requests-loading',false);
+  } catch(e) { console.error('loadSupportRequests',e); toast(friendlyDbError(e),true); }
+  finally { showLoading('support-requests-loading',false); }
 }
 
 let _chatPollInterval = null;
@@ -5579,14 +5643,14 @@ async function openSupportChat(id) {
   if(!r) return;
   _currentChatTicketId = id;
   document.getElementById('support-chat-header').textContent = '⊛ '+(r.ign||r.uid||'Player');
-  document.getElementById('support-chat-subheader').textContent = (r.type||'General')+' · '+fmtDate(r.createdAt);
+  document.getElementById('support-chat-subheader').textContent = (r.type||'General')+' · '+fmtDate(r.created_at||r.createdAt);
   document.getElementById('support-view-id').value = id;
   document.getElementById('support-view-uid').value = r.uid||'';
   document.getElementById('support-chat-input').value = '';
   document.getElementById('modal-support-view').classList.add('active');
 
   // Mark as read by admin
-  try { await db.ref('supportRequests/'+id).update({unreadByAdmin:false}); } catch(e){}
+  try { await _sb.rpc('mark_support_read',{p_ticket_id:id}); } catch(e) { console.warn('mark support read failed',e); }
 
   await loadChatMessages(id, true);
   if(_chatPollInterval) clearInterval(_chatPollInterval);
@@ -5654,7 +5718,6 @@ async function sendAdminChatMessage() {
         id: crypto.randomUUID(), ticket_id: ticketId, sender: 'admin', message: msg, created_at: Date.now()
       });
       if(error) throw error;
-      await _sb.from('support_requests').update({ last_message_at: Date.now(), unread_by_user: true }).eq('id', ticketId);
       await loadChatMessages(ticketId, true);
     } catch(e) {
       if(retry<1 && /schema cache|PGRST/i.test(e.message||'')) { await new Promise(r=>setTimeout(r,900)); return doSend(retry+1); }
@@ -5669,10 +5732,11 @@ async function sendAdminChatMessage() {
 
 async function resolveSupport(id, uid) {
   try {
-    await db.ref('supportRequests/'+id).update({status:'resolved'});
+    const {error} = await _sb.from('support_requests').update({status:'resolved'}).eq('id',id);
+    if(error) throw error;
     if(uid) await sendNotifToUser(uid,'Support Request Resolved ✓','Your support request has been resolved. Thank you!');
     toast('Marked as resolved'); loadSupportRequests();
-  } catch(e) { toast('Failed',true); }
+  } catch(e) { console.error('resolve support',e); toast(friendlyDbError(e),true); }
 }
 
 document.getElementById('support-resolve-btn')?.addEventListener('click', async ()=>{
@@ -5776,10 +5840,34 @@ async function loadSettings() {
       document.getElementById('settings-referrer-coins').value = c.referrerCoins||50;
       document.getElementById('settings-referee-coins').value = c.refereeCoins||25;
       document.getElementById('settings-coin-rate').value = c.coinToMoneyRate||10;
+      const maintenanceOn = c.maintenanceMode === true || c.maintenanceMode === 'true' || c.maintenanceMode === 1;
+      const maintenanceInput = document.getElementById('settings-maintenance-mode');
+      if(maintenanceInput) maintenanceInput.checked = maintenanceOn;
+      updateMaintenanceModeUI(maintenanceOn);
+    } else {
+      updateMaintenanceModeUI(false);
     }
     if(tSnap.exists()) document.getElementById('settings-ticker').value = tSnap.val().text||tSnap.val()||'';
   } catch(e) { toast('Failed to load settings',true); }
 }
+
+function updateMaintenanceModeUI(enabled){
+  const status=document.getElementById('settings-maintenance-status');
+  const note=document.getElementById('settings-maintenance-note');
+  if(status){status.textContent=enabled?'ON':'OFF';status.style.color=enabled?'#ff5252':'var(--text-muted)';}
+  if(note){note.textContent=enabled?'Maintenance is ON — User Panel access is blocked.':'User access is currently enabled.';note.style.color=enabled?'#ff5252':'var(--text-muted)';}
+}
+document.getElementById('settings-maintenance-mode')?.addEventListener('change', async (event)=>{
+  const input=event.currentTarget; const enabled=input.checked; input.disabled=true;
+  try{
+    await db.ref('appConfig').update({maintenanceMode:enabled,updatedAt:Date.now()});
+    updateMaintenanceModeUI(enabled);
+    toast(enabled?'Maintenance mode enabled. User access is blocked.':'Maintenance mode disabled. User access is restored.');
+  }catch(err){
+    input.checked=!enabled; updateMaintenanceModeUI(!enabled);
+    toast('Could not update maintenance mode: '+(err?.message||'Unknown error'),true);
+  }finally{input.disabled=false;}
+});
 
 document.getElementById('save-settings-btn')?.addEventListener('click', async ()=>{
   const btn = document.getElementById('save-settings-btn');
@@ -5808,6 +5896,7 @@ document.getElementById('save-settings-btn')?.addEventListener('click', async ()
       referrerCoins: parseInt(document.getElementById('settings-referrer-coins').value)||50,
       refereeCoins: parseInt(document.getElementById('settings-referee-coins').value)||25,
       coinToMoneyRate: Math.max(1, parseInt(document.getElementById('settings-coin-rate').value)||10),
+      maintenanceMode: document.getElementById('settings-maintenance-mode')?.checked === true,
       updatedAt: Date.now()
     });
     const ticker = document.getElementById('settings-ticker').value.trim();
@@ -6043,10 +6132,20 @@ async function loadCoinToMoneyHistory() {
   loading.style.display='flex'; table.style.display='none'; empty.style.display='none';
   try {
     if(!_sb) throw new Error('Supabase is not initialized');
-    const {data,error}=await _sb.from('coin_history').select('uid,type,amount,code,created_at').order('created_at',{ascending:false}).limit(300);
+    const [{data,error},{data:rateRow,error:rateError}]=await Promise.all([
+      _sb.from('coin_history').select('uid,type,amount,code,created_at').order('created_at',{ascending:false}).limit(300),
+      _sb.from('app_config').select('value').eq('key','coinToMoneyRate').maybeSingle()
+    ]);
     if(error) throw error;
+    if(rateError) throw rateError;
+    const rateValue=Number(rateRow?.value);
+    const coinsPerRupee=Number.isFinite(rateValue)&&rateValue>0?rateValue:10;
     const rows=(data||[]).filter(r=>/convert|money|conversion/i.test(String(r.type||'')+' '+String(r.code||'')));
-    tbody.innerHTML=rows.map(r=>`<tr><td>${sanitize(r.uid)}</td><td>${sanitize(r.type)}</td><td>${sanitize(r.amount)}</td><td>${sanitize(r.code||'—')}</td><td>${fmtDate(r.created_at)}</td></tr>`).join('');
+    tbody.innerHTML=rows.map(r=>{
+      const coins=Math.abs(Number(r.amount)||0);
+      const rupees=coins/coinsPerRupee;
+      return `<tr><td>${sanitize(r.uid)}</td><td>${sanitize(r.type)}</td><td>${coins.toLocaleString('en-IN')}</td><td>₹${rupees.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td>${sanitize(r.code||'—')}</td><td>${fmtDate(r.created_at)}</td></tr>`;
+    }).join('');
     loading.style.display='none'; if(!rows.length){empty.style.display='block';empty.textContent='No conversion-related coin history found in the latest 300 records.';return;} table.style.display='table';
   } catch(e){ loading.style.display='none'; empty.style.display='block'; empty.textContent='Conversion history unavailable: '+sanitize(e.message)+' (read-only; no wallet changes made).'; }
 }
@@ -6316,16 +6415,6 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
       document.getElementById('wallet-tab-add-money').style.display = tab === 'add-money' ? 'block' : 'none';
       document.getElementById('wallet-tab-withdraw').style.display = tab === 'withdraw' ? 'block' : 'none';
-    });
-  });
-
-  // ── Join Requests Filter Tabs ──
-  document.querySelectorAll('#join-filter-tabs .filter-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#join-filter-tabs .filter-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      jrFilter = tab.dataset.filter;
-      renderJR();
     });
   });
 
