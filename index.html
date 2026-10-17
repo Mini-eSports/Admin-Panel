@@ -4390,27 +4390,30 @@ document.getElementById('save-edit-user-btn')?.addEventListener('click', async (
   btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Saving...';
   const uid = document.getElementById('edit-user-uid').value;
   try {
-    const beforeSnap = await db.ref('users/'+uid).once('value');
-    const before = beforeSnap.val() || {};
-    const newCoins = parseInt(document.getElementById('edit-user-coins').value)||0;
-    const coinDelta = newCoins - (before.coins||0);
-
-    await db.ref('users/'+uid).update({
-      coins: newCoins,
-      realMoney: {
-        deposited: parseFloat(document.getElementById('edit-user-deposited').value)||0,
-        winnings: parseFloat(document.getElementById('edit-user-winnings').value)||0,
-        bonus: parseFloat(document.getElementById('edit-user-bonus').value)||0
-      },
-      approved: document.getElementById('edit-user-approved').checked
-    });
-    // Keep Coin History as a true audit trail — every balance change must be logged,
-    // otherwise its total silently drifts away from the actual coin balance over time.
-    if(coinDelta !== 0) {
-      await _sb.from('coin_history').insert({
-        id: crypto.randomUUID(), uid, type: 'admin_adjustment', amount: coinDelta, created_at: Date.now()
-      });
+    const coinsRaw = document.getElementById('edit-user-coins').value.trim();
+    const depositedRaw = document.getElementById('edit-user-deposited').value.trim();
+    const winningsRaw = document.getElementById('edit-user-winnings').value.trim();
+    const bonusRaw = document.getElementById('edit-user-bonus').value.trim();
+    const newCoins = Number(coinsRaw);
+    const deposited = Number(depositedRaw);
+    const winnings = Number(winningsRaw);
+    const bonus = Number(bonusRaw);
+    if(!uid || coinsRaw === '' || !Number.isSafeInteger(newCoins) || newCoins < 0 ||
+       depositedRaw === '' || !Number.isFinite(deposited) || deposited < 0 ||
+       winningsRaw === '' || !Number.isFinite(winnings) || winnings < 0 ||
+       bonusRaw === '' || !Number.isFinite(bonus) || bonus < 0) {
+      throw new Error('Enter valid non-negative wallet balances. Coins must be a whole number.');
     }
+
+    const { error } = await _sb.rpc('admin_update_user_wallet', {
+      p_uid: uid,
+      p_coins: newCoins,
+      p_deposited: deposited,
+      p_winnings: winnings,
+      p_bonus: bonus,
+      p_approved: document.getElementById('edit-user-approved').checked
+    });
+    if(error) throw error;
     toast('User updated!');
     closeModal('modal-edit-user');
     loadUsers();
@@ -5982,19 +5985,25 @@ async function loadReferrals() {
 
 async function approveReferral(id, uid) {
   try {
-    await db.ref('referrals/'+id).update({status:'approved'});
-    // Give bonus coins (10 coins for referral)
-    const uSnap = await db.ref('users/'+uid).once('value');
-    if(uSnap.exists()) {
-      const u = uSnap.val();
-      await db.ref('users/'+uid).update({coins: (u.coins||0)+10});
-      await db.ref('users/'+uid+'/coinHistory').push({type:'referral_bonus',amount:10,createdAt:Date.now()});
-      await sendNotifToUser(uid, 'Referral Bonus!', 'Your refer code was approved! +10 coins added.');
+    const { data, error } = await _sb.rpc('admin_approve_referral', {
+      p_referral_id: id
+    });
+    if (error) throw error;
+    if (!data || data.success !== true || !data.uid) {
+      throw new Error('Referral approval did not return a successful result.');
     }
-    await logAudit('approve_referral', 'Referral '+id+' approved for '+uid);
+    // Notification is intentionally sent only after the atomic database transaction succeeds.
+    try {
+      await sendNotifToUser(data.uid, 'Referral Bonus!', 'Your refer code was approved! +10 coins added.');
+    } catch (notificationError) {
+      console.error('Referral approved, but notification failed:', notificationError);
+      toast('Referral approved; notification could not be sent.', true);
+      loadReferrals();
+      return;
+    }
     toast('Referral approved! +10 coins given.');
     loadReferrals();
-  } catch(e) { toast('Failed: '+e.message, true); }
+  } catch(e) { toast('Failed: '+(e.message||'Referral approval failed'), true); }
 }
 
 async function rejectReferral(id) {
