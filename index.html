@@ -2085,14 +2085,11 @@ table { border-collapse: collapse; width: 100%; }
     </div>
 
     <div class="sidebar-nav">
-      <div class="nav-section-title">Main</div>
-
+      <div class="nav-section-title">Admin Menu</div>
       <div class="nav-item active" onclick="showSection('dashboard')" data-section="dashboard">
         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
         <span class="nav-item-text">Dashboard</span>
       </div>
-
-      <div class="nav-section-title">Requests</div>
 
       <div class="nav-item" onclick="showSection('profile-verification')" data-section="profile-verification">
         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg></span>
@@ -2118,8 +2115,6 @@ table { border-collapse: collapse; width: 100%; }
         <span class="nav-badge" id="badge-team-requests">0</span>
       </div>
 
-      <div class="nav-section-title">Management</div>
-
       <div class="nav-item" onclick="showSection('users')" data-section="users">
         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
         <span class="nav-item-text">Users</span>
@@ -2130,27 +2125,11 @@ table { border-collapse: collapse; width: 100%; }
         <span class="nav-item-text">Tournaments</span>
       </div>
 
+      <div class="nav-item" onclick="showSection('join-requests')" data-section="join-requests"><span class="nav-item-icon">≡</span><span class="nav-item-text">Joined Players</span><span class="nav-badge" id="badge-join-requests">0</span></div>
+
       <div class="nav-item" onclick="showSection('match-results')" data-section="match-results">
         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
         <span class="nav-item-text">Match Results</span>
-      </div>
-
-      <div class="nav-section-title">System</div>
-
-      <div class="nav-item" onclick="showSection('settings')" data-section="settings">
-        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-        <span class="nav-item-text">Settings</span>
-      </div>
-
-      <div class="nav-item" onclick="showSection('support-requests')" data-section="support-requests">
-        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span>
-        <span class="nav-item-text">Support Requests</span>
-        <span class="nav-badge" id="badge-support-requests">0</span>
-      </div>
-
-      <div class="nav-item" onclick="showSection('voucher-management')" data-section="voucher-management">
-        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></span>
-        <span class="nav-item-text">Vouchers</span>
       </div>
 
       <div class="nav-item" onclick="showSection('referral-management')" data-section="referral-management">
@@ -2159,11 +2138,20 @@ table { border-collapse: collapse; width: 100%; }
         <span class="nav-badge" id="badge-referrals">0</span>
       </div>
 
-      <div class="nav-item" onclick="showSection('financial-report')" data-section="financial-report">
-        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-        <span class="nav-item-text">Financial Report</span>
+      <div class="nav-item" onclick="showSection('voucher-management')" data-section="voucher-management">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></span>
+        <span class="nav-item-text">voucher</span>
       </div>
 
+      <div class="nav-item" onclick="showSection('coin-to-money')" data-section="coin-to-money">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <span class="nav-item-text">Coin to Money</span>
+      </div>
+
+      <div class="nav-item" onclick="showSection('ticket-management')" data-section="ticket-management"><span class="nav-item-icon">🎟️</span><span class="nav-item-text">Ticket</span></div>
+
+      <div class="nav-item" onclick="showSection('settings')" data-section="settings"><span class="nav-item-icon">⚙</span><span class="nav-item-text">Setting</span></div>
+      <div class="nav-item" onclick="showSection('support-requests')" data-section="support-requests"><span class="nav-item-icon">☏</span><span class="nav-item-text">Support</span><span class="nav-badge" id="badge-support-requests">0</span></div>
       <div class="nav-item" onclick="showSection('audit-log')" data-section="audit-log">
         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="3"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="3"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="3"/></svg></span>
         <span class="nav-item-text">Audit Log</span>
@@ -2520,7 +2508,7 @@ table { border-collapse: collapse; width: 100%; }
       <!-- ========== SECTION: JOIN REQUESTS ========== -->
       <div class="section-page" id="section-join-requests">
         <div class="page-header">
-          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">≡</span>Join Requests</h1>
+          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">≡</span>Joined Players</h1>
         </div>
 
         <div class="panel">
@@ -2843,6 +2831,24 @@ table { border-collapse: collapse; width: 100%; }
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ========== SECTION: COIN TO MONEY HISTORY (READ ONLY) ========== -->
+      <div class="section-page" id="section-coin-to-money">
+        <div class="page-header"><h1 class="page-title">🪙 Coin to Money History</h1><p style="color:var(--dim);font-size:12px">Read-only conversion history. This page does not change balances.</p></div>
+        <div class="panel"><div class="panel-header"><h3 class="panel-title">Coin Transactions</h3><button class="btn btn-outline btn-sm" onclick="loadCoinToMoneyHistory()">Refresh</button></div>
+        <div class="table-wrapper"><div id="coin-to-money-loading" class="table-loading">Loading history…</div>
+        <table class="data-table" id="coin-to-money-table" style="display:none"><thead><tr><th>User UID</th><th>Type</th><th>Coins</th><th>Reference</th><th>Date</th></tr></thead><tbody id="coin-to-money-tbody"></tbody></table>
+        <div class="table-empty" id="coin-to-money-empty" style="display:none">No coin history found or access unavailable.</div></div></div>
+      </div>
+
+      <!-- ========== SECTION: TICKET MANAGEMENT (READ ONLY) ========== -->
+      <div class="section-page" id="section-ticket-management">
+        <div class="page-header"><h1 class="page-title">🎟️ Ticket Management</h1><p style="color:var(--dim);font-size:12px">Read-only ticket audit. Claim/cancel/refund is not performed from this screen.</p></div>
+        <div class="panel"><div class="panel-header"><h3 class="panel-title">Wallet Tickets</h3><button class="btn btn-outline btn-sm" onclick="loadTicketManagement()">Refresh</button></div>
+        <div class="table-wrapper"><div id="ticket-management-loading" class="table-loading">Loading tickets…</div>
+        <table class="data-table" id="ticket-management-table" style="display:none"><thead><tr><th>Ticket ID</th><th>Sender UID</th><th>Receiver UID</th><th>Type</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead><tbody id="ticket-management-tbody"></tbody></table>
+        <div class="table-empty" id="ticket-management-empty" style="display:none">No tickets found or access unavailable.</div></div></div>
       </div>
 
       <!-- ========== SECTION: SETTINGS ========== -->
@@ -3838,6 +3844,8 @@ function getSectionLoader(id) {
     'voucher-management': loadVouchers,
     'referral-management': loadReferrals,
     'financial-report': loadFinancialReport,
+    'coin-to-money': loadCoinToMoneyHistory,
+    'ticket-management': loadTicketManagement,
     'audit-log': loadAuditLog
   };
   return map[id] || null;
@@ -3859,6 +3867,8 @@ const SECTION_NAMES = {
   'voucher-management': 'Voucher Management',
   'referral-management': 'Referral Management',
   'financial-report': 'Financial Report',
+  'coin-to-money': 'Coin to Money',
+  'ticket-management': 'Ticket Management',
   'audit-log': 'Audit Log'
 };
 
@@ -6016,6 +6026,31 @@ async function rejectReferral(id) {
 // ═══════════════════════════════════════════
 // FINANCIAL REPORT
 // ═══════════════════════════════════════════
+async function loadTicketManagement() {
+  const loading=document.getElementById('ticket-management-loading'), table=document.getElementById('ticket-management-table'), empty=document.getElementById('ticket-management-empty'), tbody=document.getElementById('ticket-management-tbody');
+  loading.style.display='flex'; table.style.display='none'; empty.style.display='none';
+  try {
+    if(!_sb) throw new Error('Supabase is not initialized');
+    const {data,error}=await _sb.from('tickets').select('id,sender_uid,receiver_uid,type,amount,status,created_at').order('created_at',{ascending:false}).limit(300);
+    if(error) throw error;
+    tbody.innerHTML=(data||[]).map(r=>`<tr><td>${sanitize(r.id)}</td><td>${sanitize(r.sender_uid)}</td><td>${sanitize(r.receiver_uid)}</td><td>${sanitize(r.type)}</td><td>${sanitize(r.amount)}</td><td>${statusBadge(r.status)}</td><td>${fmtDate(r.created_at)}</td></tr>`).join('');
+    loading.style.display='none'; if(!data||!data.length){empty.style.display='block';return;} table.style.display='table';
+  } catch(e){ loading.style.display='none'; empty.style.display='block'; empty.textContent='Ticket data unavailable: '+sanitize(e.message)+' (read-only; no wallet changes made).'; }
+}
+
+async function loadCoinToMoneyHistory() {
+  const loading=document.getElementById('coin-to-money-loading'), table=document.getElementById('coin-to-money-table'), empty=document.getElementById('coin-to-money-empty'), tbody=document.getElementById('coin-to-money-tbody');
+  loading.style.display='flex'; table.style.display='none'; empty.style.display='none';
+  try {
+    if(!_sb) throw new Error('Supabase is not initialized');
+    const {data,error}=await _sb.from('coin_history').select('uid,type,amount,code,created_at').order('created_at',{ascending:false}).limit(300);
+    if(error) throw error;
+    const rows=(data||[]).filter(r=>/convert|money|conversion/i.test(String(r.type||'')+' '+String(r.code||'')));
+    tbody.innerHTML=rows.map(r=>`<tr><td>${sanitize(r.uid)}</td><td>${sanitize(r.type)}</td><td>${sanitize(r.amount)}</td><td>${sanitize(r.code||'—')}</td><td>${fmtDate(r.created_at)}</td></tr>`).join('');
+    loading.style.display='none'; if(!rows.length){empty.style.display='block';empty.textContent='No conversion-related coin history found in the latest 300 records.';return;} table.style.display='table';
+  } catch(e){ loading.style.display='none'; empty.style.display='block'; empty.textContent='Conversion history unavailable: '+sanitize(e.message)+' (read-only; no wallet changes made).'; }
+}
+
 async function loadFinancialReport() {
   document.getElementById('fr-loading').style.display='flex';
   document.getElementById('fr-table').style.display='none';
