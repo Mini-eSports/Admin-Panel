@@ -1996,6 +1996,24 @@ table { border-collapse: collapse; width: 100%; }
 .joined-match-chip.active{border-color:var(--primary,#ffd700);background:rgba(255,215,0,.12);box-shadow:0 0 0 1px rgba(255,215,0,.15);color:var(--primary,#ffd700)}
 .joined-match-loading{padding:10px;color:var(--dim,#888);font-size:12px}
 
+.joined-match-select-wrap{position:relative;width:100%;max-width:560px}
+.joined-match-select{appearance:none;-webkit-appearance:none;width:100%;min-height:54px;padding:14px 48px 14px 16px!important;border:1px solid var(--border,rgba(255,215,0,.28))!important;border-radius:14px!important;background:linear-gradient(135deg,rgba(255,215,0,.09),rgba(15,15,15,.98))!important;color:var(--text,#f4f4f4)!important;font-weight:700;outline:none;box-shadow:0 5px 18px rgba(0,0,0,.18)}
+.joined-match-select:focus{border-color:var(--primary,#ffd700)!important;box-shadow:0 0 0 3px rgba(255,215,0,.12)}
+.joined-match-select option{background:#111;color:#f4f4f4}
+.joined-match-select-arrow{position:absolute;right:17px;top:50%;transform:translateY(-58%);font-size:24px;color:var(--primary,#ffd700);pointer-events:none}
+.joined-match-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.joined-match-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(255,215,0,.22);border-radius:999px;background:rgba(255,215,0,.08);font-size:11px;color:var(--primary,#ffd700);font-weight:700}
+.roster-slots{display:grid;grid-template-columns:repeat(2,minmax(95px,1fr));gap:6px;min-width:190px;max-width:330px}
+.roster-slots.roster-solo{grid-template-columns:minmax(110px,1fr);min-width:120px;max-width:180px}
+.roster-slots.roster-squad{grid-template-columns:repeat(2,minmax(95px,1fr))}
+.roster-slot{display:flex;align-items:center;gap:7px;min-width:0;padding:7px 8px;border:1px solid rgba(255,215,0,.17);border-radius:9px;background:rgba(255,215,0,.045)}
+.roster-slot .roster-avatar{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border-radius:8px;background:rgba(255,215,0,.13);color:var(--primary,#ffd700);font-size:11px;font-weight:800}
+.roster-slot .roster-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:700;color:var(--text,#eee)}
+.roster-slot .roster-role{display:block;font-size:9px;color:var(--dim,#888);font-weight:500}
+.roster-slot.roster-empty{border-style:dashed;opacity:.52;background:transparent}
+.joined-mode-pill{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:6px;background:rgba(255,215,0,.1);color:var(--primary,#ffd700);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:600px){.joined-match-select-wrap{max-width:100%}.roster-slots{min-width:175px;grid-template-columns:repeat(2,minmax(82px,1fr))}.roster-slots.roster-solo{min-width:115px}.roster-slot{padding:6px}.roster-slot .roster-avatar{width:22px;height:22px;flex-basis:22px}}
+
 </style>
 </head>
 <body>
@@ -2522,10 +2540,14 @@ table { border-collapse: collapse; width: 100%; }
         <div class="panel">
           <div class="panel-header" style="display:block;">
             <h3 class="panel-title" style="margin-bottom:14px;">Select Match</h3>
-            <div id="joined-match-slider" class="joined-match-slider" role="group" aria-label="Select tournament match">
-              <div class="joined-match-loading">Loading matches…</div>
+            <div class="joined-match-select-wrap">
+              <select id="joined-match-select" class="form-control joined-match-select" aria-label="Select a match">
+                <option value="">Loading matches…</option>
+              </select>
+              <span class="joined-match-select-arrow" aria-hidden="true">⌄</span>
             </div>
-            <div id="joined-match-selection-label" style="margin-top:10px;color:var(--dim);font-size:12px;">Select a match to view its joined players.</div>
+            <div id="joined-match-meta" class="joined-match-meta" aria-live="polite"></div>
+            <div id="joined-match-selection-label" style="margin-top:10px;color:var(--dim,#888);font-size:12px;">Select a match to view its joined players.</div>
           </div>
           <div class="table-wrapper">
             <div id="join-requests-loading" class="table-loading">
@@ -2538,6 +2560,7 @@ table { border-collapse: collapse; width: 100%; }
                   <th>Player</th>
                   <th>IGN</th>
                   <th>FF UID</th>
+                  <th>Team Roster</th>
                   <th>Tournament</th>
                   <th>Entry Type</th>
                   <th>Fee</th>
@@ -5135,77 +5158,117 @@ function deleteTournament(id, name) {
 // ═══════════════════════════════════════════
 // JOIN REQUESTS
 // ═══════════════════════════════════════════
-let jrData = [], jrSelectedTournamentId = null, jrTournamentOptions = [];
+let jrData = [], jrSelectedTournamentId = null, jrTournamentOptions = [], jrRosterByRequest = {};
 async function loadJoinRequests() {
   showLoading('join-requests-loading',true); showTable('join-requests-table',false); showEmpty('join-requests-empty',false);
   try {
-    // Use the same tournament source as the Matches/Tournaments section.
     const [requestsSnap, tournamentsSnap] = await Promise.all([
       db.ref('joinRequests').once('value'),
       db.ref('tournaments').once('value')
     ]);
     jrData = [];
-    if(requestsSnap.exists()) requestsSnap.forEach(c=>{ const v=c.val(); jrData.push({id:c.key,...v}); });
+    if(requestsSnap.exists()) requestsSnap.forEach(c=>jrData.push({id:c.key,...c.val()}));
     jrData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
     jrTournamentOptions = [];
     if(tournamentsSnap.exists()) tournamentsSnap.forEach(c=>jrTournamentOptions.push({id:c.key,...c.val()}));
     jrTournamentOptions.sort((a,b)=>(a.matchTime||0)-(b.matchTime||0));
-    // Keep the current selection when refreshing, unless that tournament was removed.
     if(!jrTournamentOptions.some(t=>String(t.id)===String(jrSelectedTournamentId))) jrSelectedTournamentId = null;
-    renderJoinedMatchSlider();
+    jrRosterByRequest = {};
+    const requestIds = jrData.map(r=>r.id).filter(Boolean);
+    if(requestIds.length && _sb) {
+      // Roster is read-only here; never mutate balances or join status from this display query.
+      const {data: members, error} = await _sb.from('match_team_members').select('id,join_request_id,uid,ign,ffuid,role,created_at').in('join_request_id', requestIds);
+      if(!error) (members||[]).forEach(m=>{ (jrRosterByRequest[m.join_request_id] ||= []).push(m); });
+    }
+    renderJoinedMatchSelect();
     renderJR();
   } catch(e) { toast('Failed to load joined players: '+e.message,true); }
   showLoading('join-requests-loading',false);
 }
-
-function renderJoinedMatchSlider() {
-  const slider = document.getElementById('joined-match-slider');
-  if(!slider) return;
-  if(!jrTournamentOptions.length) {
-    slider.innerHTML = '<div class="joined-match-loading">No matches found. Create a match in Tournaments first.</div>';
-    const label=document.getElementById('joined-match-selection-label'); if(label) label.textContent='';
-    return;
-  }
-  slider.innerHTML = jrTournamentOptions.map(t=>{
-    const active=String(t.id)===String(jrSelectedTournamentId);
-    const mode=[t.gameMode,t.matchCategory].filter(Boolean).join(' · ');
-    const time=t.matchTime?fmtDate(t.matchTime):'Time not set';
-    return `<button type="button" class="joined-match-chip${active?' active':''}" data-tournament-id="${sanitize(String(t.id))}" aria-pressed="${active}"><strong>${sanitize(t.name||'Untitled Match')}</strong><small>${sanitize(mode||((t.entryType||'paid')==='paid'?'Paid Match':'Coin Match'))} · ${sanitize(time)}</small></button>`;
-  }).join('');
-  slider.querySelectorAll('[data-tournament-id]').forEach(btn=>btn.addEventListener('click',()=>{
-    jrSelectedTournamentId=btn.getAttribute('data-tournament-id');
-    renderJoinedMatchSlider();
-    renderJR();
-  }));
-  const selected=jrTournamentOptions.find(t=>String(t.id)===String(jrSelectedTournamentId));
-  const label=document.getElementById('joined-match-selection-label');
-  if(label) label.textContent=selected ? `Showing players for: ${selected.name||'Untitled Match'}` : 'Select a match above to view only its joined players.';
+function getJoinedMode(t) {
+  const raw = [t?.matchCategory,t?.gameMode,t?.mode,t?.category,t?.teamMode].filter(Boolean).join(' ').toLowerCase();
+  if(/\bsquad\b|4\s*v\s*4|4\s*players/.test(raw)) return {key:'squad',label:'Squad',slots:4,icon:'🛡️'};
+  if(/\bduo\b|2\s*v\s*2|2\s*players/.test(raw)) return {key:'duo',label:'Duo',slots:2,icon:'⚔️'};
+  if(/\bsolo\b|1\s*v\s*1|1\s*player/.test(raw)) return {key:'solo',label:'Solo',slots:1,icon:'🎯'};
+  const teamSize = Number(t?.teamSize || t?.team_size || 0);
+  if(teamSize>=4) return {key:'squad',label:'Squad',slots:4,icon:'🛡️'};
+  if(teamSize===2) return {key:'duo',label:'Duo',slots:2,icon:'⚔️'};
+  return {key:'solo',label:'Solo',slots:1,icon:'🎯'};
 }
-
-function renderJR() {
-  const tbody = document.getElementById('join-requests-tbody');
-  if(!tbody) return;
-  const filtered = jrSelectedTournamentId===null ? [] : jrData.filter(r=>String(r.tournamentId||'')===String(jrSelectedTournamentId));
-  if(!filtered.length) {
-    showEmpty('join-requests-empty',true); showTable('join-requests-table',false); showFooter('join-requests-footer',false);
-    const empty=document.getElementById('join-requests-empty');
-    if(empty){ const title=empty.querySelector('div:nth-child(2)'); const msg=empty.querySelector('div:nth-child(3)'); if(title)title.textContent=jrSelectedTournamentId===null?'Select a Match':'No Players Joined'; if(msg)msg.textContent=jrSelectedTournamentId===null?'Choose a match from the slider above.':'No join requests found for this match.'; }
+function renderJoinedMatchSelect() {
+  const select=document.getElementById('joined-match-select');
+  if(!select) return;
+  if(!jrTournamentOptions.length) {
+    select.innerHTML='<option value="">No matches available</option>'; select.disabled=true;
+    const meta=document.getElementById('joined-match-meta'); if(meta)meta.innerHTML='';
+    const label=document.getElementById('joined-match-selection-label'); if(label)label.textContent='Create a match in Tournaments first.';
     return;
   }
-  showEmpty('join-requests-empty',false); showTable('join-requests-table',true); showFooter('join-requests-footer',true);
-  document.getElementById('join-requests-info').textContent = 'Showing '+filtered.length+' players';
-  tbody.innerHTML = filtered.map(r=>`
-    <tr>
-      <td><strong>${sanitize(r.playerName||r.ign||r.uid||'-')}</strong></td>
+  select.disabled=false;
+  select.innerHTML='<option value="">— Choose a match —</option>'+jrTournamentOptions.map(t=>{
+    const mode=getJoinedMode(t); const status=t.status||'Active';
+    return `<option value="${sanitize(String(t.id))}" ${String(t.id)===String(jrSelectedTournamentId)?'selected':''}>${sanitize(t.name||'Untitled Match')} · ${mode.label} · ${sanitize(String(status))}</option>`;
+  }).join('');
+  select.value=jrSelectedTournamentId===null?'':String(jrSelectedTournamentId);
+  select.onchange=()=>{jrSelectedTournamentId=select.value||null;renderJoinedMatchSelect();renderJR();};
+  const selected=jrTournamentOptions.find(t=>String(t.id)===String(jrSelectedTournamentId));
+  const meta=document.getElementById('joined-match-meta');
+  if(meta) {
+    if(!selected) meta.innerHTML='';
+    else { const mode=getJoinedMode(selected); const fee=Number(selected.entryFee??selected.entry_fee??0)||0; const feeType=(selected.entryType||selected.entry_type||'paid')==='paid'?'₹'+fee:'🪙 '+fee;
+      meta.innerHTML=`<span class="joined-match-tag">${mode.icon} ${mode.label} Match</span><span class="joined-match-tag">👥 ${mode.slots} slot${mode.slots===1?'':'s'} per team</span><span class="joined-match-tag">${feeType} Entry</span><span class="joined-match-tag">${sanitize(String(selected.status||'Active'))}</span>`;
+    }
+  }
+  const label=document.getElementById('joined-match-selection-label');
+  if(label) label.textContent=selected?`Showing ${getJoinedMode(selected).label} players for: ${selected.name||'Untitled Match'}`:'Choose a match from the dropdown to view its players.';
+}
+function renderRosterSlots(request, mode) {
+  const members=(jrRosterByRequest[request.id]||[]).slice().sort((a,b)=>{
+    const ar=String(a.role||'').toLowerCase(),br=String(b.role||'').toLowerCase();
+    return (ar.includes('captain')?-1:0)-(br.includes('captain')?-1:0) || (a.created_at||0)-(b.created_at||0);
+  });
+  if(!members.some(m=>String(m.uid||'')===String(request.uid||''))) members.unshift({uid:request.uid,ign:request.ign,ffuid:request.ffuid||request.ffUid,role:'Captain'});
+  const limit=mode.slots;
+  const shown=members.slice(0,limit);
+  const slots=[];
+  for(let i=0;i<limit;i++) {
+    const m=shown[i];
+    if(m) { const name=m.ign||m.player_name||m.uid||'Player'; const role=String(m.role|| (i===0?'Captain':'Member')); const initial=String(name).trim().charAt(0).toUpperCase()||'P';
+      slots.push(`<div class="roster-slot" title="${sanitize(name)} · UID ${sanitize(m.ffuid||m.ffUid||'-')}"><span class="roster-avatar">${sanitize(initial)}</span><span class="roster-name">${sanitize(name)}<span class="roster-role">${sanitize(role)}</span></span></div>`);
+    } else slots.push(`<div class="roster-slot roster-empty"><span class="roster-avatar">+</span><span class="roster-name">Open slot<span class="roster-role">Waiting for player</span></span></div>`);
+  }
+  return `<div class="roster-slots roster-${mode.key}">${slots.join('')}</div>`;
+}
+function renderJR() {
+  const tbody=document.getElementById('join-requests-tbody'); if(!tbody)return;
+  const filtered=jrSelectedTournamentId===null?[]:jrData.filter(r=>String(r.tournamentId||r.tournament_id||'')===String(jrSelectedTournamentId));
+  const selected=jrTournamentOptions.find(t=>String(t.id)===String(jrSelectedTournamentId));
+  if(!filtered.length) {
+    showEmpty('join-requests-empty',true);showTable('join-requests-table',false);showFooter('join-requests-footer',false);
+    const empty=document.getElementById('join-requests-empty');
+    if(empty){const title=empty.querySelector('div:nth-child(2)'),msg=empty.querySelector('div:nth-child(3)');if(title)title.textContent=jrSelectedTournamentId===null?'Select a Match':'No Players Joined';if(msg)msg.textContent=jrSelectedTournamentId===null?'Choose a match from the dropdown above.':'No join requests found for this match.';}
+    return;
+  }
+  const mode=getJoinedMode(selected||{});
+  showEmpty('join-requests-empty',false);showTable('join-requests-table',true);showFooter('join-requests-footer',true);
+  document.getElementById('join-requests-info').textContent=`Showing ${filtered.length} ${mode.label.toLowerCase()} team${filtered.length===1?'':'s'} · ${filtered.length*mode.slots} roster slots`;
+  tbody.innerHTML=filtered.map(r=>{
+    const playerName=r.playerName||r.player_name||r.ign||r.uid||'-';
+    const fee=Number(r.entryFee??r.entry_fee??selected?.entryFee??selected?.entry_fee??0)||0;
+    const entryType=r.entryType||r.entry_type||selected?.entryType||selected?.entry_type||'paid';
+    return `<tr class="joined-player-row joined-player-${mode.key}">
+      <td><strong>${sanitize(playerName)}</strong><span class="joined-mode-pill">${mode.label}</span></td>
       <td>${sanitize(r.ign||'-')}</td>
       <td>${sanitize(r.ffuid||r.ffUid||'-')}</td>
-      <td>${sanitize(r.tournamentName||jrTournamentOptions.find(t=>String(t.id)===String(r.tournamentId))?.name||'-')}</td>
-      <td>${(r.entryType||'paid')==='paid'?'Paid':'Coins'}</td>
-      <td>${(r.entryType||'paid')==='paid'?'₹':'🪙'}${Number(r.entryFee)||0}</td>
-      <td>${fmtDate(r.createdAt)}</td>
+      <td>${renderRosterSlots(r,mode)}</td>
+      <td>${sanitize(r.tournamentName||r.tournament_name||selected?.name||'-')}</td>
+      <td>${entryType==='paid'?'Paid':'Coins'}</td>
+      <td>${entryType==='paid'?'₹':'🪙'}${fee}</td>
+      <td>${fmtDate(r.createdAt||r.created_at)}</td>
       <td>${statusBadge(r.status||'pending')}</td>
-      <td>${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveJoin('${sanitize(r.id)}')">✓</button> <button class="btn btn-danger btn-xs" onclick="rejectRequest('${sanitize(r.id)}','${sanitize(r.uid||'')}','joinRequests','join')">✕</button>`:'—'}</td>
-    </tr>`).join('');
+      <td>${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveJoin('${sanitize(r.id)}')" aria-label="Approve request">✓</button> <button class="btn btn-danger btn-xs" onclick="rejectRequest('${sanitize(r.id)}','${sanitize(r.uid||'')}','joinRequests','join')" aria-label="Reject request">✕</button>`:'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 async function approveJoin(id) {
