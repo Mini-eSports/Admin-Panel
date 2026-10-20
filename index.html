@@ -3241,29 +3241,29 @@ table { border-collapse: collapse; width: 100%; }
           <div id="tournament-prize-preview" style="font-size:10px;color:var(--dim);margin-top:5px;">🥇 50% · 🥈 30% · 🥉 20% (auto-calculated)</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Max Slots</label>
-          <input type="number" class="form-input" id="tournament-slots" placeholder="12" min="1" value="12">
+          <label class="form-label">💀 Per Kill Reward (₹)</label>
+          <input type="number" class="form-input" id="tournament-kill-reward" placeholder="0" min="0" step="0.01" value="0">
+          <div style="font-size:10px;color:var(--dim);margin-top:5px;">Reward per kill, in addition to rank prize</div>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">💀 Per Kill Reward (₹) — optional</label>
-          <input type="number" class="form-input" id="tournament-kill-reward" placeholder="0" min="0" step="0.01">
-          <div style="font-size:10px;color:var(--dim);margin-top:5px;">Paid per kill on top of rank prize when results are submitted</div>
+          <label class="form-label">Max Slots</label>
+          <input type="number" class="form-input" id="tournament-slots" placeholder="48" min="1" value="48">
         </div>
         <div class="form-group">
           <label class="form-label">Match Date & Time *</label>
           <input type="datetime-local" class="form-input" id="tournament-datetime">
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-toggle">
-            <input type="checkbox" id="tournament-special">
-            <span class="toggle-switch"></span>
-            <span class="toggle-label">Special Tournament</span>
-          </label>
+      <div class="form-group" style="margin-top:8px;">
+        <label class="form-label">Tournament Type</label>
+        <div id="tournament-type-selector" role="group" aria-label="Tournament Type" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:5px;background:#080808;border:1px solid var(--border);border-radius:14px;">
+          <button type="button" class="tournament-type-option active" data-type="simple" onclick="setTournamentType('simple')" style="min-height:44px;border:1px solid var(--primary);border-radius:10px;background:rgba(255,210,0,.14);color:var(--primary);font-weight:800;padding:8px 4px;font-size:12px;">Simple Tournament</button>
+          <button type="button" class="tournament-type-option" data-type="sunday" onclick="setTournamentType('sunday')" style="min-height:44px;border:1px solid #333;border-radius:10px;background:#111;color:#aaa;font-weight:700;padding:8px 4px;font-size:12px;">Sunday Special</button>
+          <button type="button" class="tournament-type-option" data-type="monthly" onclick="setTournamentType('monthly')" style="min-height:44px;border:1px solid #333;border-radius:10px;background:#111;color:#aaa;font-weight:700;padding:8px 4px;font-size:12px;">Monthly Special</button>
         </div>
+        <input type="hidden" id="tournament-type" value="simple">
       </div>
     </div>
     <div class="modal-footer">
@@ -4922,6 +4922,22 @@ function updateTournamentModeOptions(preselect){
   if(preselect && modes.includes(preselect)) sel.value = preselect;
 }
 
+function setTournamentType(type){
+  const allowed=['simple','sunday','monthly'];
+  if(!allowed.includes(type)) type='simple';
+  const hidden=document.getElementById('tournament-type');
+  if(hidden) hidden.value=type;
+  document.querySelectorAll('#tournament-type-selector .tournament-type-option').forEach(btn=>{
+    const active=btn.dataset.type===type;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',active?'true':'false');
+    btn.style.borderColor=active?'var(--primary)':'#333';
+    btn.style.background=active?'rgba(255,210,0,.14)':'#111';
+    btn.style.color=active?'var(--primary)':'#aaa';
+    btn.style.boxShadow=active?'0 0 12px rgba(255,210,0,.12)':'none';
+  });
+}
+
 function openCreateTournament() {
   document.getElementById('modal-tournament-title').textContent = '★ Create Tournament';
   document.getElementById('tournament-edit-id').value = '';
@@ -4933,10 +4949,10 @@ function openCreateTournament() {
   document.getElementById('tournament-entry-fee').value = '';
   document.getElementById('tournament-prize').value = '';
   updatePrizePreview();
-  document.getElementById('tournament-kill-reward').value = '';
-  document.getElementById('tournament-slots').value = '12';
+  document.getElementById('tournament-kill-reward').value = '0';
+  document.getElementById('tournament-slots').value = '48';
   document.getElementById('tournament-datetime').value = '';
-  document.getElementById('tournament-special').checked = false;
+  setTournamentType('simple');
   document.getElementById('modal-tournament').classList.add('active');
 }
 
@@ -4954,13 +4970,13 @@ async function openEditTournament(id) {
   document.getElementById('tournament-entry-fee').value = t.entryFee||0;
   document.getElementById('tournament-prize').value = t.prizePool||0;
   updatePrizePreview();
-  document.getElementById('tournament-kill-reward').value = t.killReward||'';
-  document.getElementById('tournament-slots').value = t.maxSlots||12;
+  document.getElementById('tournament-kill-reward').value = t.killReward ?? 0;
+  document.getElementById('tournament-slots').value = t.maxSlots||48;
   if(t.matchTime) {
     const d = new Date(t.matchTime);
     document.getElementById('tournament-datetime').value = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
   }
-  document.getElementById('tournament-special').checked = t.isSpecial||false;
+  setTournamentType(t.tournamentType || (t.isSpecial ? 'sunday' : 'simple')); 
   document.getElementById('modal-tournament').classList.add('active');
 }
 
@@ -5043,9 +5059,10 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     entryFee: fee,
     prizePool: parseInt(document.getElementById('tournament-prize').value)||0,
     killReward: parseFloat(document.getElementById('tournament-kill-reward').value)||0,
-    maxSlots: parseInt(document.getElementById('tournament-slots').value)||12,
+    maxSlots: parseInt(document.getElementById('tournament-slots').value)||48,
     matchTime, status: computeStatus(matchTime),
-    isSpecial: document.getElementById('tournament-special').checked,
+    tournamentType: document.getElementById('tournament-type').value,
+    isSpecial: document.getElementById('tournament-type').value !== 'simple',
     updatedAt: Date.now()
   };
   try {
