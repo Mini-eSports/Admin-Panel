@@ -2016,6 +2016,42 @@ table { border-collapse: collapse; width: 100%; }
 @media(max-width:600px){.joined-match-select-wrap{max-width:100%}.roster-slots{min-width:175px;grid-template-columns:repeat(2,minmax(82px,1fr))}.roster-slots.roster-solo{min-width:115px}.roster-slot{padding:6px}.roster-slot .roster-avatar{width:22px;height:22px;flex-basis:22px}}
 
 </style>
+<style id="premium-tournament-modal-fix">
+/* Premium Create/Edit Tournament modal */
+#modal-tournament{padding:14px;background:rgba(0,0,0,.84);backdrop-filter:blur(8px)}
+#modal-tournament .modal.modal-lg{width:min(100%,900px);max-width:900px;max-height:min(96dvh,1100px);overflow:auto;overscroll-behavior:contain;border:1.5px solid #f5d21a;border-radius:24px;background:radial-gradient(ellipse at 100% 0%,rgba(255,204,0,.10),transparent 35%),linear-gradient(145deg,#10100d 0%,#050505 62%,#111006 100%);box-shadow:0 0 0 1px #6b590c,0 0 32px rgba(255,204,0,.16);scrollbar-width:thin;scrollbar-color:#6b590c #080808}
+#modal-tournament .modal::before{height:5px;background:linear-gradient(90deg,#8d7100,#ffe21a,#fff2a1,#e0ad00);border-radius:24px 24px 0 0}
+#modal-tournament .modal-header{padding:20px 24px 14px;border-bottom:1px solid rgba(255,211,0,.18);gap:12px}
+#modal-tournament .modal-title{font-size:clamp(19px,3vw,28px);color:#ffd91a;letter-spacing:.2px}
+#modal-tournament .modal-title::before{content:'🏆 ';filter:drop-shadow(0 0 8px #d7a500)}
+#modal-tournament .modal-close{width:42px;height:42px;min-width:42px;border-radius:50%;border:1px solid #e6c516;color:#ffdf22;font-size:24px}
+#modal-tournament .modal-body{padding:20px 24px 24px}
+#modal-tournament .form-group{min-width:0;margin-bottom:15px}
+#modal-tournament .form-label{font-size:12px;letter-spacing:1.25px;color:#c9c9d0;font-weight:800;text-transform:uppercase;margin-bottom:8px;display:block}
+#modal-tournament .form-input,#modal-tournament .form-select{min-height:52px;border:1px solid #8f7717;border-radius:13px;background:linear-gradient(180deg,#101010,#070707);color:#f5f5f5;padding:12px 15px;box-shadow:inset 0 1px 0 #ffffff08;max-width:100%;width:100%;box-sizing:border-box}
+#modal-tournament .form-input:focus,#modal-tournament .form-select:focus{outline:none;border-color:#ffe21a;box-shadow:0 0 0 3px #ffd70020,0 0 16px #ffd70014}
+#modal-tournament .form-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#modal-tournament #tournament-type-selector{gap:10px!important;padding:7px!important;border-color:#5f5013!important;background:#080808!important}
+#modal-tournament .tournament-type-option{min-height:68px!important;border-radius:13px!important;font-size:clamp(11px,1.8vw,14px)!important;line-height:1.3;transition:all .18s ease}
+#modal-tournament .tournament-type-option.active{border-color:#ffe21a!important;background:linear-gradient(135deg,#332b00,#171400)!important;box-shadow:0 0 15px #ffd70020,inset 0 0 0 1px #ffe21a!important;color:#ffe21a!important}
+#modal-tournament .modal-footer{position:sticky;bottom:0;z-index:3;padding:14px 24px max(16px,env(safe-area-inset-bottom));background:rgba(5,5,5,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(255,211,0,.22);display:grid;grid-template-columns:minmax(110px,.8fr) minmax(0,1.2fr);gap:12px}
+#modal-tournament .modal-footer .btn{min-height:56px;border-radius:13px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
+#modal-tournament #save-tournament-btn{box-shadow:0 0 20px #ffd00024}
+@media(max-width:600px){
+ #modal-tournament{padding:7px;align-items:center}
+ #modal-tournament .modal.modal-lg{width:100%;max-height:calc(100dvh - 14px);border-radius:18px}
+ #modal-tournament .modal-header{padding:15px 16px 12px}
+ #modal-tournament .modal-body{padding:15px 16px 18px}
+ #modal-tournament .form-row{gap:10px}
+ #modal-tournament .form-label{font-size:10px;letter-spacing:.8px}
+ #modal-tournament .form-input,#modal-tournament .form-select{min-height:48px;padding:10px;font-size:14px}
+ #modal-tournament .modal-footer{padding:11px 16px max(13px,env(safe-area-inset-bottom));gap:8px}
+ #modal-tournament .modal-footer .btn{min-height:50px;padding:10px 8px;font-size:12px}
+ #modal-tournament #tournament-type-selector{gap:6px!important;padding:4px!important}
+ #modal-tournament .tournament-type-option{min-height:60px!important;padding:7px 3px!important;font-size:10px!important}
+}
+@media(max-width:370px){#modal-tournament .form-row{grid-template-columns:minmax(0,1fr)}#modal-tournament .modal-footer{grid-template-columns:1fr 1.35fr}}
+</style>
 </head>
 <body>
 
@@ -4976,7 +5012,7 @@ async function openEditTournament(id) {
     const d = new Date(t.matchTime);
     document.getElementById('tournament-datetime').value = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
   }
-  setTournamentType(t.tournamentType || (t.isSpecial ? 'sunday' : 'simple')); 
+  setTournamentType(t.tournament_type || t.tournamentType || (t.isSpecial ? 'sunday' : 'simple')); 
   document.getElementById('modal-tournament').classList.add('active');
 }
 
@@ -5061,7 +5097,7 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     killReward: parseFloat(document.getElementById('tournament-kill-reward').value)||0,
     maxSlots: parseInt(document.getElementById('tournament-slots').value)||48,
     matchTime, status: computeStatus(matchTime),
-    tournamentType: document.getElementById('tournament-type').value,
+    tournament_type: document.getElementById('tournament-type').value,
     isSpecial: document.getElementById('tournament-type').value !== 'simple',
     updatedAt: Date.now()
   };
