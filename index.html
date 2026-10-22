@@ -2021,9 +2021,13 @@ table { border-collapse: collapse; width: 100%; }
 #modal-tournament{padding:14px;background:rgba(0,0,0,.84);backdrop-filter:blur(8px)}
 #modal-tournament .modal.modal-lg{width:min(100%,900px);max-width:900px;max-height:min(96dvh,1100px);overflow:auto;overscroll-behavior:contain;border:1.5px solid #f5d21a;border-radius:24px;background:radial-gradient(ellipse at 100% 0%,rgba(255,204,0,.10),transparent 35%),linear-gradient(145deg,#10100d 0%,#050505 62%,#111006 100%);box-shadow:0 0 0 1px #6b590c,0 0 32px rgba(255,204,0,.16);scrollbar-width:thin;scrollbar-color:#6b590c #080808}
 #modal-tournament .modal::before{height:5px;background:linear-gradient(90deg,#8d7100,#ffe21a,#fff2a1,#e0ad00);border-radius:24px 24px 0 0}
-#modal-tournament .modal-header{padding:20px 24px 14px;border-bottom:1px solid rgba(255,211,0,.18);gap:12px}
+#modal-tournament .modal-header{position:sticky;top:0;z-index:4;padding:20px 24px 14px;border-bottom:1px solid rgba(255,211,0,.18);gap:12px;background:linear-gradient(110deg,rgba(18,16,6,.98),rgba(5,5,5,.98));backdrop-filter:blur(10px)}
 #modal-tournament .modal-title{font-size:clamp(19px,3vw,28px);color:#ffd91a;letter-spacing:.2px}
 #modal-tournament .modal-title::before{content:'🏆 ';filter:drop-shadow(0 0 8px #d7a500)}
+#modal-tournament .modal-title{font-weight:900}
+#modal-tournament .modal-body .form-row:first-of-type{margin-top:2px}
+#modal-tournament .modal-footer .btn-outline{border-color:#55470b;color:#ffe21a;background:#080808}
+#modal-tournament .modal-footer #save-tournament-btn{background:linear-gradient(110deg,#ffe21a,#ffbf00);color:#080808;border:0}
 #modal-tournament .modal-close{width:42px;height:42px;min-width:42px;border-radius:50%;border:1px solid #e6c516;color:#ffdf22;font-size:24px}
 #modal-tournament .modal-body{padding:20px 24px 24px}
 #modal-tournament .form-group{min-width:0;margin-bottom:15px}
@@ -3461,7 +3465,7 @@ function toSnake(obj) {
     displayName:'display_name', tournamentId:'tournament_id', tournamentName:'tournament_name',
     entryType:'entry_type', entryFee:'entry_fee', prizePool:'prize_pool', maxSlots:'max_slots',
     filledSlots:'filled_slots', matchTime:'match_time', roomId:'room_id', roomPassword:'room_password',
-    roomLocked:'room_locked', isSpecial:'is_special', gameMode:'game_mode', createdAt:'created_at', matchCategory:'match_category', killReward:'kill_reward',
+    roomLocked:'room_locked', isSpecial:'is_special', specialType:'special_type', gameMode:'game_mode', createdAt:'created_at', matchCategory:'match_category', killReward:'kill_reward',
     updatedAt:'updated_at', approvedAt:'approved_at', usedBy:'used_by', usedAt:'used_at',
     photoURL:'photo_url', profileUpdatePending:'profile_update_pending', lastDailyClaim:'last_daily_claim',
     realMoney:'real_money', soloTeam:'solo_team', duoTeam:'duo_team', squadTeam:'squad_team',
@@ -3488,7 +3492,7 @@ function toCamel(obj) {
     display_name:'displayName', tournament_id:'tournamentId', tournament_name:'tournamentName',
     entry_type:'entryType', entry_fee:'entryFee', prize_pool:'prizePool', max_slots:'maxSlots',
     filled_slots:'filledSlots', match_time:'matchTime', room_id:'roomId', room_password:'roomPassword',
-    room_locked:'roomLocked', is_special:'isSpecial', game_mode:'gameMode', created_at:'createdAt', match_category:'matchCategory', kill_reward:'killReward',
+    room_locked:'roomLocked', is_special:'isSpecial', special_type:'specialType', game_mode:'gameMode', created_at:'createdAt', match_category:'matchCategory', kill_reward:'killReward',
     updated_at:'updatedAt', approved_at:'approvedAt', used_by:'usedBy', used_at:'usedAt',
     photo_url:'photoURL', profile_update_pending:'profileUpdatePending', last_daily_claim:'lastDailyClaim',
     real_money:'realMoney', solo_team:'soloTeam', duo_team:'duoTeam', squad_team:'squadTeam',
@@ -5012,7 +5016,7 @@ async function openEditTournament(id) {
     const d = new Date(t.matchTime);
     document.getElementById('tournament-datetime').value = new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);
   }
-  setTournamentType(t.tournament_type || t.tournamentType || (t.isSpecial ? 'sunday' : 'simple')); 
+  setTournamentType(t.specialType || t.special_type || t.tournament_type || t.tournamentType || (t.isSpecial ? 'sunday' : 'simple')); 
   document.getElementById('modal-tournament').classList.add('active');
 }
 
@@ -5097,7 +5101,9 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     killReward: parseFloat(document.getElementById('tournament-kill-reward').value)||0,
     maxSlots: parseInt(document.getElementById('tournament-slots').value)||48,
     matchTime, status: computeStatus(matchTime),
-    tournament_type: document.getElementById('tournament-type').value,
+    // Persist tournament type using the real public.tournaments schema.
+    // There is no tournament_type column; special_type + is_special are the canonical fields.
+    specialType: document.getElementById('tournament-type').value === 'simple' ? null : document.getElementById('tournament-type').value,
     isSpecial: document.getElementById('tournament-type').value !== 'simple',
     updatedAt: Date.now()
   };
