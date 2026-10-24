@@ -2025,14 +2025,14 @@ table { border-collapse: collapse; width: 100%; }
 #modal-tournament .modal-title{font-size:clamp(17px,2.6vw,25px);color:#ffd91a;letter-spacing:.2px;font-weight:900}
 #modal-tournament .modal-title::before{content:'🏆 ';filter:drop-shadow(0 0 8px #d7a500)}
 #modal-tournament .modal-close{width:36px;height:36px;min-width:36px;border-radius:50%;border:1px solid #e6c516;color:#ffdf22;font-size:22px}
-#modal-tournament .modal-body{padding:10px 16px 8px;flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:5px}
-#modal-tournament .form-group{min-width:0;margin:0;flex:1}
+#modal-tournament .modal-body{padding:10px 16px 8px;flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:7px}
+#modal-tournament .form-group{min-width:0;margin:0 0 5px;flex:0 0 auto}
 #modal-tournament .form-label{font-size:10px;letter-spacing:1px;color:#c9c9d0;font-weight:800;text-transform:uppercase;margin-bottom:4px;display:block;line-height:1.2}
 #modal-tournament .form-input,#modal-tournament .form-select{height:39px;min-height:39px;border:1px solid #8f7717;border-radius:10px;background:linear-gradient(180deg,#101010,#070707);color:#f5f5f5;padding:7px 10px;box-shadow:inset 0 1px 0 #ffffff08;max-width:100%;width:100%;box-sizing:border-box;font-size:13px}
 #modal-tournament .form-input:focus,#modal-tournament .form-select:focus{outline:none;border-color:#ffe21a;box-shadow:0 0 0 2px #ffd70020,0 0 12px #ffd70014}
-#modal-tournament .form-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+#modal-tournament .form-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 5px;flex:0 0 auto}
 #modal-tournament #tournament-prize-preview{font-size:9px!important;margin-top:3px!important;line-height:1.2}
-#modal-tournament .rank-prize-preview{flex:0 0 auto;border:1px solid #8c7110;border-radius:11px;padding:6px 8px;background:linear-gradient(110deg,rgba(255,210,0,.07),rgba(0,0,0,.4))}
+#modal-tournament .rank-prize-preview{flex:0 0 auto;margin:0 0 5px;border:1px solid #8c7110;border-radius:11px;padding:6px 8px;background:linear-gradient(110deg,rgba(255,210,0,.07),rgba(0,0,0,.4))}
 #modal-tournament .rank-prize-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#ffdc19;font-size:10px;letter-spacing:.35px;margin-bottom:5px}
 #modal-tournament .rank-auto-split{border:1px solid #806b12;border-radius:7px;padding:4px 8px;background:#171300;color:#ffdc19;font-size:10px;font-weight:800;white-space:nowrap}
 #modal-tournament .rank-prize-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
@@ -2051,8 +2051,8 @@ table { border-collapse: collapse; width: 100%; }
  #modal-tournament .modal.modal-lg{width:100%;height:calc(100dvh - 10px);max-height:calc(100dvh - 10px);border-radius:16px}
  #modal-tournament .modal-header{padding:9px 12px 8px}
  #modal-tournament .modal-title{font-size:17px}
- #modal-tournament .modal-body{padding:8px 11px 7px;gap:4px}
- #modal-tournament .form-row{gap:7px}
+ #modal-tournament .modal-body{padding:8px 11px 7px;gap:3px;justify-content:flex-start}
+ #modal-tournament .form-row{gap:7px;margin-bottom:4px}
  #modal-tournament .form-label{font-size:9px;letter-spacing:.6px;margin-bottom:3px}
  #modal-tournament .form-input,#modal-tournament .form-select{height:35px;min-height:35px;padding:6px 8px;font-size:12px;border-radius:9px}
  #modal-tournament .rank-prize-preview{padding:5px 6px}
@@ -3246,12 +3246,12 @@ table { border-collapse: collapse; width: 100%; }
     <div class="modal-body">
       <input type="hidden" id="tournament-edit-id">
       <div class="form-group">
-        <label class="form-label">Tournament Name *</label>
+        <label class="form-label">✏️ TOURNAMENT NAME *</label>
         <input type="text" class="form-input" id="tournament-name" placeholder="e.g. Battle Royale Championship">
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Match Category *</label>
+          <label class="form-label">🎮 MATCH CATEGORY *</label>
           <select class="form-select" id="tournament-category" onchange="updateTournamentModeOptions()">
             <option value="Battle Royale">🪂 Battle Royale</option>
             <option value="Clash Squad">⚔️ Clash Squad</option>
@@ -3259,13 +3259,13 @@ table { border-collapse: collapse; width: 100%; }
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Game Mode</label>
+          <label class="form-label">👥 GAME MODE *</label>
           <select class="form-select" id="tournament-mode"></select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Map *</label>
+          <label class="form-label">🗺️ MAP *</label>
           <select class="form-select" id="tournament-map">
             <option value="bermuda">Bermuda</option>
             <option value="kalahari">Kalahari</option>
@@ -3274,7 +3274,7 @@ table { border-collapse: collapse; width: 100%; }
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Entry Type *</label>
+          <label class="form-label">🪙 ENTRY TYPE *</label>
           <select class="form-select" id="tournament-entry-type">
             <option value="paid">Paid (₹)</option>
             <option value="coin">Coin (🪙)</option>
@@ -3283,22 +3283,22 @@ table { border-collapse: collapse; width: 100%; }
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Entry Fee (₹) *</label>
+          <label class="form-label">💰 ENTRY FEE (₹) *</label>
           <input type="number" class="form-input" id="tournament-entry-fee" placeholder="0" min="0">
         </div>
         <div class="form-group">
-          <label class="form-label">💀 Per Kill Reward (₹)</label>
+          <label class="form-label">💀 PER KILL REWARD (₹)</label>
           <input type="number" class="form-input" id="tournament-kill-reward" placeholder="0" min="0" step="0.01" value="0">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Prize Pool (₹) *</label>
+          <label class="form-label">🏆 PRIZE POOL (₹) *</label>
           <input type="number" class="form-input" id="tournament-prize" placeholder="0" min="0" oninput="updatePrizePreview();updateTournamentRankPrizePreview()">
           <div id="tournament-prize-preview" style="font-size:10px;color:var(--dim);margin-top:5px;">🥇 50% · 🥈 30% · 🥉 20% (auto-calculated)</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Max Slots *</label>
+          <label class="form-label">👥 MAX SLOTS *</label>
           <input type="number" class="form-input" id="tournament-slots" placeholder="48" min="1" value="48">
         </div>
       </div>
@@ -3312,12 +3312,12 @@ table { border-collapse: collapse; width: 100%; }
       </div>
       <div class="form-row">
         <div class="form-group" style="grid-column:1/-1;">
-          <label class="form-label">Match Date & Time *</label>
+          <label class="form-label">📅 MATCH DATE & TIME *</label>
           <input type="datetime-local" class="form-input" id="tournament-datetime">
         </div>
       </div>
       <div class="form-group" style="margin-top:8px;">
-        <label class="form-label">Tournament Type</label>
+        <label class="form-label">🏆 TOURNAMENT TYPE</label>
         <div id="tournament-type-selector" role="group" aria-label="Tournament Type" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:5px;background:#080808;border:1px solid var(--border);border-radius:14px;">
           <button type="button" class="tournament-type-option active" data-type="simple" onclick="setTournamentType('simple')" style="min-height:44px;border:1px solid var(--primary);border-radius:10px;background:rgba(255,210,0,.14);color:var(--primary);font-weight:800;padding:8px 4px;font-size:12px;">Simple Tournament</button>
           <button type="button" class="tournament-type-option" data-type="sunday" onclick="setTournamentType('sunday')" style="min-height:44px;border:1px solid #333;border-radius:10px;background:#111;color:#aaa;font-weight:700;padding:8px 4px;font-size:12px;">Sunday Special</button>
@@ -4678,7 +4678,7 @@ async function renderBulkStep1(){
       <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">Use {NO} for match number, {DATE} for date</div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Game Mode</label>
+      <div class="form-group"><label class="form-label">👥 GAME MODE *</label>
         <select class="form-select" id="bulk-game-mode"><option ${c.gameMode==='Solo'?'selected':''}>Solo</option><option ${c.gameMode==='Duo'?'selected':''}>Duo</option><option ${c.gameMode==='Squad'?'selected':''}>Squad</option></select>
       </div>
       <div class="form-group"><label class="form-label">Map</label>
