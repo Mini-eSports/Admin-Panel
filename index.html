@@ -2036,6 +2036,10 @@ table { border-collapse: collapse; width: 100%; }
 #modal-tournament .rank-prize-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#ffdc19;font-size:10px;letter-spacing:.35px;margin-bottom:5px}
 #modal-tournament .rank-auto-split{border:1px solid #806b12;border-radius:7px;padding:4px 8px;background:#171300;color:#ffdc19;font-size:10px;font-weight:800;white-space:nowrap}
 #modal-tournament .rank-prize-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+#modal-tournament .rank-prize-edit{grid-column:1/-1;width:100%;min-width:0;box-sizing:border-box;background:#080808;color:#ffe21a;border:1px solid #b89a16;border-radius:6px;padding:5px;font:700 12px inherit}
+#modal-tournament .rank-prize-edit[hidden]{display:none}
+#modal-tournament .rank-prize-card.manual-edit strong{display:none}
+#modal-tournament .rank-prize-card.manual-edit em{grid-column:1/-1}
 #modal-tournament .rank-prize-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:5px;min-width:0;border:1px solid #6d5c15;border-radius:8px;padding:5px 6px;background:#090909;font-size:11px}
 #modal-tournament .rank-first{border-color:#d9b820}.rank-second{border-color:#367bc2}.rank-third{border-color:#b45d30}
 #modal-tournament .rank-medal{font-size:15px}#modal-tournament .rank-place{font-weight:900;color:#eee}#modal-tournament .rank-prize-card strong{font-size:11px;white-space:nowrap}#modal-tournament .rank-prize-card em{font-style:normal;font-size:9px;color:#ffdc19}
@@ -2532,9 +2536,8 @@ table { border-collapse: collapse; width: 100%; }
         <div class="page-header">
           <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">★</span>Tournaments</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" id="bulk-history-btn">🕐 Bulk History</button>
+            <button class="btn btn-primary btn-sm" id="create-tournament-btn">🏆 Create Tournament</button>
             <button class="btn btn-outline btn-sm" style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,140,0,0.08));border-color:var(--primary);color:var(--primary);font-weight:800;" id="bulk-create-btn">⚡ Bulk Match Create</button>
-            <button class="btn btn-primary btn-sm" id="create-tournament-btn">+ Create Tournament</button>
           </div>
         </div>
 
@@ -3303,12 +3306,13 @@ table { border-collapse: collapse; width: 100%; }
         </div>
       </div>
       <div class="rank-prize-preview" aria-label="Rank prize distribution">
-        <div class="rank-prize-heading"><strong>♛ RANK PRIZE DISTRIBUTION (₹)</strong><button type="button" id="tournament-auto-split" class="rank-auto-split">✦ Auto Split</button></div>
+        <div class="rank-prize-heading"><strong>♛ RANK PRIZE DISTRIBUTION (₹)</strong><button type="button" id="tournament-auto-split" class="rank-auto-split" aria-pressed="false">✎ Edit Split</button></div>
         <div class="rank-prize-cards">
-          <div class="rank-prize-card rank-first"><span class="rank-medal">🥇</span><span class="rank-place">1</span><strong id="tournament-prize-1">₹0</strong><em>50%</em></div>
-          <div class="rank-prize-card rank-second"><span class="rank-medal">🥈</span><span class="rank-place">2</span><strong id="tournament-prize-2">₹0</strong><em>30%</em></div>
-          <div class="rank-prize-card rank-third"><span class="rank-medal">🥉</span><span class="rank-place">3</span><strong id="tournament-prize-3">₹0</strong><em>20%</em></div>
+          <div class="rank-prize-card rank-first"><span class="rank-medal">🥇</span><span class="rank-place">1</span><strong id="tournament-prize-1">₹0</strong><input class="rank-prize-edit" id="tournament-prize-edit-1" type="number" min="0" step="1" aria-label="First place prize" hidden><em>50%</em></div>
+          <div class="rank-prize-card rank-second"><span class="rank-medal">🥈</span><span class="rank-place">2</span><strong id="tournament-prize-2">₹0</strong><input class="rank-prize-edit" id="tournament-prize-edit-2" type="number" min="0" step="1" aria-label="Second place prize" hidden><em>30%</em></div>
+          <div class="rank-prize-card rank-third"><span class="rank-medal">🥉</span><span class="rank-place">3</span><strong id="tournament-prize-3">₹0</strong><input class="rank-prize-edit" id="tournament-prize-edit-3" type="number" min="0" step="1" aria-label="Third place prize" hidden><em>20%</em></div>
         </div>
+        <div id="rank-prize-edit-note" style="display:none;color:var(--dim);font-size:10px;margin-top:5px">Manual split enabled. Use Auto Split to restore 50% / 30% / 20%.</div>
       </div>
       <div class="form-row">
         <div class="form-group" style="grid-column:1/-1;">
@@ -3327,8 +3331,7 @@ table { border-collapse: collapse; width: 100%; }
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" data-close-modal="modal-tournament">Cancel</button>
-      <button class="btn btn-primary" id="save-tournament-btn">⊙ Save Tournament</button>
+      <button class="btn btn-primary" id="save-tournament-btn" style="width:100%">⊙ Save Tournament</button>
     </div>
   </div>
 </div>
@@ -3353,12 +3356,12 @@ table { border-collapse: collapse; width: 100%; }
 
 <!-- ===== MODAL: BULK MATCH CREATE ===== -->
 <div class="modal-overlay" id="modal-bulk-create">
-  <div class="modal" style="max-width:640px;max-height:90vh;overflow-y:auto;">
-    <div class="modal-header">
-      <h3 class="modal-title">⚡ Bulk Match Create</h3>
+  <div class="modal" style="max-width:980px;width:calc(100% - 24px);max-height:94vh;overflow:hidden;border:2px solid #ffd900;box-shadow:0 0 24px rgba(255,210,0,.22);background:radial-gradient(ellipse at top right,rgba(255,205,0,.10),transparent 45%),#050505;">
+    <div class="modal-header" style="background:linear-gradient(110deg,rgba(255,210,0,.13),#080808 58%);border-bottom:1px solid rgba(255,215,0,.35);padding:16px 18px;">
+      <h3 class="modal-title" style="font-size:clamp(18px,3vw,27px);color:#ffd900;">⚡ Bulk Match Create</h3>
       <button class="modal-close" data-close-modal="modal-bulk-create">✕</button>
     </div>
-    <div class="modal-body" id="bulk-create-body"></div>
+    <div class="modal-body" id="bulk-create-body" style="overflow-y:auto;max-height:calc(94vh - 76px);padding:14px;"></div>
   </div>
 </div>
 
@@ -4646,7 +4649,7 @@ function defaultBulkConfig(){
   const now = new Date(now2Local());
   return {
     count:10, namePattern:'Mini eSports #{NO}',
-    gameMode:'Solo', map:'Bermuda', entryType:'paid', entryFee:10, prizePool:100, maxSlots:12,
+    gameMode:'Solo', map:'Bermuda', entryType:'paid', entryFee:10, perKillReward:2, prizePool:100, maxSlots:12,
     startDate: now.toISOString().slice(0,10), startTime:'18:00',
     timeGapMinutes:30, repeatPattern:'sameday', perDay:10, customDays:1
   };
@@ -4655,86 +4658,50 @@ function now2Local(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimez
 
 async function renderBulkStep1(){
   const c = _bulkFlow.config;
-  let templateOptions = '<option value="">— Load a saved template —</option>';
+  let templateOptions = '<option value="">📄 — Load a saved template —</option>';
   try{
     const { data } = await _sb.from('bulk_templates').select('id,name').order('created_at',{ascending:false});
     (data||[]).forEach(t=>{ templateOptions += `<option value="${t.id}">${sanitize(t.name)}</option>`; });
   }catch(e){}
-
+  const fieldStyle='border:1px solid #d5b900!important;border-radius:12px!important;background:linear-gradient(120deg,#080808,#111)!important;color:#f5f5f5!important;min-height:48px;box-shadow:inset 0 0 0 1px rgba(255,215,0,.04);';
+  const labelStyle='display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#d8e4f7;margin-bottom:8px;';
+  const cardStyle='padding:12px;border:1px solid rgba(255,215,0,.20);border-radius:16px;background:linear-gradient(135deg,rgba(255,215,0,.045),rgba(10,12,16,.96));min-width:0;';
   document.getElementById('bulk-create-body').innerHTML = `
-    <div class="form-group">
-      <label class="form-label">📂 Load Template</label>
-      <select class="form-select" id="bulk-template-select" onchange="loadBulkTemplate(this.value)">${templateOptions}</select>
+    <div style="padding:2px 2px 12px;color:#b9c8dd;font-size:13px;">Create multiple matches at once with same settings.</div>
+    <div style="${cardStyle}margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;"><label style="${labelStyle}margin:0;font-size:15px;">📂 Load Template</label><button type="button" class="btn btn-outline btn-sm" onclick="openBulkHistory()">☷ Manage</button></div>
+      <select class="form-select" style="${fieldStyle}width:100%;" id="bulk-template-select" onchange="loadBulkTemplate(this.value)">${templateOptions}</select>
     </div>
-    <hr style="border-color:rgba(255,255,255,0.08);margin:14px 0;">
-    <div class="form-group">
-      <label class="form-label">Number of Matches *</label>
-      <input type="number" class="form-input" id="bulk-count" min="1" max="100" value="${c.count}">
-      <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">Maximum 100 per batch</div>
+    <div style="${cardStyle}margin-bottom:10px;">
+      <label style="${labelStyle}">✏️ Match Name Pattern <span style="color:#ffd900">*</span><span title="Use {NO} for match number and {DATE} for date" style="color:#ffd900;border:1px solid #6f6200;border-radius:50%;padding:0 6px;">?</span></label>
+      <input type="text" class="form-input" style="${fieldStyle}width:100%;" id="bulk-name-pattern" value="${sanitize(c.namePattern)}" placeholder="e.g. Mini eSports #{NO}">
+      <div style="font-size:11px;color:#8c9bb0;margin-top:6px;">Use {NO} for match number, {DATE} for date</div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Match Name Pattern *</label>
-      <input type="text" class="form-input" id="bulk-name-pattern" value="${sanitize(c.namePattern)}" placeholder="e.g. BR Solo - {DATE} - #{NO}">
-      <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">Use {NO} for match number, {DATE} for date</div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+      <div style="${cardStyle}"><label style="${labelStyle}"># Number of Matches <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-count" min="1" max="100" value="${c.count}"><div style="font-size:11px;color:#8c9bb0;margin-top:5px;">Maximum 100 per batch</div></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🎮 Game Mode <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-game-mode"><option ${c.gameMode==='Solo'?'selected':''}>Solo</option><option ${c.gameMode==='Duo'?'selected':''}>Duo</option><option ${c.gameMode==='Squad'?'selected':''}>Squad</option></select></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🗺️ Map <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-map"><option ${c.map==='Bermuda'?'selected':''}>Bermuda</option><option ${c.map==='Purgatory'?'selected':''}>Purgatory</option><option ${c.map==='Kalahari'?'selected':''}>Kalahari</option><option ${c.map==='Alpine'?'selected':''}>Alpine</option></select></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🪙 Entry Type <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-entry-type"><option value="paid" ${c.entryType==='paid'?'selected':''}>Paid (₹)</option><option value="coin" ${c.entryType==='coin'?'selected':''}>Free (Coins)</option></select></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">₹ Entry Fee <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-entry-fee" min="0" value="${c.entryFee}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">💀 Per Kill Reward (₹)</label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-kill-reward" min="0" value="${c.perKillReward||2}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🏆 Total Prize Pool (per match) <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-prize-pool" min="0" value="${c.prizePool}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">👥 Max Slots <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-max-slots" min="1" value="${c.maxSlots}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">📅 Start Date <span style="color:#ffd900">*</span></label><input type="date" class="form-input" style="${fieldStyle}width:100%;" id="bulk-start-date" value="${c.startDate}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🕒 Start Time <span style="color:#ffd900">*</span></label><input type="time" class="form-input" style="${fieldStyle}width:100%;" id="bulk-start-time" value="${c.startTime}"></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">⏱ Time Gap</label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-time-gap">${TIME_GAP_OPTIONS.map(m=>`<option value="${m}" ${c.timeGapMinutes===m?'selected':''}>${m<60?m+' Minutes':(m/60)+' Hour'+(m>60?'s':'')}</option>`).join('')}<option value="custom" ${!TIME_GAP_OPTIONS.includes(c.timeGapMinutes)?'selected':''}>Custom</option></select><div id="bulk-custom-gap-wrap" style="${TIME_GAP_OPTIONS.includes(c.timeGapMinutes)?'display:none;':''}margin-top:8px;"><label style="${labelStyle}">Custom Gap (minutes)</label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-custom-gap" min="1" value="${c.timeGapMinutes}"></div></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🔁 Repeat Pattern</label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-repeat-pattern" onchange="document.getElementById('bulk-per-day-wrap').style.display=this.value==='sameday'?'none':'block'"><option value="sameday" ${c.repeatPattern==='sameday'?'selected':''}>Same Day</option><option value="daily" ${c.repeatPattern==='daily'?'selected':''}>Daily</option><option value="every2days" ${c.repeatPattern==='every2days'?'selected':''}>Every 2 Days</option><option value="weekly" ${c.repeatPattern==='weekly'?'selected':''}>Weekly</option></select><div id="bulk-per-day-wrap" style="${c.repeatPattern==='sameday'?'display:none;':''}margin-top:8px;"><label style="${labelStyle}">Matches Per Day</label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-per-day" min="1" value="${c.perDay}"></div></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">👥 GAME MODE *</label>
-        <select class="form-select" id="bulk-game-mode"><option ${c.gameMode==='Solo'?'selected':''}>Solo</option><option ${c.gameMode==='Duo'?'selected':''}>Duo</option><option ${c.gameMode==='Squad'?'selected':''}>Squad</option></select>
-      </div>
-      <div class="form-group"><label class="form-label">Map</label>
-        <select class="form-select" id="bulk-map"><option ${c.map==='Bermuda'?'selected':''}>Bermuda</option><option ${c.map==='Purgatory'?'selected':''}>Purgatory</option><option ${c.map==='Kalahari'?'selected':''}>Kalahari</option><option ${c.map==='Alpine'?'selected':''}>Alpine</option></select>
-      </div>
+    <div id="bulk-preview-hint" style="font-size:11px;color:#8c9bb0;margin:10px 2px;"></div>
+    <div class="modal-footer" style="padding:12px 0 2px;margin-top:12px;border-top:1px solid rgba(255,215,0,.25);display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button class="btn btn-outline" style="border-color:#bca900;color:#ffd900;min-height:52px;" onclick="saveBulkTemplatePrompt()">▣ SAVE AS TEMPLATE</button>
+      <button class="btn btn-primary" style="min-height:52px;font-weight:900;" onclick="generateBulkPreview()">◉ PREVIEW SCHEDULE</button>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Entry Type</label>
-        <select class="form-select" id="bulk-entry-type"><option value="paid" ${c.entryType==='paid'?'selected':''}>Paid (₹)</option><option value="coin" ${c.entryType==='coin'?'selected':''}>Free (Coins)</option></select>
-      </div>
-      <div class="form-group"><label class="form-label">Entry Fee</label><input type="number" class="form-input" id="bulk-entry-fee" min="0" value="${c.entryFee}"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Total Prize Pool (per match)</label><input type="number" class="form-input" id="bulk-prize-pool" min="0" value="${c.prizePool}"></div>
-      <div class="form-group"><label class="form-label">Max Slots</label><input type="number" class="form-input" id="bulk-max-slots" min="1" value="${c.maxSlots}"></div>
-    </div>
-    <hr style="border-color:rgba(255,255,255,0.08);margin:14px 0;">
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Start Date *</label><input type="date" class="form-input" id="bulk-start-date" value="${c.startDate}"></div>
-      <div class="form-group"><label class="form-label">Start Time *</label><input type="time" class="form-input" id="bulk-start-time" value="${c.startTime}"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">⏱ Time Gap</label>
-        <select class="form-select" id="bulk-time-gap">
-          ${TIME_GAP_OPTIONS.map(m=>`<option value="${m}" ${c.timeGapMinutes===m?'selected':''}>${m<60?m+' Minutes':(m/60)+' Hour'+(m>60?'s':'')}</option>`).join('')}
-          <option value="custom" ${!TIME_GAP_OPTIONS.includes(c.timeGapMinutes)?'selected':''}>Custom</option>
-        </select>
-      </div>
-      <div class="form-group" id="bulk-custom-gap-wrap" style="${TIME_GAP_OPTIONS.includes(c.timeGapMinutes)?'display:none;':''}">
-        <label class="form-label">Custom Gap (minutes)</label><input type="number" class="form-input" id="bulk-custom-gap" min="1" value="${c.timeGapMinutes}">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">📅 Repeat Pattern</label>
-        <select class="form-select" id="bulk-repeat-pattern" onchange="document.getElementById('bulk-per-day-wrap').style.display=this.value==='sameday'?'none':'block'">
-          <option value="sameday" ${c.repeatPattern==='sameday'?'selected':''}>Same Day</option>
-          <option value="daily" ${c.repeatPattern==='daily'?'selected':''}>Daily</option>
-          <option value="every2days" ${c.repeatPattern==='every2days'?'selected':''}>Every 2 Days</option>
-          <option value="weekly" ${c.repeatPattern==='weekly'?'selected':''}>Weekly</option>
-        </select>
-      </div>
-      <div class="form-group" id="bulk-per-day-wrap" style="${c.repeatPattern==='sameday'?'display:none;':''}">
-        <label class="form-label">Matches Per Day</label><input type="number" class="form-input" id="bulk-per-day" min="1" value="${c.perDay}">
-      </div>
-    </div>
-    <div id="bulk-preview-hint" style="font-size:11px;color:var(--text-muted);margin:10px 0;"></div>
-    <div class="modal-footer" style="padding:0;margin-top:16px;">
-      <button class="btn btn-outline" onclick="saveBulkTemplatePrompt()">💾 Save as Template</button>
-      <button class="btn btn-primary" onclick="generateBulkPreview()">👁 Preview Schedule</button>
-    </div>
+    <style>@media(max-width:520px){#bulk-create-body .modal-footer{grid-template-columns:1fr!important}#bulk-create-body input,#bulk-create-body select{font-size:16px!important}}</style>
   `;
   document.getElementById('bulk-time-gap')?.addEventListener('change', function(){
     document.getElementById('bulk-custom-gap-wrap').style.display = this.value==='custom' ? 'block':'none';
   });
 }
-
 function readBulkConfigFromForm(){
   const gapSel = document.getElementById('bulk-time-gap').value;
   return {
@@ -4744,6 +4711,7 @@ function readBulkConfigFromForm(){
     map: document.getElementById('bulk-map').value,
     entryType: document.getElementById('bulk-entry-type').value,
     entryFee: parseFloat(document.getElementById('bulk-entry-fee').value)||0,
+    perKillReward: parseFloat(document.getElementById('bulk-kill-reward')?.value)||0,
     prizePool: parseFloat(document.getElementById('bulk-prize-pool').value)||0,
     maxSlots: parseInt(document.getElementById('bulk-max-slots').value)||12,
     startDate: document.getElementById('bulk-start-date').value,
@@ -4776,7 +4744,7 @@ function generateBulkSchedule(c){
     const no = String(i+1).padStart(2,'0');
     const name = c.namePattern.replace(/\{NO\}/g, no).replace(/\{DATE\}/g, dateStr(mt));
     matches.push({
-      name, gameMode:c.gameMode, map:c.map, entryType:c.entryType, entryFee:c.entryFee,
+      name, gameMode:c.gameMode, map:c.map, entryType:c.entryType, entryFee:c.entryFee, perKillReward:c.perKillReward||0,
       prizePool:c.prizePool, maxSlots:c.maxSlots, matchTime: mt.getTime(), isSpecial:false, specialType:null,
       _conflict:false
     });
@@ -4808,37 +4776,21 @@ function renderBulkStep2(){
   const matches = _bulkFlow.matches;
   const conflictCount = matches.filter(m=>m._conflict).length;
   const cur = _bulkFlow.config.entryType==='paid' ? '₹' : '🪙';
+  const dateFmt=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const timeFmt=d=>d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}).replace(' AM',' am').replace(' PM',' pm');
   document.getElementById('bulk-create-body').innerHTML = `
-    <h4 style="color:var(--primary);margin-bottom:4px;">👁 Preview Schedule</h4>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">${matches.length} matches will be generated</div>
-    ${conflictCount>0?`<div style="background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;">
-      <div style="color:#ffb400;font-weight:700;font-size:12px;">⚠️ ${conflictCount} match(es) already exist at this time/map/mode.</div>
-      <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;"><input type="checkbox" id="bulk-skip-conflicts" checked> Skip Conflicting (recommended)</label>
-    </div>`:''}
-    <div class="table-wrapper" style="max-height:320px;overflow-y:auto;">
-      <table class="data-table" style="min-width:100%;">
-        <thead><tr><th>#</th><th>Match Name</th><th>Date</th><th>Time</th><th>Map</th><th>Entry</th><th>Prize</th><th></th></tr></thead>
-        <tbody>
-          ${matches.map((m,i)=>`<tr style="${m._conflict?'background:rgba(255,50,50,0.06);':''}">
-            <td>${i+1}</td>
-            <td>${sanitize(m.name)}${m._conflict?' <span style="color:var(--red);font-size:10px;">⚠️ conflict</span>':''}</td>
-            <td style="font-size:11px;">${new Date(m.matchTime).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</td>
-            <td style="font-size:11px;">${new Date(m.matchTime).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</td>
-            <td style="font-size:11px;">${sanitize(m.map)}</td>
-            <td style="font-size:11px;">${cur}${m.entryFee}</td>
-            <td style="font-size:11px;">${cur}${m.prizePool}</td>
-            <td><button class="btn btn-outline btn-xs" onclick="editBulkRow(${i})">✏️</button></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
+    <div style="padding:3px 2px 14px;border-bottom:1px solid rgba(255,215,0,.28);margin-bottom:12px;"><div style="font-size:clamp(20px,4vw,29px);font-weight:900;color:#ffd900;">◉ Preview Schedule</div><div style="font-size:13px;color:#aab8cc;margin-top:6px;">${matches.length} matches will be generated with these settings.</div><div style="display:inline-block;margin-top:10px;border:1px solid #8b7700;background:rgba(255,215,0,.08);padding:8px 14px;border-radius:10px;color:#ffd900;font-weight:800;">▦ ${matches.length} Matches</div></div>
+    ${conflictCount>0?`<div style="background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;"><div style="color:#ffb400;font-weight:700;font-size:12px;">⚠️ ${conflictCount} match(es) already exist at this time/map/mode.</div><label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;"><input type="checkbox" id="bulk-skip-conflicts" checked> Skip Conflicting (recommended)</label></div>`:''}
+    <div style="overflow-x:auto;border:1px solid rgba(255,215,0,.28);border-radius:12px;"><table class="data-table" style="min-width:640px;width:100%;"><thead><tr style="background:rgba(255,215,0,.12);"><th style="color:#ffd900">#</th><th style="color:#ffd900">MATCH NAME</th><th style="color:#ffd900">▦ DATE</th><th style="color:#ffd900">◷ TIME</th><th style="color:#ffd900">MAP</th><th style="color:#ffd900">ENTRY</th><th style="color:#ffd900">PRIZE</th><th></th></tr></thead><tbody>
+      ${matches.map((m,i)=>{const d=new Date(m.matchTime);return `<tr style="${m._conflict?'background:rgba(255,50,50,0.08);':''}border-bottom:1px solid rgba(255,215,0,.12);"><td><span style="display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid #c5a900;border-radius:9px;color:#ffd900;font-weight:800;">${i+1}</span></td><td style="font-weight:700;">${sanitize(m.name)}${m._conflict?' <span style="color:var(--red);font-size:10px;">⚠ conflict</span>':''}</td><td style="white-space:nowrap;">${dateFmt(d)}</td><td style="white-space:nowrap;">${timeFmt(d)}</td><td>${sanitize(m.map)}</td><td>${cur}${m.entryFee}</td><td>${cur}${m.prizePool}</td><td><button class="btn btn-outline btn-xs" onclick="editBulkRow(${i})">✏️</button></td></tr>`}).join('')}
+    </tbody></table></div>
+    <div class="modal-footer" style="padding:14px 0 2px;margin-top:14px;border-top:1px solid rgba(255,215,0,.28);display:grid;grid-template-columns:minmax(100px,.8fr) minmax(0,1.2fr);gap:10px;">
+      <button class="btn btn-outline" style="min-height:56px;" onclick="_bulkFlow.step=1;renderBulkStep1();">← BACK</button>
+      <button class="btn btn-primary" id="bulk-create-all-btn" style="min-height:56px;font-weight:900;" onclick="createBulkMatches()">🚀 CREATE ALL (${matches.length})</button>
     </div>
-    <div class="modal-footer" style="padding:0;margin-top:16px;">
-      <button class="btn btn-outline" onclick="_bulkFlow.step=1;renderBulkStep1();">← Back</button>
-      <button class="btn btn-primary" id="bulk-create-all-btn" onclick="createBulkMatches()">🚀 Create All (${matches.length})</button>
-    </div>
+    <style>@media(max-width:520px){#bulk-create-body .modal-footer{grid-template-columns:1fr!important}}</style>
   `;
 }
-
 function editBulkRow(i){
   const m = _bulkFlow.matches[i];
   const dt = new Date(m.matchTime);
@@ -4982,13 +4934,21 @@ function updateTournamentModeOptions(preselect){
   if(preselect && modes.includes(preselect)) sel.value = preselect;
 }
 
+let _rankPrizeManual = false;
 function updateTournamentRankPrizePreview(){
   const total=Math.max(0,Number(document.getElementById('tournament-prize')?.value)||0);
-  const first=Math.floor(total*.5), second=Math.floor(total*.3), third=Math.max(0,total-first-second);
-  [['tournament-prize-1',first],['tournament-prize-2',second],['tournament-prize-3',third]].forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent='₹'+Number(val).toLocaleString('en-IN');});
+  const amounts=_rankPrizeManual ? [1,2,3].map(i=>Math.max(0,Math.floor(Number(document.getElementById('tournament-prize-edit-'+i)?.value)||0))) : [Math.floor(total*.5),Math.floor(total*.3),Math.max(0,total-Math.floor(total*.5)-Math.floor(total*.3))];
+  amounts.forEach((val,index)=>{const i=index+1,out=document.getElementById('tournament-prize-'+i),input=document.getElementById('tournament-prize-edit-'+i);if(out)out.textContent='₹'+Number(val).toLocaleString('en-IN');if(input&&!_rankPrizeManual)input.value=val;});
+  const labels=[50,30,20];
+  amounts.forEach((val,index)=>{const em=document.querySelector('.rank-prize-card.'+['rank-first','rank-second','rank-third'][index]+' em');if(em)em.textContent=_rankPrizeManual?(total?Math.round(val/total*100)+'%':'0%'):labels[index]+'%';});
+  document.querySelectorAll('.rank-prize-edit').forEach(el=>el.hidden=!_rankPrizeManual);
+  document.querySelectorAll('.rank-prize-card').forEach(el=>el.classList.toggle('manual-edit',_rankPrizeManual));
+  const note=document.getElementById('rank-prize-edit-note');if(note)note.style.display=_rankPrizeManual?'block':'none';
+  const btn=document.getElementById('tournament-auto-split');if(btn){btn.textContent=_rankPrizeManual?'✦ Auto Split':'✎ Edit Split';btn.setAttribute('aria-pressed',_rankPrizeManual?'true':'false');}
 }
-document.getElementById('tournament-prize')?.addEventListener('input',updateTournamentRankPrizePreview);
-document.getElementById('tournament-auto-split')?.addEventListener('click',()=>{updateTournamentRankPrizePreview();toast('Prize split calculated: 50% / 30% / 20%');});
+document.getElementById('tournament-prize')?.addEventListener('input',()=>{if(!_rankPrizeManual)updateTournamentRankPrizePreview();});
+document.getElementById('tournament-auto-split')?.addEventListener('click',()=>{_rankPrizeManual=!_rankPrizeManual;updateTournamentRankPrizePreview();if(!_rankPrizeManual)toast('Auto split restored: 50% / 30% / 20%');});
+[1,2,3].forEach(i=>document.getElementById('tournament-prize-edit-'+i)?.addEventListener('input',()=>{if(!_rankPrizeManual)return;const total=Math.max(0,Number(document.getElementById('tournament-prize')?.value)||0);const values=[1,2,3].map(n=>Math.max(0,Math.floor(Number(document.getElementById('tournament-prize-edit-'+n)?.value)||0)));values.forEach((v,n)=>{const el=document.getElementById('tournament-prize-'+(n+1));if(el)el.textContent='₹'+v.toLocaleString('en-IN');const em=document.querySelector('.rank-prize-card.'+['rank-first','rank-second','rank-third'][n]+' em');if(em)em.textContent=total?Math.round(v/total*100)+'%':'0%';});}));
 
 function setTournamentType(type){
   const allowed=['simple','sunday','monthly'];
@@ -5007,6 +4967,7 @@ function setTournamentType(type){
 }
 
 function openCreateTournament() {
+  _rankPrizeManual=false;
   document.getElementById('modal-tournament-title').textContent = '★ Create Tournament';
   document.getElementById('tournament-edit-id').value = '';
   document.getElementById('tournament-name').value = '';
@@ -5027,6 +4988,7 @@ function openCreateTournament() {
 }
 
 async function openEditTournament(id) {
+  _rankPrizeManual=false;
   const snap = await db.ref('tournaments/'+id).once('value');
   if(!snap.exists()) return;
   const t = snap.val();
