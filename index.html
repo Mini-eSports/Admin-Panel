@@ -3356,14 +3356,32 @@ table { border-collapse: collapse; width: 100%; }
 
 <!-- ===== MODAL: BULK MATCH CREATE ===== -->
 <div class="modal-overlay" id="modal-bulk-create">
-  <div class="modal" style="max-width:980px;width:calc(100% - 24px);max-height:94vh;overflow:hidden;border:2px solid #ffd900;box-shadow:0 0 24px rgba(255,210,0,.22);background:radial-gradient(ellipse at top right,rgba(255,205,0,.10),transparent 45%),#050505;">
-    <div class="modal-header" style="background:linear-gradient(110deg,rgba(255,210,0,.13),#080808 58%);border-bottom:1px solid rgba(255,215,0,.35);padding:16px 18px;">
+  <div class="modal bulk-create-modal" style="max-width:900px;width:calc(100% - 24px);max-height:94vh;overflow:hidden;border:2px solid #ffd900;border-radius:24px;box-shadow:0 0 30px rgba(255,210,0,.24);background:radial-gradient(ellipse at 78% 0%,rgba(255,205,0,.13),transparent 34%),radial-gradient(ellipse at 100% 8%,rgba(120,70,0,.13),transparent 28%),#050505;">
+    <div class="modal-header" style="background:linear-gradient(110deg,rgba(255,210,0,.16),rgba(8,8,8,.96) 58%),radial-gradient(circle at 88% 20%,rgba(255,190,0,.16),transparent 30%);border-bottom:1px solid rgba(255,215,0,.35);padding:18px 20px;min-height:78px;">
       <h3 class="modal-title" style="font-size:clamp(18px,3vw,27px);color:#ffd900;">⚡ Bulk Match Create</h3>
       <button class="modal-close" data-close-modal="modal-bulk-create">✕</button>
     </div>
-    <div class="modal-body" id="bulk-create-body" style="overflow-y:auto;max-height:calc(94vh - 76px);padding:14px;"></div>
+    <div class="modal-body" id="bulk-create-body" style="overflow-y:auto;max-height:calc(94vh - 78px);padding:16px;"></div>
   </div>
 </div>
+<style>
+/* Bulk Match Create reference-matched gold/black layout */
+#modal-bulk-create .bulk-create-modal{border-radius:24px!important}
+#bulk-create-body .bulk-field-card{padding:13px;border:1px solid rgba(255,215,0,.18);border-radius:18px;background:linear-gradient(145deg,rgba(255,215,0,.055),rgba(10,12,16,.96) 72%);box-shadow:inset 0 1px rgba(255,255,255,.025);min-width:0}
+#bulk-create-body .bulk-field-card input,#bulk-create-body .bulk-field-card select{height:54px!important;border-radius:14px!important;font-size:16px!important;padding:0 14px!important;box-sizing:border-box}
+#bulk-create-body .bulk-label{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800;color:#d8e4f7;margin-bottom:10px;line-height:1.35}
+#bulk-create-body .bulk-actions{padding:14px 0 2px;margin-top:14px;border-top:1px solid rgba(255,215,0,.28);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#bulk-create-body .bulk-actions button{min-height:58px;border-radius:14px;font-weight:900;letter-spacing:.6px}
+#bulk-create-body .bulk-preview-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;background:rgba(0,0,0,.35)}
+#bulk-create-body .bulk-preview-table th{padding:14px 8px;background:rgba(255,215,0,.14);color:#ffd900;text-align:left;font-size:clamp(10px,2.5vw,14px);letter-spacing:.5px;white-space:nowrap}
+#bulk-create-body .bulk-preview-table td{padding:13px 8px;border-top:1px solid rgba(255,215,0,.12);font-size:clamp(11px,2.7vw,15px);overflow-wrap:anywhere}
+#bulk-create-body .bulk-preview-table th:first-child,#bulk-create-body .bulk-preview-table td:first-child{width:48px;text-align:center}
+#bulk-create-body .bulk-preview-table th:nth-child(2),#bulk-create-body .bulk-preview-table td:nth-child(2){width:37%}
+#bulk-create-body .bulk-preview-table th:nth-child(3),#bulk-create-body .bulk-preview-table td:nth-child(3){width:30%;white-space:nowrap}
+#bulk-create-body .bulk-preview-table th:nth-child(4),#bulk-create-body .bulk-preview-table td:nth-child(4){width:25%;white-space:nowrap}
+#bulk-create-body .bulk-preview-row-number{display:inline-grid;place-items:center;width:36px;height:38px;border:1px solid #c5a900;border-radius:10px;color:#ffd900;font-weight:900;background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(0,0,0,.6))}
+@media(max-width:520px){#modal-bulk-create .modal{width:calc(100% - 18px)!important}#modal-bulk-create .modal-header{padding:15px 16px!important}#bulk-create-body{padding:13px!important}#bulk-create-body .bulk-field-card{padding:11px!important}#bulk-create-body .bulk-actions{gap:9px}#bulk-create-body .bulk-actions button{font-size:12px!important;padding:10px 6px!important;min-height:54px}#bulk-create-body .bulk-preview-table th,#bulk-create-body .bulk-preview-table td{padding:11px 4px}#bulk-create-body .bulk-preview-row-number{width:30px;height:34px}#bulk-create-body .bulk-preview-table th:first-child,#bulk-create-body .bulk-preview-table td:first-child{width:38px}#bulk-create-body .bulk-preview-table th:nth-child(2),#bulk-create-body .bulk-preview-table td:nth-child(2){width:35%}#bulk-create-body .bulk-preview-table th:nth-child(3),#bulk-create-body .bulk-preview-table td:nth-child(3){width:31%}#bulk-create-body .bulk-preview-table th:nth-child(4),#bulk-create-body .bulk-preview-table td:nth-child(4){width:25%}}
+</style>
 
 <!-- ===== MODAL: BULK CREATION HISTORY ===== -->
 <div class="modal-overlay" id="modal-bulk-history">
@@ -4664,8 +4682,8 @@ async function renderBulkStep1(){
     (data||[]).forEach(t=>{ templateOptions += `<option value="${t.id}">${sanitize(t.name)}</option>`; });
   }catch(e){}
   const fieldStyle='border:1px solid #d5b900!important;border-radius:12px!important;background:linear-gradient(120deg,#080808,#111)!important;color:#f5f5f5!important;min-height:48px;box-shadow:inset 0 0 0 1px rgba(255,215,0,.04);';
-  const labelStyle='display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#d8e4f7;margin-bottom:8px;';
-  const cardStyle='padding:12px;border:1px solid rgba(255,215,0,.20);border-radius:16px;background:linear-gradient(135deg,rgba(255,215,0,.045),rgba(10,12,16,.96));min-width:0;';
+  const labelStyle='display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800;color:#d8e4f7;margin-bottom:10px;';
+  const cardStyle='padding:13px;border:1px solid rgba(255,215,0,.18);border-radius:18px;background:linear-gradient(145deg,rgba(255,215,0,.055),rgba(10,12,16,.96) 72%);min-width:0;';
   document.getElementById('bulk-create-body').innerHTML = `
     <div style="padding:2px 2px 12px;color:#b9c8dd;font-size:13px;">Create multiple matches at once with same settings.</div>
     <div style="${cardStyle}margin-bottom:10px;">
@@ -4781,14 +4799,13 @@ function renderBulkStep2(){
   document.getElementById('bulk-create-body').innerHTML = `
     <div style="padding:3px 2px 14px;border-bottom:1px solid rgba(255,215,0,.28);margin-bottom:12px;"><div style="font-size:clamp(20px,4vw,29px);font-weight:900;color:#ffd900;">◉ Preview Schedule</div><div style="font-size:13px;color:#aab8cc;margin-top:6px;">${matches.length} matches will be generated with these settings.</div><div style="display:inline-block;margin-top:10px;border:1px solid #8b7700;background:rgba(255,215,0,.08);padding:8px 14px;border-radius:10px;color:#ffd900;font-weight:800;">▦ ${matches.length} Matches</div></div>
     ${conflictCount>0?`<div style="background:rgba(255,180,0,0.1);border:1px solid rgba(255,180,0,0.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;"><div style="color:#ffb400;font-weight:700;font-size:12px;">⚠️ ${conflictCount} match(es) already exist at this time/map/mode.</div><label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;"><input type="checkbox" id="bulk-skip-conflicts" checked> Skip Conflicting (recommended)</label></div>`:''}
-    <div style="overflow-x:auto;border:1px solid rgba(255,215,0,.28);border-radius:12px;"><table class="data-table" style="min-width:640px;width:100%;"><thead><tr style="background:rgba(255,215,0,.12);"><th style="color:#ffd900">#</th><th style="color:#ffd900">MATCH NAME</th><th style="color:#ffd900">▦ DATE</th><th style="color:#ffd900">◷ TIME</th><th style="color:#ffd900">MAP</th><th style="color:#ffd900">ENTRY</th><th style="color:#ffd900">PRIZE</th><th></th></tr></thead><tbody>
-      ${matches.map((m,i)=>{const d=new Date(m.matchTime);return `<tr style="${m._conflict?'background:rgba(255,50,50,0.08);':''}border-bottom:1px solid rgba(255,215,0,.12);"><td><span style="display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid #c5a900;border-radius:9px;color:#ffd900;font-weight:800;">${i+1}</span></td><td style="font-weight:700;">${sanitize(m.name)}${m._conflict?' <span style="color:var(--red);font-size:10px;">⚠ conflict</span>':''}</td><td style="white-space:nowrap;">${dateFmt(d)}</td><td style="white-space:nowrap;">${timeFmt(d)}</td><td>${sanitize(m.map)}</td><td>${cur}${m.entryFee}</td><td>${cur}${m.prizePool}</td><td><button class="btn btn-outline btn-xs" onclick="editBulkRow(${i})">✏️</button></td></tr>`}).join('')}
+    <div style="border:1px solid rgba(255,215,0,.30);border-radius:14px;overflow:hidden;width:100%;"><table class="bulk-preview-table"><thead><tr><th>#</th><th>▤ MATCH NAME</th><th>▦ DATE</th><th>◷ TIME</th></tr></thead><tbody>
+      ${matches.map((m,i)=>{const d=new Date(m.matchTime);return `<tr style="${m._conflict?'background:rgba(255,50,50,0.08);':''}"><td><span class="bulk-preview-row-number">${i+1}</span></td><td style="font-weight:800;color:#e6e8ed;cursor:pointer;" title="Tap to edit this match" onclick="editBulkRow(${i})">${sanitize(m.name)}${m._conflict?' <span style="color:var(--red);font-size:10px;">⚠</span>':''}</td><td>${dateFmt(d)}</td><td>${timeFmt(d)}</td></tr>`}).join('')}
     </tbody></table></div>
-    <div class="modal-footer" style="padding:14px 0 2px;margin-top:14px;border-top:1px solid rgba(255,215,0,.28);display:grid;grid-template-columns:minmax(100px,.8fr) minmax(0,1.2fr);gap:10px;">
-      <button class="btn btn-outline" style="min-height:56px;" onclick="_bulkFlow.step=1;renderBulkStep1();">← BACK</button>
-      <button class="btn btn-primary" id="bulk-create-all-btn" style="min-height:56px;font-weight:900;" onclick="createBulkMatches()">🚀 CREATE ALL (${matches.length})</button>
+    <div class="bulk-actions">
+      <button class="btn btn-outline" style="border:1px solid #777;color:#d9e3f5;background:linear-gradient(120deg,#171717,#050505);" onclick="_bulkFlow.step=1;renderBulkStep1();">← BACK</button>
+      <button class="btn btn-primary" id="bulk-create-all-btn" style="min-height:58px;font-weight:900;" onclick="createBulkMatches()">🚀 CREATE ALL (${matches.length})</button>
     </div>
-    <style>@media(max-width:520px){#bulk-create-body .modal-footer{grid-template-columns:1fr!important}}</style>
   `;
 }
 function editBulkRow(i){
