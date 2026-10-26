@@ -2015,6 +2015,54 @@ table { border-collapse: collapse; width: 100%; }
 .joined-mode-pill{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:6px;background:rgba(255,215,0,.1);color:var(--primary,#ffd700);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 @media(max-width:600px){.joined-match-select-wrap{max-width:100%}.roster-slots{min-width:175px;grid-template-columns:repeat(2,minmax(82px,1fr))}.roster-slots.roster-solo{min-width:115px}.roster-slot{padding:6px}.roster-slot .roster-avatar{width:22px;height:22px;flex-basis:22px}}
 
+
+/* Users Management — premium black/gold reference design */
+#section-users .users-page-heading{margin-bottom:14px;align-items:center}
+#section-users .users-page-heading .page-title{font-size:clamp(22px,3.4vw,32px);letter-spacing:-.5px}
+#section-users .users-page-heading .page-title-icon{font-size:1.18em}
+#section-users .users-hero{position:relative;display:flex;align-items:center;gap:16px;min-height:105px;margin:4px 0 12px;padding:16px 20px;border:1px solid #9f8210;border-radius:17px;overflow:hidden;background:radial-gradient(ellipse at 85% 50%,rgba(255,190,0,.18),transparent 35%),linear-gradient(115deg,#0b0b08,#161309 60%,#080808);box-shadow:0 0 16px rgba(255,215,0,.14),inset 0 0 18px rgba(255,215,0,.04)}
+#section-users .users-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 55%,rgba(255,215,0,.08),transparent 80%);pointer-events:none}
+#section-users .users-hero-icon{width:72px;height:72px;flex:0 0 72px;display:grid;place-items:center;border:2px solid #eacb22;border-radius:15px;background:linear-gradient(145deg,rgba(255,215,0,.25),rgba(0,0,0,.75));color:#ffd91a;font-size:39px;text-shadow:0 0 12px #ffd000;box-shadow:0 0 14px rgba(255,215,0,.18)}
+#section-users .users-hero h2{position:relative;margin:0;color:#ffd51a;font-size:clamp(20px,3vw,29px);font-weight:900}
+#section-users .users-hero p{position:relative;margin:6px 0 0;color:#d4d4d4;font-size:13px;line-height:1.45}
+#section-users .users-hero-art{margin-left:auto;color:rgba(255,207,0,.22);font-size:70px;text-shadow:0 0 20px rgba(255,215,0,.2)}
+#section-users .users-page-heading .page-actions{gap:10px;display:flex}
+#section-users .users-export,#section-users .users-credit{min-height:48px;min-width:0;padding:0 18px;border-radius:13px;font-size:13px;font-weight:900;letter-spacing:.35px}
+#section-users .users-export{border:1px solid #e4cf6b;color:#ffd91a;background:rgba(255,215,0,.035)}
+#section-users .users-credit{background:linear-gradient(100deg,#00df72,#00f08b);color:#001c0e;border:0;box-shadow:0 0 16px rgba(0,235,116,.17)}
+#section-users .users-panel{background:transparent;border:0;box-shadow:none;overflow:visible}
+#section-users .users-panel-header{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:0 0 13px;background:transparent;border:0}
+#section-users .users-panel-header .panel-title{display:none}
+#section-users .users-panel-header .search-box{width:100%;max-width:none;min-height:56px;border:1px solid #555d6b;border-radius:13px;background:linear-gradient(110deg,#08090c,#111318);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+#section-users .users-panel-header .search-box input{font-size:15px;min-height:54px}
+#section-users #users-table.card-grid{display:grid;grid-template-columns:1fr;gap:13px}
+#section-users .users-premium-card{padding:15px;border:1px solid rgba(255,211,0,.46);border-radius:19px;background:radial-gradient(ellipse at 100% 0%,rgba(255,190,0,.09),transparent 40%),linear-gradient(135deg,#0b0c0c,#101111 70%,#090909);box-shadow:0 0 13px rgba(255,215,0,.08),inset 0 0 18px rgba(255,215,0,.018)}
+#section-users .users-card-main{display:flex;gap:13px;align-items:flex-start;position:relative}
+#section-users .users-avatar{width:92px;height:100px;flex:0 0 92px;border:2px solid #f5d51b;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle,rgba(255,215,0,.22),#101010 70%);color:#ffdc20;font-size:35px;font-weight:900;box-shadow:0 0 12px rgba(255,215,0,.22)}
+#section-users .users-avatar img{width:100%;height:100%;object-fit:cover}
+#section-users .users-identity{min-width:0;flex:1;padding-right:0}
+#section-users .uc-top{align-items:center;flex-wrap:wrap;margin-bottom:7px}
+#section-users .uc-name{font-size:17px}
+#section-users .uc-row{font-size:12px;gap:7px;min-width:0;line-height:1.4;margin-top:7px;flex-wrap:wrap}
+#section-users .users-value{overflow-wrap:anywhere;min-width:0}
+#section-users .uc-icon{width:19px;text-align:center}
+#section-users .users-ign-icon{display:inline-grid;place-items:center;background:#9b16c8;color:#fff;border-radius:4px;font-size:10px;font-weight:900;height:19px}
+#section-users .users-ign{color:#43b4ff;font-weight:700}
+#section-users .uc-copy-btn{font-size:20px;line-height:1;color:#21a8ff}
+#section-users .users-level{position:absolute;right:0;top:0;border:1px solid rgba(255,215,0,.42);border-radius:8px;padding:5px 8px;color:#ffe02a;background:rgba(255,215,0,.08);font-size:11px;font-weight:900;white-space:nowrap}
+#section-users .users-balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
+#section-users .users-balance{display:flex;align-items:center;gap:10px;min-width:0;padding:10px;border:1px solid rgba(255,215,0,.32);border-radius:12px;background:linear-gradient(110deg,rgba(255,215,0,.07),rgba(0,0,0,.3))}
+#section-users .users-balance-icon{display:grid;place-items:center;flex:0 0 40px;width:40px;height:40px;border-radius:10px;background:rgba(255,215,0,.1);font-size:25px}
+#section-users .users-balance small{display:block;color:#b8c0ca;font-size:9px;font-weight:900;letter-spacing:.35px}
+#section-users .users-balance strong{display:block;margin-top:3px;color:#f4f4f4;font-size:14px;font-weight:900;overflow-wrap:anywhere}
+#section-users .users-premium-actions{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:8px;margin-top:12px;padding-top:11px;border-top:0}
+#section-users .users-premium-actions .btn{min-height:44px;border-radius:11px;font-size:12px;font-weight:900;letter-spacing:.25px}
+#section-users .users-view{border:1px solid #aeb5c1;color:#f0f2f6;background:#090a0c}
+#section-users .users-edit{border:1px solid #e4c51c;color:#ffd91a;background:rgba(255,215,0,.035)}
+#section-users .users-delete{border:1px solid #ff2345;color:#ff5369;background:linear-gradient(100deg,rgba(255,0,40,.13),rgba(70,0,12,.25))}
+@media(min-width:900px){#section-users #users-table.card-grid{grid-template-columns:1fr 1fr}#section-users .users-avatar{width:86px;height:92px;flex-basis:86px}}
+@media(max-width:520px){#section-users .users-page-heading{display:block}#section-users .users-page-heading .page-title{margin-bottom:13px}#section-users .users-page-heading .page-actions{display:grid;grid-template-columns:1fr 1fr}#section-users .users-export,#section-users .users-credit{padding:0 8px;font-size:11px;min-height:45px}#section-users .users-hero{gap:11px;padding:13px;min-height:88px}#section-users .users-hero-icon{width:57px;height:57px;flex-basis:57px;font-size:30px}#section-users .users-hero-art{font-size:43px}#section-users .users-hero p{font-size:11px}#section-users .users-premium-card{padding:12px}#section-users .users-avatar{width:70px;height:76px;flex-basis:70px;border-radius:12px}#section-users .uc-name{font-size:15px}#section-users .users-level{position:static;order:3;margin-left:auto;font-size:10px;padding:4px 6px}#section-users .users-card-main{gap:10px}#section-users .uc-row{font-size:11px}#section-users .users-balance{padding:8px;gap:7px}#section-users .users-balance-icon{width:31px;height:31px;flex-basis:31px;font-size:20px}#section-users .users-balance small{font-size:8px}#section-users .users-balance strong{font-size:12px}#section-users .users-premium-actions{grid-template-columns:1fr 1fr 1fr;gap:6px}#section-users .users-premium-actions .btn{font-size:10px;min-height:41px;padding:0 4px}}
+
 </style>
 <style id="premium-tournament-modal-fix">
 /* Compact, fixed-height tournament composer — no inner scrolling */
@@ -2493,19 +2541,20 @@ table { border-collapse: collapse; width: 100%; }
 
       <!-- ========== SECTION: USERS ========== -->
       <div class="section-page" id="section-users">
-        <div class="page-header">
-          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">⊞</span>Users Management</h1>
+        <div class="page-header users-page-heading">
+          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">♟</span>Users Management</h1>
           <div class="page-actions">
-            <button class="btn btn-outline btn-sm" onclick="exportUsersCSV()">↓ Export CSV</button>
-            <button class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#00c853,#00e676);border:none;color:#003d1a;font-weight:800;" onclick="openCreditDebit()">＋ Credit / Debit</button>
+            <button class="btn btn-outline btn-sm users-export" onclick="exportUsersCSV()">⇩ &nbsp; EXPORT CSV</button>
+            <button class="btn btn-primary btn-sm users-credit" onclick="openCreditDebit()">＋ &nbsp; CREDIT / DEBIT</button>
           </div>
-
-        <div class="panel">
-          <div class="panel-header">
+        </div>
+        <div class="users-hero"><div class="users-hero-icon">♟</div><div><h2>Users Management</h2><p>Manage all registered users, view details and take actions.</p></div><div class="users-hero-art">♛</div></div>
+        <div class="panel users-panel">
+          <div class="panel-header users-panel-header">
             <h3 class="panel-title">All Users</h3>
             <div class="search-box">
               <span class="search-box-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-              <input type="text" placeholder="Search users by name, email, IGN..." id="search-users">
+              <input type="text" placeholder="Search users by name, email or UID..." id="search-users">
             </div>
           </div>
           <div class="table-wrapper">
@@ -2538,17 +2587,11 @@ table { border-collapse: collapse; width: 100%; }
           <div class="page-actions">
             <button class="btn btn-primary btn-sm" id="create-tournament-btn">🏆 Create Tournament</button>
             <button class="btn btn-outline btn-sm" style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,140,0,0.08));border-color:var(--primary);color:var(--primary);font-weight:800;" id="bulk-create-btn">⚡ Bulk Match Create</button>
+            <button class="btn btn-outline btn-sm" style="background:linear-gradient(135deg,rgba(0,190,255,.15),rgba(0,80,180,.08));border-color:#28bfff;color:#71dcff;font-weight:900;" id="tournament-rules-btn">📖 Rules</button>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-header">
-            <h3 class="panel-title">All Tournaments</h3>
-            <div class="search-box">
-              <span class="search-box-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-              <input type="text" placeholder="Search tournaments..." id="search-tournaments">
-            </div>
-          </div>
           <div class="table-wrapper">
             <div id="tournaments-loading" class="table-loading">
               <div class="table-loading-spinner"></div>
@@ -3353,6 +3396,40 @@ table { border-collapse: collapse; width: 100%; }
     </div>
   </div>
 </div>
+
+<!-- ===== MODAL: TOURNAMENT RULES & REFUND POLICY ===== -->
+<div class="modal-overlay" id="modal-tournament-rules">
+  <div class="modal" style="width:calc(100% - 20px);max-width:850px;max-height:92vh;overflow:hidden;border:2px solid #ffd900;border-radius:22px;background:radial-gradient(ellipse at 80% 0%,rgba(255,205,0,.13),transparent 38%),#050505;box-shadow:0 0 32px rgba(255,210,0,.2);">
+    <div class="modal-header" style="padding:16px 18px;background:linear-gradient(100deg,rgba(255,215,0,.14),#080808);border-bottom:1px solid rgba(255,215,0,.35);">
+      <div><h3 class="modal-title" style="color:#ffd900;font-size:clamp(18px,3vw,25px);">📖 Tournament Rules</h3><small style="color:#b8c1d1;">Rules for all modes and refund policy</small></div>
+      <button class="modal-close" data-close-modal="modal-tournament-rules" aria-label="Close rules">✕</button>
+    </div>
+    <div class="modal-body" style="max-height:calc(92vh - 78px);overflow-y:auto;padding:14px;">
+      <div class="tr-rules-grid">
+        <section class="tr-rule-card tr-gold"><header>🪂 Battle Royale <small>All · Solo · Duo · Squad</small></header><ol><li>Use only your registered Free Fire UID and IGN.</li><li>Hacks, scripts, cheats, third-party tools, and emulators are not allowed.</li><li>Join only in the team format selected for the match (Solo, Duo, or Squad).</li><li>Room ID and password are shared by the admin when the match becomes live.</li><li>Lobby issues or technical problems must be reported to the admin promptly.</li><li>Rule violations may result in disqualification and forfeiture of rewards.</li><li>Admin result verification and final decisions are binding.</li></ol><div class="tr-scoring"><b>Scoring (when enabled)</b><span>☠️ Kill: +1 point</span><span>🏆 Booyah: +10 points</span><span>🥉 Top 3: +5 points</span><span>🏅 Top 5: +3 points</span></div></section>
+        <section class="tr-rule-card tr-red"><header>⚔️ Clash Squad <small>2 vs 2 · 4 vs 4 (1 vs 1 disabled)</small></header><ol><li>Only registered UID and IGN may be used.</li><li>No hacks, glitches, scripts, or unfair third-party tools.</li><li>The room is created and managed by the admin.</li><li>Players must follow the selected 2v2 or 4v4 team size and match settings.</li><li>Abuse, teaming violations, or unfair play may lead to disqualification or a ban.</li></ol></section>
+        <section class="tr-rule-card tr-green"><header>🐺 Lone Wolf <small>1 vs 1 · 2 vs 2</small></header><ol><li>Use your own registered UID and IGN.</li><li>Hacks, scripts, glitches, and third-party unfair tools are prohibited.</li><li>Room ID/password are provided by the admin when available.</li><li>Follow the selected 1v1 or 2v2 mode and match settings.</li><li>Any abuse or unfair play may result in disqualification.</li></ol></section>
+        <section class="tr-rule-card tr-purple"><header>🛡️ Refund Policy</header><ol><li>If the admin cancels a match, the full entry fee will be refunded.</li><li>If a match cannot start because of a confirmed technical issue, the admin will review and process the applicable refund.</li><li>Once a match has started, leaving voluntarily does not qualify for a refund.</li><li>Refunds, when approved, are returned to the applicable in-app wallet.</li><li>Cheating, abuse, or other rule violations are not eligible for a refund.</li><li>For disputes, contact support and provide relevant proof such as screenshots or video.</li></ol></section>
+      </div>
+      <div class="tr-important">ℹ️ <div><b>Important</b><br>Check match details before joining. Match-specific settings and admin announcements take precedence where applicable.</div></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;min-height:48px;" data-close-modal="modal-tournament-rules">Got it</button>
+    </div>
+  </div>
+</div>
+<style>
+#modal-tournament-rules .tr-rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#modal-tournament-rules .tr-rule-card{border:1px solid #514719;border-radius:15px;overflow:hidden;background:linear-gradient(145deg,rgba(255,215,0,.06),rgba(10,12,16,.96));}
+#modal-tournament-rules .tr-rule-card header{padding:13px 14px;font-size:16px;font-weight:900;color:#ffd900;background:linear-gradient(100deg,rgba(255,215,0,.12),transparent);border-bottom:1px solid rgba(255,215,0,.2)}
+#modal-tournament-rules .tr-rule-card header small{display:block;margin-top:4px;color:#aeb8ca;font-size:11px;font-weight:600}
+#modal-tournament-rules .tr-rule-card ol{margin:12px 14px 14px;padding-left:25px;color:#e1e5ee;font-size:12px;line-height:1.55}
+#modal-tournament-rules .tr-rule-card li{padding:3px 0 5px 3px}
+#modal-tournament-rules .tr-red{border-color:#842439}#modal-tournament-rules .tr-red header{color:#ff4968;background:linear-gradient(100deg,rgba(255,30,70,.13),transparent)}
+#modal-tournament-rules .tr-green{border-color:#176b4c}#modal-tournament-rules .tr-green header{color:#22e99a;background:linear-gradient(100deg,rgba(0,220,130,.12),transparent)}
+#modal-tournament-rules .tr-purple{border-color:#763c92}#modal-tournament-rules .tr-purple header{color:#df69ff;background:linear-gradient(100deg,rgba(190,40,255,.13),transparent)}
+#modal-tournament-rules .tr-scoring{display:flex;flex-wrap:wrap;gap:6px;padding:10px;margin:0 12px 12px;border-radius:10px;background:#090d14;border:1px solid #283244;font-size:10px;color:#dfe7f4}#modal-tournament-rules .tr-scoring b{width:100%;color:#ffd900;font-size:11px}#modal-tournament-rules .tr-scoring span{padding:5px 7px;background:#151b26;border-radius:6px}
+#modal-tournament-rules .tr-important{display:flex;gap:10px;align-items:flex-start;padding:13px;margin-top:12px;border:1px solid #14865b;border-radius:12px;background:rgba(0,190,110,.08);color:#22e99a;font-size:12px;line-height:1.5}#modal-tournament-rules .tr-important b{font-size:13px}
+@media(max-width:620px){#modal-tournament-rules .tr-rules-grid{grid-template-columns:1fr}#modal-tournament-rules .modal-body{padding:10px!important}#modal-tournament-rules .tr-rule-card header{font-size:15px}#modal-tournament-rules .tr-rule-card ol{font-size:12px}}
+</style>
 
 <!-- ===== MODAL: BULK MATCH CREATE ===== -->
 <div class="modal-overlay" id="modal-bulk-create">
@@ -4474,29 +4551,46 @@ function renderUsers(data) {
   showEmpty('users-empty',false); showCardGrid('users-table',true); showFooter('users-footer',true);
   document.getElementById('users-info').textContent = 'Showing '+filtered.length+' users';
   const balance = u => ((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0);
-  grid.innerHTML = filtered.map(u=>`
-    <div class="uc-card">
-      <div class="uc-top">
-        <div class="uc-name">${sanitize(u.displayName||'Player')}</div>
-        ${u.approved?'<span class="badge badge-success">✓ Approved</span>':'<span class="badge badge-warning">⏳ Pending</span>'}
+  grid.innerHTML = filtered.map(u=>{
+    const avatar = u.avatarUrl||u.avatar_url||u.photoURL||u.photoUrl||u.profileImage||u.profile_image||'';
+    const joined = u.createdAt ? new Date(typeof u.createdAt==='number'?u.createdAt:Date.parse(u.createdAt)||0).toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}) : '—';
+    const level = Number(u.level||u.xpLevel||u.xp_level||0);
+    const uidSafe = String(u.uid||'').replace(/'/g,'&#39;');
+    return `<div class="uc-card users-premium-card">
+      <div class="users-card-main">
+        <div class="users-avatar">${avatar?`<img src="${sanitize(avatar)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}<span style="${avatar?'display:none;':''}">${sanitize((u.displayName||'P').trim().charAt(0).toUpperCase())}</span></div>
+        <div class="users-identity">
+          <div class="uc-top"><div class="uc-name">${sanitize(u.displayName||'Player')}</div>${u.approved?'<span class="badge badge-success">✓ APPROVED</span>':'<span class="badge badge-warning">◷ PENDING</span>'}</div>
+          <div class="uc-row"><span class="uc-icon">✉️</span><span class="users-value">${sanitize(u.email||'—')}</span><button class="uc-copy-btn" onclick="copyToClipboard('${uidSafe}','UID')" title="Copy account UID">▢</button></div>
+          <div class="uc-row"><span class="uc-icon users-ign-icon">ID</span><span>IGN: <b class="users-ign">${sanitize(u.ign||'Not set')}</b></span>${u.ign?`<button class="uc-copy-btn" onclick="copyToClipboard('${String(u.ign).replace(/'/g,'&#39;')}','IGN')" title="Copy IGN">▢</button>`:''}</div>
+          <div class="uc-row"><span class="uc-icon">🎮</span><span>FF UID: <b class="uc-ffuid">${sanitize(u.ffuid||'Not set')}</b></span>${u.ffuid?`<button class="uc-copy-btn" onclick="copyToClipboard('${String(u.ffuid).replace(/'/g,'&#39;')}','FF UID')" title="Copy FF UID">▢</button>`:''}</div>
+          <div class="uc-row"><span class="uc-icon">◷</span><span>Joined: ${sanitize(joined)}</span></div>
+        </div>
+        ${level?`<span class="users-level">♛ Lv. ${level}</span>`:''}
       </div>
-      <div class="uc-row"><span class="uc-icon">📧</span><span style="word-break:break-all;">${sanitize(u.email||'-')}</span></div>
-      <div class="uc-row"><span class="uc-icon">🆔</span><span class="uc-uid">${sanitize((u.uid||'').slice(0,14))}${u.uid&&u.uid.length>14?'…':''}</span>
-        <button class="uc-copy-btn" onclick="copyToClipboard('${sanitize(u.uid||'')}','UID')" title="Copy UID"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-      </div>
-      <div class="uc-row"><span class="uc-icon">🎮</span>${u.ffuid?`<span class="uc-ffuid">${sanitize(u.ffuid)}</span>`:'<span class="uc-notset">Not Set</span>'} ${u.ign?'· '+sanitize(u.ign):''}</div>
-      <div class="uc-badges">
-        <span class="badge" style="background:rgba(255,215,0,0.1);color:var(--yellow);">◎ ${u.coins||0} Coins</span>
-        <span class="badge" style="background:rgba(255,255,255,0.06);color:#fff;">₹${balance(u)} Balance</span>
-      </div>
-      <div class="uc-actions">
-        <button class="btn btn-outline btn-xs" onclick="openEditUser('${u.uid}')">✎ Edit</button>
-        <button class="btn btn-danger btn-xs" onclick="deleteUser('${u.uid}','${sanitize(u.displayName||u.email||u.uid)}')">✕ Delete</button>
-      </div>
-    </div>`).join('');
+      <div class="users-balance-grid"><div class="users-balance"><span class="users-balance-icon">🪙</span><div><small>COIN BALANCE</small><strong>${Number(u.coins||0).toLocaleString('en-IN')} COINS</strong></div></div><div class="users-balance"><span class="users-balance-icon">👛</span><div><small>MONEY BALANCE</small><strong>₹${balance(u)}</strong></div></div></div>
+      <div class="uc-actions users-premium-actions"><button class="btn btn-outline btn-xs users-view" onclick="viewUser('${uidSafe}')">◉ &nbsp; VIEW</button><button class="btn btn-outline btn-xs users-edit" onclick="openEditUser('${uidSafe}')">✎ &nbsp; EDIT</button><button class="btn btn-danger btn-xs users-delete" onclick="deleteUser('${uidSafe}','${sanitize(u.displayName||u.email||u.uid)}')">▤ &nbsp; DELETE</button></div>
+    </div>`;
+  }).join('');
 }
 
 document.getElementById('search-users')?.addEventListener('input', ()=>renderUsers(usersData));
+
+async function viewUser(uid) {
+  try {
+    const snap = await db.ref('users/'+uid).once('value');
+    if (!snap.exists()) { toast('User not found', true); return; }
+    const u = snap.val() || {};
+    const money = ((u.realMoney?.deposited||0)+(u.realMoney?.winnings||0)+(u.realMoney?.bonus||0)).toFixed(0);
+    const details = [
+      'Name: '+(u.displayName||'Player'), 'Email: '+(u.email||'—'),
+      'IGN: '+(u.ign||'Not set'), 'FF UID: '+(u.ffuid||'Not set'),
+      'Account UID: '+uid, 'Status: '+(u.approved?'Approved':'Pending'),
+      'Coins: '+(u.coins||0), 'Money balance: ₹'+money
+    ].join('\n');
+    alert(details);
+  } catch(e) { toast('Could not load user details', true); }
+}
 
 async function openEditUser(uid) {
   const snap = await db.ref('users/'+uid).once('value');
@@ -4656,6 +4750,7 @@ const TIME_GAP_OPTIONS = [5,10,15,20,30,45,60,120];
 let _bulkFlow = null; // {step, config, matches:[]}
 
 document.getElementById('bulk-create-btn')?.addEventListener('click', ()=>openBulkCreate());
+document.getElementById('tournament-rules-btn')?.addEventListener('click', ()=>document.getElementById('modal-tournament-rules')?.classList.add('active'));
 document.getElementById('bulk-history-btn')?.addEventListener('click', ()=>openBulkHistory());
 
 async function openBulkCreate(){
@@ -4940,7 +5035,7 @@ async function viewBulkBatchMatches(batchId){
 
 const CATEGORY_MODES = {
   'Battle Royale': ['Solo','Duo','Squad'],
-  'Clash Squad': ['1v1','2v2','4v4'],
+  'Clash Squad': ['2v2','4v4'],
   'Lone Wolf': ['1v1','2v2']
 };
 function updateTournamentModeOptions(preselect){
@@ -5109,6 +5204,7 @@ document.getElementById('save-tournament-btn')?.addEventListener('click', async 
     entryType: document.getElementById('tournament-entry-type').value,
     entryFee: fee,
     prizePool: parseInt(document.getElementById('tournament-prize').value)||0,
+    prizeDistribution: _rankPrizeManual ? [1,2,3].map(i=>Math.max(0,Math.floor(Number(document.getElementById('tournament-prize-edit-'+i)?.value)||0))) : null,
     killReward: parseFloat(document.getElementById('tournament-kill-reward').value)||0,
     maxSlots: parseInt(document.getElementById('tournament-slots').value)||48,
     matchTime, status: computeStatus(matchTime),
