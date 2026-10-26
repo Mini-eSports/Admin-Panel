@@ -3406,26 +3406,18 @@ table { border-collapse: collapse; width: 100%; }
     </div>
     <div class="modal-body" style="max-height:calc(92vh - 78px);overflow-y:auto;padding:14px;">
       <div class="tr-rules-grid">
-        <section class="tr-rule-card tr-gold"><header>🪂 Battle Royale <small>Sub-categories: Solo · Duo · Squad</small></header><div class="tr-subcats"><span>SOLO</span><span>DUO</span><span>SQUAD</span></div><label class="tr-manual-label" for="tr-rules-br">Add Battle Royale rules</label><textarea id="tr-rules-br" class="tr-manual-rules" placeholder="Yahan Battle Royale ke rules manually likhein…"></textarea></section>
-        <section class="tr-rule-card tr-red"><header>⚔️ Clash Squad <small>Sub-categories: 2 vs 2 · 4 vs 4</small></header><div class="tr-subcats"><span>2 VS 2</span><span>4 VS 4</span></div><label class="tr-manual-label" for="tr-rules-cs">Add Clash Squad rules</label><textarea id="tr-rules-cs" class="tr-manual-rules" placeholder="Yahan Clash Squad ke rules manually likhein…"></textarea></section>
-        <section class="tr-rule-card tr-green"><header>🐺 Lone Wolf <small>Sub-categories: 1 vs 1 · 2 vs 2</small></header><div class="tr-subcats"><span>1 VS 1</span><span>2 VS 2</span></div><label class="tr-manual-label" for="tr-rules-lw">Add Lone Wolf rules</label><textarea id="tr-rules-lw" class="tr-manual-rules" placeholder="Yahan Lone Wolf ke rules manually likhein…"></textarea></section>
+        <section class="tr-rule-card tr-gold"><header>🪂 Battle Royale <small>All · Solo · Duo · Squad</small></header><ol><li>Use only your registered Free Fire UID and IGN.</li><li>Hacks, scripts, cheats, third-party tools, and emulators are not allowed.</li><li>Join only in the team format selected for the match (Solo, Duo, or Squad).</li><li>Room ID and password are shared by the admin when the match becomes live.</li><li>Lobby issues or technical problems must be reported to the admin promptly.</li><li>Rule violations may result in disqualification and forfeiture of rewards.</li><li>Admin result verification and final decisions are binding.</li></ol><div class="tr-scoring"><b>Scoring (when enabled)</b><span>☠️ Kill: +1 point</span><span>🏆 Booyah: +10 points</span><span>🥉 Top 3: +5 points</span><span>🏅 Top 5: +3 points</span></div></section>
+        <section class="tr-rule-card tr-red"><header>⚔️ Clash Squad <small>2 vs 2 · 4 vs 4 (1 vs 1 disabled)</small></header><ol><li>Only registered UID and IGN may be used.</li><li>No hacks, glitches, scripts, or unfair third-party tools.</li><li>The room is created and managed by the admin.</li><li>Players must follow the selected 2v2 or 4v4 team size and match settings.</li><li>Abuse, teaming violations, or unfair play may lead to disqualification or a ban.</li></ol></section>
+        <section class="tr-rule-card tr-green"><header>🐺 Lone Wolf <small>1 vs 1 · 2 vs 2</small></header><ol><li>Use your own registered UID and IGN.</li><li>Hacks, scripts, glitches, and third-party unfair tools are prohibited.</li><li>Room ID/password are provided by the admin when available.</li><li>Follow the selected 1v1 or 2v2 mode and match settings.</li><li>Any abuse or unfair play may result in disqualification.</li></ol></section>
+        <section class="tr-rule-card tr-purple"><header>🛡️ Refund Policy</header><ol><li>If the admin cancels a match, the full entry fee will be refunded.</li><li>If a match cannot start because of a confirmed technical issue, the admin will review and process the applicable refund.</li><li>Once a match has started, leaving voluntarily does not qualify for a refund.</li><li>Refunds, when approved, are returned to the applicable in-app wallet.</li><li>Cheating, abuse, or other rule violations are not eligible for a refund.</li><li>For disputes, contact support and provide relevant proof such as screenshots or video.</li></ol></section>
       </div>
-      <div class="tr-rule-card tr-purple" style="margin-top:12px;"><header>🛡️ Refund Policy</header><label class="tr-manual-label" for="tr-rules-refund">Add refund policy manually</label><textarea id="tr-rules-refund" class="tr-manual-rules" placeholder="Yahan refund policy manually likhein…"></textarea></div>
-      <div class="tr-important">ℹ️ <div><b>Important</b><br>Yahan rules manually likhkar Save Rules dabayein.</div></div>
-      <button type="button" id="tr-save-rules" class="btn btn-primary" style="width:100%;margin-top:12px;min-height:48px;">💾 Save Rules</button>
-      <button class="btn btn-outline" style="width:100%;margin-top:8px;min-height:44px;" data-close-modal="modal-tournament-rules">Close</button>
+      <div class="tr-important">ℹ️ <div><b>Important</b><br>Check match details before joining. Match-specific settings and admin announcements take precedence where applicable.</div></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;min-height:48px;" data-close-modal="modal-tournament-rules">Got it</button>
     </div>
   </div>
 </div>
 <style>
 #modal-tournament-rules .tr-rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-#modal-tournament-rules .tr-subcats{display:flex;flex-wrap:wrap;gap:7px;padding:12px 12px 0}
-#modal-tournament-rules .tr-subcats span{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;border:1px solid rgba(255,215,0,.45);border-radius:8px;background:#11131a;color:#ffe15a;font-weight:900;font-size:11px;letter-spacing:.4px}
-#modal-tournament-rules .tr-manual-label{display:block;margin:13px 12px 6px;color:#d9deea;font-size:12px;font-weight:800}
-#modal-tournament-rules .tr-manual-rules{display:block;width:calc(100% - 24px);min-height:105px;margin:0 12px 14px;padding:11px;border:1px solid #514719;border-radius:10px;background:#050608;color:#f2f4fa;font:inherit;font-size:13px;resize:vertical;box-sizing:border-box}
-#modal-tournament-rules .tr-manual-rules:focus{outline:1px solid #ffd900;border-color:#ffd900}
-@media(max-width:620px){#section-tournaments .page-header .page-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:100%}#section-tournaments .page-header .page-actions #create-tournament-btn{grid-column:1/-1}#section-tournaments .page-header .page-actions #bulk-create-btn,#section-tournaments .page-header .page-actions #tournament-rules-btn{width:100%;min-width:0;padding-left:7px;padding-right:7px;white-space:nowrap;font-size:clamp(10px,2.8vw,12px)}#section-tournaments .page-header .page-actions #tournament-rules-btn{grid-column:2;grid-row:2}#section-tournaments .page-header .page-actions #bulk-create-btn{grid-column:1;grid-row:2}}
-
 #modal-tournament-rules .tr-rule-card{border:1px solid #514719;border-radius:15px;overflow:hidden;background:linear-gradient(145deg,rgba(255,215,0,.06),rgba(10,12,16,.96));}
 #modal-tournament-rules .tr-rule-card header{padding:13px 14px;font-size:16px;font-weight:900;color:#ffd900;background:linear-gradient(100deg,rgba(255,215,0,.12),transparent);border-bottom:1px solid rgba(255,215,0,.2)}
 #modal-tournament-rules .tr-rule-card header small{display:block;margin-top:4px;color:#aeb8ca;font-size:11px;font-weight:600}
@@ -4759,17 +4751,6 @@ let _bulkFlow = null; // {step, config, matches:[]}
 
 document.getElementById('bulk-create-btn')?.addEventListener('click', ()=>openBulkCreate());
 document.getElementById('tournament-rules-btn')?.addEventListener('click', ()=>document.getElementById('modal-tournament-rules')?.classList.add('active'));
-// Editable tournament rules are stored in this admin browser (no database schema required).
-(()=>{
- const ids=['tr-rules-br','tr-rules-cs','tr-rules-lw','tr-rules-refund'];
- const key='mini_esports_manual_tournament_rules_v1';
- try{const saved=JSON.parse(localStorage.getItem(key)||'{}');ids.forEach(id=>{const el=document.getElementById(id);if(el&&typeof saved[id]==='string')el.value=saved[id];});}catch(e){console.warn('Could not load locally saved tournament rules',e);}
- document.getElementById('tr-save-rules')?.addEventListener('click',()=>{
-  const data={};ids.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
-  try{localStorage.setItem(key,JSON.stringify(data));const b=document.getElementById('tr-save-rules');if(b){const old=b.textContent;b.textContent='✓ Rules Saved on This Device';setTimeout(()=>b.textContent=old,1800);}}
-  catch(e){alert('Rules save nahi ho paye. Browser storage available nahi hai.');}
- });
-})();
 document.getElementById('bulk-history-btn')?.addEventListener('click', ()=>openBulkHistory());
 
 async function openBulkCreate(){
