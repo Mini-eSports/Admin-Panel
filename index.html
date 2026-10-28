@@ -2121,6 +2121,16 @@ table { border-collapse: collapse; width: 100%; }
 @media(max-height:700px){#modal-tournament .modal-header{padding-top:6px;padding-bottom:5px}#modal-tournament .modal-body{padding-top:5px;padding-bottom:5px;gap:3px}#modal-tournament .form-input,#modal-tournament .form-select{height:32px;min-height:32px}#modal-tournament .form-group{margin:0}#modal-tournament .rank-prize-preview{padding:3px 5px}#modal-tournament .modal-footer{padding-top:5px;padding-bottom:5px}#modal-tournament .tournament-type-option{min-height:32px!important}}
 @media(max-width:370px){#modal-tournament .form-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}#modal-tournament .form-label{font-size:8px}#modal-tournament .form-input,#modal-tournament .form-select{font-size:11px;padding-left:6px;padding-right:6px}}
 </style>
+
+<style id="tournaments-mobile-action-fix">
+@media (max-width: 620px){
+ #section-tournaments .page-header{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important;width:100%!important;}
+ #section-tournaments .page-title{font-size:clamp(22px,6vw,30px)!important;line-height:1.2!important;white-space:normal!important;margin:0!important;}
+ #section-tournaments .tournaments-action-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%!important;flex:none!important;justify-content:stretch!important;align-items:stretch!important;}
+ #section-tournaments .tournaments-action-row .btn{display:flex!important;justify-content:center!important;align-items:center!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;min-width:0!important;width:100%!important;min-height:52px!important;height:auto!important;padding:8px 5px!important;font-size:clamp(10px,2.7vw,13px)!important;line-height:1.25!important;letter-spacing:0!important;border-radius:12px!important;box-sizing:border-box!important;}
+}
+@media (min-width:621px){#section-tournaments .tournaments-action-row{display:flex;flex-wrap:wrap;gap:10px}.tournaments-action-row .btn{font-size:12px;padding:10px 14px}}
+</style>
 </head>
 <body>
 
