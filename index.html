@@ -3742,12 +3742,16 @@ class DbRef {
   async set(value) {
     const info = this._parseTable();
     if(info.isSettings) {
-      const {error} = await _sb.from('app_settings').upsert({key: info.id, value});
+      const {error} = await _sb.rpc('admin_set_app_setting', {
+        p_key: info.id, p_value: value, p_merge: false
+      });
       if(error) throw error;
       return;
     }
     if(info.isConfig && info.id) {
-      const {error} = await _sb.from('app_config').upsert({key: info.id, value});
+      const {error} = await _sb.rpc('admin_set_app_config', {
+        p_key: info.id, p_value: value
+      });
       if(error) throw error;
       return;
     }
@@ -3778,14 +3782,17 @@ class DbRef {
   async update(data) {
     const info = this._parseTable();
     if(info.isSettings) {
-      const {data:existing} = await _sb.from('app_settings').select('value').eq('key', info.id).single();
-      const merged = {...(existing?.value||{}), ...data};
-      const {error} = await _sb.from('app_settings').upsert({key: info.id, value: merged});
+      const {error} = await _sb.rpc('admin_set_app_setting', {
+        p_key: info.id, p_value: data, p_merge: true
+      });
       if(error) throw error;
       return;
     }
     if(info.isConfig && !info.id) {
-      for(const k in data) { const {error} = await _sb.from('app_config').upsert({key:k, value:data[k]}); if(error) throw error; }
+      const {error} = await _sb.rpc('admin_update_app_config', {
+        p_values: data
+      });
+      if(error) throw error;
       return;
     }
     if(info.table === 'notifications' && !info.id) {
