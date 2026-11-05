@@ -3977,8 +3977,10 @@ function toast(msg, isErr=false) {
   if(!container) return;
   const el = document.createElement('div');
   el.className = 'toast ' + (isErr ? 'error' : 'success');
-  el.innerHTML = `<span class="toast-icon">${isErr ? '✕' : '✓'}</span><span class="toast-msg">${msg}</span><button class="toast-close" onclick="this.parentElement.remove()">✕</button>`;
-  container.appendChild(el);
+  const icon = document.createElement('span'); icon.className='toast-icon'; icon.textContent=isErr?'✕':'✓';
+  const message = document.createElement('span'); message.className='toast-msg'; message.textContent=String(msg ?? '');
+  const close = document.createElement('button'); close.className='toast-close'; close.type='button'; close.textContent='✕'; close.setAttribute('aria-label','Close notification'); close.addEventListener('click',()=>el.remove());
+  el.append(icon,message,close); container.appendChild(el);
   setTimeout(() => {
     el.classList.add('removing');
     setTimeout(() => el.remove(), 300);
@@ -4002,7 +4004,7 @@ function statusBadge(s) {
     live:'<span class="badge badge-danger">● Live</span>',
     completed:'<span class="badge badge-info">✔ Done</span>'
   };
-  return map[s] || `<span class="badge">${s}</span>`;
+  return map[s] || `<span class="badge">${sanitize(s)}</span>`;
 }
 
 function sanitize(s) {
@@ -5433,43 +5435,15 @@ function renderJR() {
 
 async function approveJoin(id) {
   if(_processingReq[id]) return;
-  _processingReq[id] = true;
+  _processingReq[id]=true;
   try {
-    const {data: reqRow} = await _sb.from('join_requests').select('status').eq('id', id).single();
-    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadJoinRequests(); return; }
-    const snap = await db.ref('joinRequests/'+id).once('value');
-    if(!snap.exists()) return;
-    const r = snap.val();
-    const uid = r.uid, tid = r.tournamentId, type = r.entryType, feePerPlayer = r.entryFee||0;
-    const teamSize = r.teamSize||1;
-    const totalFee = feePerPlayer * teamSize; // captain pays for the whole team
-    const uSnap = await db.ref('users/'+uid).once('value');
-    if(!uSnap.exists()) { toast('User not found',true); return; }
-    const u = uSnap.val();
-    // Deduct fee (captain pays for entire team)
-    if(type==='paid') {
-      const dep = u.realMoney?.deposited||0;
-      if(dep < totalFee) { toast('Captain has insufficient balance',true); return; }
-      await db.ref('users/'+uid+'/realMoney/deposited').set(dep-totalFee);
-    } else {
-      if((u.coins||0) < totalFee) { toast('Captain has insufficient coins',true); return; }
-      await db.ref('users/'+uid+'/coins').set((u.coins||0)-totalFee);
-    }
-    // Increment slots by full team size
-    const tSnap = await db.ref('tournaments/'+tid+'/filledSlots').once('value');
-    await db.ref('tournaments/'+tid+'/filledSlots').set((tSnap.val()||0)+teamSize);
-    await db.ref('joinRequests/'+id).update({status:'approved'});
-    // Award participation XP to every player on the team (captain + members), one-time per tournament
-    try {
-      const { data: roster } = await _sb.from('match_team_members').select('uid').eq('join_request_id', id);
-      const xpAmount = type==='paid' ? 10 : 5;
-      for(const p of (roster||[])) {
-        await _sb.rpc('award_xp', { p_uid: p.uid, p_tournament_id: tid, p_reason: 'participation', p_amount: xpAmount });
-      }
-    } catch(xpErr) { console.error('XP award error', xpErr); }
-    await sendNotifToUser(uid,'Join Request Approved! ✓','Your team\'s request to join '+sanitize(r.tournamentName||'the tournament')+' has been approved ('+teamSize+' player'+(teamSize>1?'s':'')+'). Good luck!');
+    const {data,error}=await _sb.rpc('admin_approve_tournament_join',{p_join_request_id:id});
+    if(error) throw error;
+    if(!data?.success) throw new Error('Join approval was not confirmed.');
+    try { await sendNotifToUser(data.uid,'Join Request Approved! ✓',"Your team's request to join the tournament has been approved. Good luck!"); }
+    catch(e){ console.error('Join approved but notification failed',e); }
     toast('Join approved!'); loadJoinRequests();
-  } catch(e) { toast('Failed: '+e.message,true); }
+  } catch(e){ toast('Failed: '+(e.message||'Join approval failed'),true); }
   finally { delete _processingReq[id]; }
 }
 
@@ -5576,53 +5550,33 @@ function renderWalletWithdraw() {
 }
 
 async function approveAddMoney(id, uid, amount) {
-  if(_processingReq[id]) return;
-  _processingReq[id] = true;
+  if(_processingReq[id]) return; _processingReq[id]=true;
   try {
-    // Re-check status is still pending to prevent double-credit from double-click/race
-    const {data: reqRow} = await _sb.from('add_money_requests').select('status').eq('id', id).single();
-    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
-    const ref = db.ref('users/'+uid+'/realMoney/deposited');
-    const snap = await ref.once('value');
-    await ref.set((snap.val()||0)+amount);
-    await db.ref('addMoneyRequests/'+id).update({status:'approved', approvedAt: Date.now()});
-    await sendNotifToUser(uid,'💰 Money Added!','₹'+amount+' has been added to your wallet. Happy Gaming!');
-    await logAudit('approve_add_money', 'Approved ₹'+amount+' for user '+uid);
-    toast('✓ Add money approved!');
-    loadWalletRequests();
-  } catch(e) { toast('Failed: '+e.message, true); }
-  finally { delete _processingReq[id]; }
+    const {data,error}=await _sb.rpc('admin_process_wallet_request',{p_request_id:id,p_request_type:'add_money',p_action:'approve'});
+    if(error) throw error; if(!data?.success) throw new Error('Approval was not confirmed.');
+    try { await sendNotifToUser(uid,'💰 Money Added!','₹'+amount+' has been added to your wallet.'); } catch(e){console.error(e);}
+    toast('Add money approved!'); loadWalletRequests();
+  } catch(e){toast('Failed: '+e.message,true);} finally{delete _processingReq[id];}
 }
 
 async function approveWithdraw(id, uid, amount) {
-  if(_processingReq[id]) return;
-  _processingReq[id] = true;
+  if(_processingReq[id]) return; _processingReq[id]=true;
   try {
-    const {data: reqRow} = await _sb.from('withdraw_requests').select('status').eq('id', id).single();
-    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
-    const snap = await db.ref('users/'+uid+'/realMoney/winnings').once('value');
-    const win = snap.val()||0;
-    if(win < amount) { toast('Insufficient winnings balance',true); return; }
-    await db.ref('users/'+uid+'/realMoney/winnings').set(win-amount);
-    await db.ref('withdrawRequests/'+id).update({status:'approved'});
-    await sendNotifToUser(uid,'Withdrawal Approved! ₹','₹'+amount+' withdrawal has been processed.');
+    const {data,error}=await _sb.rpc('admin_process_wallet_request',{p_request_id:id,p_request_type:'withdraw',p_action:'approve'});
+    if(error) throw error; if(!data?.success) throw new Error('Approval was not confirmed.');
+    try { await sendNotifToUser(uid,'Withdrawal Approved!','₹'+amount+' withdrawal has been approved.'); } catch(e){console.error(e);}
     toast('Withdrawal approved!'); loadWalletRequests();
-  } catch(e) { toast('Failed',true); }
-  finally { delete _processingReq[id]; }
+  } catch(e){toast('Failed: '+e.message,true);} finally{delete _processingReq[id];}
 }
 
 async function rejectWallet(id, path) {
-  if(_processingReq[id]) return;
-  _processingReq[id] = true;
+  if(_processingReq[id]) return; _processingReq[id]=true;
   try {
-    const pathMap={'addMoneyRequests':'add_money_requests','withdrawRequests':'withdraw_requests'};
-    const table = pathMap[path]||path;
-    const {data: reqRow} = await _sb.from(table).select('status').eq('id', id).single();
-    if(reqRow?.status !== 'pending') { toast('This request was already processed.', true); loadWalletRequests(); return; }
-    await _sb.from(table).update({status:'rejected'}).eq('id', id);
-    toast('Rejected'); loadWalletRequests();
-  } catch(e) { toast('Failed',true); }
-  finally { delete _processingReq[id]; }
+    const requestType=path==='addMoneyRequests'?'add_money':'withdraw';
+    const {data,error}=await _sb.rpc('admin_process_wallet_request',{p_request_id:id,p_request_type:requestType,p_action:'reject'});
+    if(error) throw error; if(!data?.success) throw new Error('Rejection was not confirmed.');
+    toast('Request rejected.'); loadWalletRequests();
+  } catch(e){toast('Failed: '+e.message,true);} finally{delete _processingReq[id];}
 }
 
 // Wallet tabs
@@ -5761,65 +5715,30 @@ function checkDuplicateRanks(){
 let _submittingResults = false;
 document.getElementById('submit-results-btn')?.addEventListener('click', async ()=>{
   if(_submittingResults) return;
-  const tid = document.getElementById('match-result-tournament-select').value;
-  if(!tid) { toast('Select a tournament first',true); return; }
-  const playersRaw = document.getElementById('match-results-table').dataset.players;
-  if(!playersRaw) return;
-  const players = JSON.parse(playersRaw);
-  const prizePool = parseFloat(document.getElementById('match-results-table').dataset.prizePool)||0;
-  const killReward = parseFloat(document.getElementById('match-results-table').dataset.killReward)||0;
-
-  // Block submission if two players share the same rank
-  const seenRanks = {};
-  for(const p of players) {
-    const rank = document.getElementById('rank-'+p.uid)?.value;
-    if(rank) { if(seenRanks[rank]) { toast('Two players have the same rank. Fix before submitting.',true); return; } seenRanks[rank]=true; }
+  const tid=document.getElementById('match-result-tournament-select').value;
+  if(!tid){toast('Select a tournament first',true);return;}
+  const playersRaw=document.getElementById('match-results-table').dataset.players;
+  if(!playersRaw){toast('Load tournament participants first.',true);return;}
+  let players; try{players=JSON.parse(playersRaw);}catch(e){toast('Participant data is invalid.',true);return;}
+  const seenRanks=new Set(),results=[];
+  for(const p of players){
+    const killsRaw=document.getElementById('kills-'+p.uid)?.value??'0';
+    const rankRaw=document.getElementById('rank-'+p.uid)?.value??'';
+    if(!/^\d{1,4}$/.test(String(killsRaw))){toast('Kills must be a whole number from 0 to 9999.',true);return;}
+    const kills=Number(killsRaw),rank=rankRaw===''?null:Number(rankRaw);
+    if(rank!==null && (!Number.isInteger(rank)||rank<1||rank>3)){toast('Rank must be 1, 2, 3 or blank.',true);return;}
+    if(rank!==null&&seenRanks.has(rank)){toast('Two players have the same rank.',true);return;}
+    if(rank!==null)seenRanks.add(rank);
+    results.push({uid:p.uid,kills,rank});
   }
-
-  const btn = document.getElementById('submit-results-btn');
-  const origHTML = btn.innerHTML;
-  _submittingResults = true;
-  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Submitting...';
-  try {
-    // Re-check results weren't already submitted (prevents double-credit on double-click/race)
-    const tSnap = await db.ref('tournaments/'+tid).once('value');
-    if(tSnap.val()?.resultSubmitted) { toast('Results were already submitted for this tournament.', true); return; }
-    for(const p of players) {
-      const kills = parseInt(document.getElementById('kills-'+p.uid)?.value)||0;
-      const rank = parseInt(document.getElementById('rank-'+p.uid)?.value)||0;
-      const reward = rewardForRank(rank, prizePool) + (kills*killReward);
-      const uSnap = await db.ref('users/'+p.uid).once('value');
-      if(!uSnap.exists()) continue;
-      const u = uSnap.val();
-      await db.ref('users/'+p.uid).update({
-        'stats/kills': (u.stats?.kills||0)+kills,
-        'stats/wins': (u.stats?.wins||0)+(rank===1?1:0),
-        'stats/matches': (u.stats?.matches||0)+1,
-        'stats/earnings': (u.stats?.earnings||0)+reward,
-        'realMoney/winnings': (u.realMoney?.winnings||0)+reward
-      });
-      await _sb.from('match_results').insert({
-        id: crypto.randomUUID(), tournament_id: tid, uid: p.uid, kills, rank: rank||null, reward
-      });
-      // Award completion/win/top3 XP bonuses to the WHOLE team (captain + members), not just the captain
-      try {
-        const { data: roster } = await _sb.from('match_team_members').select('uid').eq('join_request_id', p.id || '');
-        const teamUids = (roster && roster.length) ? roster.map(m=>m.uid) : [p.uid];
-        for(const memberUid of teamUids) {
-          await _sb.rpc('award_xp', { p_uid: memberUid, p_tournament_id: tid, p_reason: 'completion', p_amount: 5 });
-          if(rank===1) await _sb.rpc('award_xp', { p_uid: memberUid, p_tournament_id: tid, p_reason: 'win', p_amount: 10 });
-          if(rank===1||rank===2||rank===3) await _sb.rpc('award_xp', { p_uid: memberUid, p_tournament_id: tid, p_reason: 'top3', p_amount: 5 });
-        }
-      } catch(xpErr) { console.error('XP award error', xpErr); }
-      if(reward>0) {
-        const rankLabel = {1:'🥇 1st Place',2:'🥈 2nd Place',3:'🥉 3rd Place'}[rank]||'';
-        await sendNotifToUser(p.uid,'Match Result ★','You finished '+rankLabel+' and earned ₹'+reward+' ('+kills+' kills)!');
-      }
-    }
-    await db.ref('tournaments/'+tid).update({resultSubmitted:true, endedAt: Date.now()});
-    toast('Results submitted!'); loadMatchResults();
-  } catch(e) { toast('Failed: '+e.message,true); }
-  finally { _submittingResults = false; btn.disabled = false; btn.innerHTML = origHTML; }
+  const btn=document.getElementById('submit-results-btn'),origHTML=btn.innerHTML;
+  _submittingResults=true;btn.disabled=true;btn.textContent='Submitting...';
+  try{
+    const {data,error}=await _sb.rpc('admin_submit_match_results',{p_tournament_id:tid,p_results:results});
+    if(error)throw error;if(!data?.success)throw new Error('Results submission was not confirmed.');
+    toast('Results submitted!');loadMatchResults();
+  }catch(e){toast('Failed: '+(e.message||'Could not submit results'),true);}
+  finally{_submittingResults=false;btn.disabled=false;btn.innerHTML=origHTML;}
 });
 
 // ═══════════════════════════════════════════
@@ -6326,32 +6245,21 @@ async function loadReferrals() {
 
 async function approveReferral(id, uid) {
   try {
-    const { data, error } = await _sb.rpc('admin_approve_referral', {
-      p_referral_id: id
-    });
-    if (error) throw error;
-    if (!data || data.success !== true || !data.uid) {
-      throw new Error('Referral approval did not return a successful result.');
-    }
-    // Notification is intentionally sent only after the atomic database transaction succeeds.
-    try {
-      await sendNotifToUser(data.uid, 'Referral Bonus!', 'Your refer code was approved! +10 coins added.');
-    } catch (notificationError) {
-      console.error('Referral approved, but notification failed:', notificationError);
-      toast('Referral approved; notification could not be sent.', true);
-      loadReferrals();
-      return;
-    }
-    toast('Referral approved! +10 coins given.');
-    loadReferrals();
-  } catch(e) { toast('Failed: '+(e.message||'Referral approval failed'), true); }
+    const {data,error}=await _sb.rpc('admin_approve_referral',{p_referral_id:id});
+    if(error) throw error;
+    if(!data || data.success!==true) throw new Error('Referral approval was not confirmed.');
+    try { await sendNotifToUser(uid,'Referral Bonus!','Your referral was approved. +' + Number(data.referrer_coins||0) + ' coins added.'); }
+    catch(e){console.error('Referral notification failed',e);}
+    toast('Referral approved!'); loadReferrals();
+  } catch(e){toast('Failed: '+(e.message||'Referral approval failed'),true);}
 }
 
 async function rejectReferral(id) {
-  await db.ref('referrals/'+id).update({status:'rejected'});
-  await logAudit('reject_referral', 'Referral '+id+' rejected');
-  toast('Referral rejected.');
-  loadReferrals();
+  try {
+    const {data,error}=await _sb.rpc('admin_reject_referral',{p_referral_id:id});
+    if(error) throw error; if(!data?.success) throw new Error('Referral rejection was not confirmed.');
+    toast('Referral rejected.'); loadReferrals();
+  } catch(e){toast('Failed: '+e.message,true);}
 }
 
 // ═══════════════════════════════════════════
