@@ -3333,7 +3333,7 @@ table { border-collapse: collapse; width: 100%; }
           <label class="form-label">🪙 ENTRY TYPE *</label>
           <select class="form-select" id="tournament-entry-type">
             <option value="paid">Paid (₹)</option>
-            <option value="coin">Coin (🪙)</option>
+            <option value="coins">Coin (🪙)</option>
           </select>
         </div>
       </div>
@@ -3670,42 +3670,50 @@ class DbRef {
     const info = this._parseTable();
     try {
       if(info.isSettings) {
-        const {data} = await _sb.from('app_settings').select('value').eq('key', info.id).single();
+        const {data,error}=await _sb.from('app_settings').select('value').eq('key', info.id).maybeSingle();
+        if(error) throw error;
         return { exists:()=>!!data, val:()=>data?data.value:null };
       }
       if(info.isConfig) {
         if(info.id) {
-          const {data} = await _sb.from('app_config').select('value').eq('key', info.id).single();
+          const {data,error}=await _sb.from('app_config').select('value').eq('key', info.id).maybeSingle();
+          if(error) throw error;
           return { exists:()=>!!data, val:()=>data?data.value:null };
         } else {
-          const {data} = await _sb.from('app_config').select('*');
+          const {data,error}=await _sb.from('app_config').select('*');
+          if(error) throw error;
           const obj = {};
           (data||[]).forEach(r=>{ obj[r.key]=r.value; });
           return { exists:()=>Object.keys(obj).length>0, val:()=>obj, forEach:(cb)=>{ (data||[]).forEach(r=>cb({key:r.key, val:()=>r.value, exists:()=>true})); } };
         }
       }
       if(info.isGlobal) {
-        const {data} = await _sb.from('notifications').select('*').eq('is_global', true).order('created_at', {ascending:false});
+        const {data,error}=await _sb.from('notifications').select('*').eq('is_global', true).order('created_at', {ascending:false});
+        if(error) throw error;
         return makeSnap(data||[]);
       }
       if(info.uid && info.table==='notifications') {
-        const {data} = await _sb.from('notifications').select('*').eq('uid', info.uid).order('created_at', {ascending:false});
+        const {data,error}=await _sb.from('notifications').select('*').eq('uid', info.uid).order('created_at', {ascending:false});
+        if(error) throw error;
         return makeSnap(data||[]);
       }
       if(!info.id) {
         if(this._orderChild) {
-          const {data} = await _sb.from(info.table).select('*').order(toSnake({[this._orderChild]:''}) ? Object.keys(toSnake({[this._orderChild]:''}))[0] : this._orderChild);
+          const {data,error}=await _sb.from(info.table).select('*').order(toSnake({[this._orderChild]:''}) ? Object.keys(toSnake({[this._orderChild]:''}))[0] : this._orderChild);
+          if(error) throw error;
           let rows = data||[];
           if(this._equalTo !== undefined) rows = rows.filter(r => r[Object.keys(toSnake({[this._orderChild]:''}))[0]] == this._equalTo);
           if(this._limitToLastN) rows = rows.slice(-this._limitToLastN);
           return makeSnap(rows);
         }
-        const {data} = await _sb.from(info.table).select('*').order('created_at', {ascending:false}).limit(this._limitToLastN||500);
+        const {data,error}=await _sb.from(info.table).select('*').order('created_at', {ascending:false}).limit(this._limitToLastN||500);
+        if(error) throw error;
         return makeSnap(data||[]);
       }
       // Single record - handle nested path
       if(info.subPath) {
-        const {data} = await _sb.from(info.table).select('*').eq('id', info.id).single();
+        const {data,error}=await _sb.from(info.table).select('*').eq('id', info.id).maybeSingle();
+        if(error) throw error;
         if(!data) return {exists:()=>false, val:()=>null};
         const camel = toCamel(data);
         const parts = info.subPath.split('/');
@@ -3713,26 +3721,26 @@ class DbRef {
         for(const p of parts) val = val?.[p];
         return {exists:()=>val!=null, val:()=>val};
       }
-      const {data} = await _sb.from(info.table).select('*').eq('id', info.id).single();
+      const {data,error}=await _sb.from(info.table).select('*').eq('id', info.id).maybeSingle();
+      if(error) throw error;
       if(!data) return {exists:()=>false, val:()=>null};
       return {exists:()=>true, val:()=>toCamel(data), key: info.id};
-    } catch(e) {
-      console.error('db.once error:', e, 'path:', this.path);
-      return {exists:()=>false, val:()=>null, forEach:()=>{}};
-    }
+    } catch(e) { console.error('db.once error:', e, 'path:', this.path); throw e; }
   }
-
   on(type, callback) {
-    // Initial load
-    this.once(type).then(snap => callback(snap));
-    // Poll every 8 seconds for real-time feel
-    const interval = setInterval(() => this.once(type).then(snap => callback(snap)), 8000);
-    this._listeners.push(interval);
+    if (this._listeners.some(x => x.callback === callback)) return callback;
+    const deliver = () => this.once(type).then(snap => callback(snap)).catch(err => console.error('DbRef listener failed:', this.path, err));
+    deliver();
+    const interval = setInterval(deliver, 8000);
+    this._listeners.push({interval, callback});
     return callback;
   }
 
   off(type, cb) {
-    this._listeners.forEach(i => clearInterval(i));
+    this._listeners = this._listeners.filter(x => {
+      if (!cb || x.callback === cb) { clearInterval(x.interval); return false; }
+      return true;
+    });
   }
 
   orderByChild(field) { this._orderChild = field; return this; }
@@ -4789,7 +4797,7 @@ async function renderBulkStep1(){
       <div style="${cardStyle}"><label style="${labelStyle}"># Number of Matches <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-count" min="1" max="100" value="${c.count}"><div style="font-size:11px;color:#8c9bb0;margin-top:5px;">Maximum 100 per batch</div></div>
       <div style="${cardStyle}"><label style="${labelStyle}">🎮 Game Mode <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-game-mode"><option ${c.gameMode==='Solo'?'selected':''}>Solo</option><option ${c.gameMode==='Duo'?'selected':''}>Duo</option><option ${c.gameMode==='Squad'?'selected':''}>Squad</option></select></div>
       <div style="${cardStyle}"><label style="${labelStyle}">🗺️ Map <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-map"><option ${c.map==='Bermuda'?'selected':''}>Bermuda</option><option ${c.map==='Purgatory'?'selected':''}>Purgatory</option><option ${c.map==='Kalahari'?'selected':''}>Kalahari</option><option ${c.map==='Alpine'?'selected':''}>Alpine</option></select></div>
-      <div style="${cardStyle}"><label style="${labelStyle}">🪙 Entry Type <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-entry-type"><option value="paid" ${c.entryType==='paid'?'selected':''}>Paid (₹)</option><option value="coin" ${c.entryType==='coin'?'selected':''}>Free (Coins)</option></select></div>
+      <div style="${cardStyle}"><label style="${labelStyle}">🪙 Entry Type <span style="color:#ffd900">*</span></label><select class="form-select" style="${fieldStyle}width:100%;" id="bulk-entry-type"><option value="paid" ${c.entryType==='paid'?'selected':''}>Paid (₹)</option><option value="coins" ${c.entryType==='coins'||c.entryType==='coin'?'selected':''}>Free (Coins)</option></select></div>
       <div style="${cardStyle}"><label style="${labelStyle}">₹ Entry Fee <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-entry-fee" min="0" value="${c.entryFee}"></div>
       <div style="${cardStyle}"><label style="${labelStyle}">💀 Per Kill Reward (₹)</label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-kill-reward" min="0" value="${c.perKillReward||2}"></div>
       <div style="${cardStyle}"><label style="${labelStyle}">🏆 Total Prize Pool (per match) <span style="color:#ffd900">*</span></label><input type="number" class="form-input" style="${fieldStyle}width:100%;" id="bulk-prize-pool" min="0" value="${c.prizePool}"></div>
@@ -4901,7 +4909,7 @@ function renderBulkStep2(){
 function editBulkRow(i){
   const m = _bulkFlow.matches[i];
   const dt = new Date(m.matchTime);
-  const dateVal = dt.toISOString().slice(0,10);
+  const dateVal = [dt.getFullYear(),String(dt.getMonth()+1).padStart(2,'0'),String(dt.getDate()).padStart(2,'0')].join('-');
   const timeVal = dt.toTimeString().slice(0,5);
   document.getElementById('bulk-create-body').insertAdjacentHTML('beforeend', `
     <div class="modal-overlay active" id="modal-bulk-edit-row" style="z-index:2000;">
@@ -5105,7 +5113,7 @@ async function openEditTournament(id) {
   document.getElementById('tournament-category').value = t.matchCategory||'Battle Royale';
   updateTournamentModeOptions(t.gameMode||'Solo');
   document.getElementById('tournament-map').value = [...document.getElementById('tournament-map').options].find(o=>o.value.toLowerCase()==String(t.map||'Bermuda').toLowerCase())?.value || 'bermuda';
-  document.getElementById('tournament-entry-type').value = t.entryType||'paid';
+  document.getElementById('tournament-entry-type').value = (t.entryType==='coin'?'coins':(t.entryType||'paid'));
   document.getElementById('tournament-entry-fee').value = t.entryFee||0;
   document.getElementById('tournament-prize').value = t.prizePool||0;
   updatePrizePreview();
