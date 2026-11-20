@@ -3570,7 +3570,7 @@ const TABLE_MAP = {
 function toSnake(obj) {
   const map = {
     displayName:'display_name', tournamentId:'tournament_id', tournamentName:'tournament_name',
-    entryType:'entry_type', entryFee:'entry_fee', prizePool:'prize_pool', maxSlots:'max_slots',
+    entryType:'entry_type', entryFee:'entry_fee', prizePool:'prize_pool', prizeDistribution:'prize_distribution', maxSlots:'max_slots',
     filledSlots:'filled_slots', matchTime:'match_time', roomId:'room_id', roomPassword:'room_password',
     roomLocked:'room_locked', isSpecial:'is_special', specialType:'special_type', gameMode:'game_mode', createdAt:'created_at', matchCategory:'match_category', killReward:'kill_reward',
     updatedAt:'updated_at', approvedAt:'approved_at', usedBy:'used_by', usedAt:'used_at',
@@ -3597,7 +3597,7 @@ function toCamel(obj) {
   if(!obj) return obj;
   const map = {
     display_name:'displayName', tournament_id:'tournamentId', tournament_name:'tournamentName',
-    entry_type:'entryType', entry_fee:'entryFee', prize_pool:'prizePool', max_slots:'maxSlots',
+    entry_type:'entryType', entry_fee:'entryFee', prize_pool:'prizePool', prize_distribution:'prizeDistribution', max_slots:'maxSlots',
     filled_slots:'filledSlots', match_time:'matchTime', room_id:'roomId', room_password:'roomPassword',
     room_locked:'roomLocked', is_special:'isSpecial', special_type:'specialType', game_mode:'gameMode', created_at:'createdAt', match_category:'matchCategory', kill_reward:'killReward',
     updated_at:'updatedAt', approved_at:'approvedAt', used_by:'usedBy', used_at:'usedAt',
