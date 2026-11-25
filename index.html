@@ -2131,6 +2131,132 @@ table { border-collapse: collapse; width: 100%; }
 }
 @media (min-width:621px){#section-tournaments .tournaments-action-row{display:flex;flex-wrap:wrap;gap:10px}.tournaments-action-row .btn{font-size:12px;padding:10px 14px}}
 </style>
+
+<style id="referral-management-premium">
+#section-referral-management{--ref-gold:#ffd51b;--ref-line:rgba(255,190,0,.48);--ref-muted:#aeb0b7}
+#section-referral-management .referral-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:2px 0 18px;padding:12px 14px;border:1px solid rgba(255,204,0,.26);border-radius:17px;background:radial-gradient(ellipse at 12% 50%,rgba(255,191,0,.13),transparent 40%),linear-gradient(110deg,#0c0b07,#080808 65%,#151107);box-shadow:0 0 18px rgba(255,190,0,.09),inset 0 0 20px rgba(255,190,0,.025)}
+#section-referral-management .referral-heading{display:flex;align-items:center;gap:13px;min-width:0}
+#section-referral-management .referral-hero-icon{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border:1px solid #d7a900;border-radius:14px;background:linear-gradient(145deg,rgba(255,210,0,.22),#080808);color:#ffd51b;font-size:31px;text-shadow:0 0 14px #ffcf00;box-shadow:0 0 15px rgba(255,204,0,.18)}
+#section-referral-management .referral-heading-copy{min-width:0}
+#section-referral-management .referral-heading h1{margin:0;color:#f5f5f5;font-size:clamp(19px,2.7vw,29px);font-weight:900;letter-spacing:-.45px;line-height:1.15}
+#section-referral-management .referral-heading h1 span{color:var(--ref-gold);text-shadow:0 0 12px rgba(255,208,0,.25)}
+#section-referral-management .referral-heading p{margin:6px 0 0;color:#b9bbc2;font-size:12px;line-height:1.35}
+#section-referral-management .referral-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:0 0 auto}
+#section-referral-management .referral-total-card,#section-referral-management .referral-filter{height:62px;min-width:164px;display:flex;align-items:center;gap:11px;padding:8px 14px;border:1px solid #d7a900;border-radius:14px;background:linear-gradient(120deg,rgba(255,197,0,.12),rgba(0,0,0,.92));box-shadow:0 0 12px rgba(255,191,0,.15),inset 0 0 12px rgba(255,191,0,.035);box-sizing:border-box}
+#section-referral-management .referral-total-icon{font-size:29px;color:#ffd21a;text-shadow:0 0 12px #e9b500}
+#section-referral-management .referral-total-copy{display:flex;flex-direction:column;gap:1px;min-width:0}
+#section-referral-management .referral-total-copy small{font-size:11px;color:#e0e0e0;white-space:nowrap}
+#section-referral-management .referral-total-copy strong{font-size:23px;line-height:1.05;color:#fff;font-weight:900;font-variant-numeric:tabular-nums}
+#section-referral-management .referral-filter{min-width:150px;gap:8px;color:#ffd21a;font-size:25px}
+#section-referral-management .referral-filter select{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f4f4f4;font-size:13px;font-weight:800;appearance:auto}
+#section-referral-management .referral-filter option{background:#101010;color:#fff}
+#section-referral-management .referral-refresh{width:46px;height:46px;flex:0 0 46px;border:1px solid #d7a900;border-radius:12px;background:rgba(255,205,0,.07);color:#ffda20;font-size:28px;line-height:1;box-shadow:0 0 12px rgba(255,190,0,.12)}
+#section-referral-management .referral-panel{overflow:hidden;padding:12px;border:1px solid rgba(255,195,0,.76);border-radius:22px;background:radial-gradient(ellipse at 50% 0%,rgba(255,185,0,.08),transparent 55%),linear-gradient(145deg,#0b0b09,#030303 65%,#0c0a04);box-shadow:0 0 0 1px rgba(255,205,0,.12),0 0 23px rgba(255,190,0,.22),inset 0 0 22px rgba(255,190,0,.045)}
+#section-referral-management .referral-desktop-table-wrap{width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+#section-referral-management .referral-data-table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0 7px;color:#f4f4f4}
+#section-referral-management .referral-data-table th{padding:9px 12px;color:#ffda23;text-align:center;font-size:13px;font-weight:900;border-right:1px solid rgba(255,193,0,.35);white-space:nowrap}
+#section-referral-management .referral-data-table th:last-child{border-right:0}
+#section-referral-management .referral-data-table td{padding:11px 12px;background:linear-gradient(100deg,rgba(255,190,0,.035),rgba(0,0,0,.82));border-top:1px solid rgba(255,180,0,.43);border-bottom:1px solid rgba(255,180,0,.43);vertical-align:middle}
+#section-referral-management .referral-data-table td:first-child{border-left:1px solid rgba(255,180,0,.43);border-radius:16px 0 0 16px}
+#section-referral-management .referral-data-table td:last-child{border-right:1px solid rgba(255,180,0,.43);border-radius:0 16px 16px 0}
+#section-referral-management .referral-index{display:grid;place-items:center;width:34px;height:34px;margin:auto;border:1px solid #b98400;border-radius:10px;color:#fff;font-size:16px;font-weight:900;background:#090909}
+#section-referral-management .referral-person{display:flex;align-items:center;gap:10px;min-width:0}
+#section-referral-management .referral-avatar{width:62px;height:62px;flex:0 0 62px;display:grid;place-items:center;overflow:hidden;border:1.5px solid #e9b900;border-radius:13px;background:radial-gradient(circle,rgba(255,205,0,.2),#090909 72%);color:#ffdb25;font-size:22px;font-weight:900;box-shadow:0 0 10px rgba(255,190,0,.18)}
+#section-referral-management .referral-avatar img{width:100%;height:100%;object-fit:cover}
+#section-referral-management .referral-person-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+#section-referral-management .referral-person-copy strong{color:#f7f7f7;font-size:14px;font-weight:900;overflow-wrap:anywhere}
+#section-referral-management .referral-person-copy span{color:#c6c8ce;font-size:12px;line-height:1.25;overflow-wrap:anywhere}
+#section-referral-management .referral-arrow{display:block;text-align:center;color:#ffd21a;font-size:26px;font-weight:900;text-shadow:0 0 9px rgba(255,190,0,.45)}
+#section-referral-management .referral-code{display:inline-flex;align-items:center;justify-content:center;min-width:112px;padding:9px 12px;border:1px solid #d6aa00;border-radius:11px;background:rgba(255,205,0,.055);color:#ffdc20;font-size:15px;font-weight:900;letter-spacing:.5px}
+#section-referral-management .referral-code-meta{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;margin-top:6px}
+#section-referral-management .referral-date{display:flex;align-items:center;justify-content:center;gap:9px;color:#f0f0f0;font-size:13px;line-height:1.45;white-space:nowrap}
+#section-referral-management .referral-date-icon{font-size:23px;color:#f4f4f4}
+#section-referral-management .referral-actions{display:flex;gap:5px;justify-content:center}
+#section-referral-management .referral-actions .btn{min-height:29px;padding:5px 8px;font-size:10px}
+#section-referral-management .referral-mobile-list{display:none}
+#section-referral-management .referral-mobile-card{padding:12px;margin:5px 0 10px;border:1px solid rgba(255,190,0,.46);border-radius:15px;background:linear-gradient(120deg,rgba(255,193,7,.055),rgba(0,0,0,.85));box-shadow:inset 0 0 12px rgba(255,190,0,.025)}
+#section-referral-management .referral-mobile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+#section-referral-management .referral-mobile-people{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:5px;align-items:center}
+#section-referral-management .referral-mobile-people .referral-person{gap:7px;align-items:flex-start}
+#section-referral-management .referral-mobile-people .referral-avatar{width:43px;height:43px;flex-basis:43px;border-radius:10px;font-size:17px}
+#section-referral-management .referral-mobile-people .referral-person-copy strong{font-size:12px}
+#section-referral-management .referral-mobile-people .referral-person-copy span{font-size:10px}
+#section-referral-management .referral-mobile-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:11px;padding-top:9px;border-top:1px solid rgba(255,190,0,.2)}
+#section-referral-management .referral-mobile-date{font-size:10px;color:#c7c7c7}
+#section-referral-management .referral-mobile-code{font-size:11px;color:#ffda20;font-weight:900;letter-spacing:.4px}
+@media(max-width:760px){
+ #section-referral-management .referral-hero{display:block;padding:12px;margin-bottom:13px}
+ #section-referral-management .referral-heading{gap:10px}
+ #section-referral-management .referral-hero-icon{width:46px;height:46px;flex-basis:46px;font-size:25px}
+ #section-referral-management .referral-heading h1{font-size:clamp(18px,5vw,24px)}
+ #section-referral-management .referral-heading p{font-size:10px;margin-top:4px}
+ #section-referral-management .referral-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px;gap:7px;margin-top:12px}
+ #section-referral-management .referral-total-card,#section-referral-management .referral-filter{height:48px;min-width:0;padding:6px 9px;border-radius:11px;gap:7px}
+ #section-referral-management .referral-total-icon{font-size:21px}
+ #section-referral-management .referral-total-copy small{font-size:9px}
+ #section-referral-management .referral-total-copy strong{font-size:18px}
+ #section-referral-management .referral-filter{font-size:19px}
+ #section-referral-management .referral-filter select{font-size:10px}
+ #section-referral-management .referral-refresh{width:40px;height:40px;min-height:40px;flex-basis:40px;font-size:24px}
+ #section-referral-management .referral-panel{padding:8px;border-radius:16px}
+ #section-referral-management .referral-desktop-table-wrap{display:none}
+ #section-referral-management .referral-mobile-list{display:block}
+}
+@media(min-width:761px){#section-referral-management .referral-data-table th:nth-child(1){width:5%}#section-referral-management .referral-data-table th:nth-child(2),#section-referral-management .referral-data-table th:nth-child(4){width:27%}#section-referral-management .referral-data-table th:nth-child(3){width:4%}#section-referral-management .referral-data-table th:nth-child(5){width:16%}#section-referral-management .referral-data-table th:nth-child(6){width:21%}}
+@media(max-width:360px){#section-referral-management .referral-mobile-people{grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)}#section-referral-management .referral-mobile-people .referral-avatar{width:35px;height:35px;flex-basis:35px}#section-referral-management .referral-mobile-people .referral-person-copy span{font-size:9px}}
+</style>
+
+<style id="admin-tournament-entry-filters">
+#tournament-type-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 14px;width:100%;}
+#tournament-type-filters .tournament-filter-btn{min-width:0;min-height:42px;padding:8px 6px;border:1px solid rgba(255,215,0,.32);border-radius:11px;background:linear-gradient(145deg,#111,#070707);color:#c8c8c8;font-size:clamp(10px,2.8vw,13px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#tournament-type-filters .tournament-filter-btn span{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;margin-left:3px;padding:0 5px;border-radius:20px;background:#28220a;color:#ffe21a;font-size:10px;}
+#tournament-type-filters .tournament-filter-btn.active{border-color:#ffe21a;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(30,22,0,.85));color:#ffe21a;box-shadow:0 0 12px rgba(255,215,0,.12),inset 0 0 0 1px rgba(255,215,0,.12);}
+#tournament-type-filters .tournament-filter-btn[data-filter="coin"].active{border-color:#35cfff;color:#65dcff;background:linear-gradient(135deg,rgba(0,160,255,.18),rgba(0,20,35,.9));box-shadow:0 0 12px rgba(0,190,255,.12);}
+@media(max-width:370px){#tournament-type-filters{gap:5px}#tournament-type-filters .tournament-filter-btn{font-size:9px;padding:7px 3px}}
+</style>
+<style id="tournament-premium-card-layout">
+#section-tournaments .tournament-filter-stack{display:grid;gap:7px;margin:0 0 14px}
+#section-tournaments .tournament-filter-group{border:1px solid rgba(255,215,0,.72);border-radius:18px;padding:7px 12px 9px;background:linear-gradient(145deg,rgba(20,17,5,.96),rgba(5,5,5,.98));box-shadow:0 0 10px rgba(255,204,0,.09),inset 0 0 12px rgba(255,204,0,.035)}
+#section-tournaments .tournament-filter-heading{font-size:clamp(12px,3.1vw,16px);font-weight:900;color:#f7d94b;margin:0 0 7px 4px;letter-spacing:.15px}
+#section-tournaments .tournament-filter-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+#section-tournaments #tournament-status-filters .tournament-filter-options,#section-tournaments #tournament-mode-filters .tournament-filter-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+#section-tournaments .tournaments-heading-subtitle{font-size:12px;color:#c7c7c7;margin:-3px 0 0 42px}
+#section-tournaments #tournament-type-filters .tournament-filter-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+#section-tournaments .tournament-filter-btn{min-width:0;min-height:37px;padding:6px 7px;border:1px solid #777;border-radius:22px;background:#080808;color:#eee;font-size:clamp(10px,2.65vw,13px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#section-tournaments .tournament-filter-btn span{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;margin-left:3px;padding:0 4px;border-radius:20px;background:#302808;color:#ffdf22;font-size:10px}
+#section-tournaments .tournament-filter-btn.active{border:2px solid #ffe21a;color:#ffe21a;box-shadow:0 0 12px rgba(255,218,0,.45),inset 0 0 12px rgba(255,218,0,.12)}
+#section-tournaments .tournament-filter-btn[data-filter="coin"].active{border-color:#24d9ff;color:#50e6ff;box-shadow:0 0 12px rgba(0,210,255,.35)}
+#section-tournaments .tournament-filter-btn[data-status-filter="live"].active{border-color:#ff344e;color:#ff5365;box-shadow:0 0 12px rgba(255,40,70,.3)}
+#section-tournaments .tournament-filter-btn[data-status-filter="completed"].active{border-color:#19d978;color:#28e68a;box-shadow:0 0 12px rgba(20,220,120,.25)}
+#section-tournaments .tournament-cards-panel{background:transparent;border:0;box-shadow:none;overflow:visible}
+#section-tournaments .tournament-cards-panel .table-wrapper{overflow:visible}
+#section-tournaments .tournament-card-list{display:grid;gap:9px}
+#section-tournaments .admin-tournament-card{border:2px solid #e9c900;border-radius:22px;padding:10px 12px;background:radial-gradient(ellipse at 10% 0%,rgba(255,215,0,.09),transparent 52%),linear-gradient(145deg,#10100c,#050505 70%);box-shadow:0 0 12px rgba(255,213,0,.28),inset 0 0 12px rgba(255,213,0,.045);color:#f5f5f5;min-width:0}
+#section-tournaments .admin-tournament-card.entry-coin{border-color:#16cfe8;box-shadow:0 0 12px rgba(0,205,235,.23),inset 0 0 12px rgba(0,205,235,.04)}
+#section-tournaments .atc-top{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:9px;align-items:center}
+#section-tournaments .atc-shield{width:46px;height:50px;display:grid;place-items:center;clip-path:polygon(50% 0,94% 12%,94% 70%,50% 100%,6% 70%,6% 12%);border:2px solid #ffd91a;background:rgba(255,215,0,.08);color:#ffdc24;font-size:14px;font-weight:1000}
+#section-tournaments .entry-coin .atc-shield{border-color:#16d9ef;color:#34e5f7;background:rgba(0,210,240,.08)}
+#section-tournaments .atc-name{font-size:clamp(14px,3.8vw,19px);font-weight:950;line-height:1.15;overflow-wrap:anywhere}
+#section-tournaments .atc-sub{font-size:11px;color:#d1d1d1;margin-top:3px;line-height:1.3}
+#section-tournaments .atc-pill{border:1.5px solid #ffd51a;border-radius:22px;padding:5px 9px;color:#ffdf24;font-size:11px;font-weight:900;white-space:nowrap}
+#section-tournaments .atc-pill.status-upcoming{border-color:#00bfff;color:#65dcff}
+#section-tournaments .atc-pill.status-live{border-color:#ff2947;color:#ff5168}
+#section-tournaments .atc-pill.status-completed{border-color:#00d878;color:#36e99a}
+#section-tournaments .atc-metrics{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:0;margin-top:8px;border-top:1px solid rgba(255,215,0,.18);border-bottom:1px solid rgba(255,215,0,.18)}
+#section-tournaments .atc-metric{min-width:0;padding:7px 6px;display:flex;align-items:center;gap:7px;border-right:1px solid rgba(255,255,255,.22)}
+#section-tournaments .atc-metric:last-child{border-right:0}
+#section-tournaments .atc-metric-icon{font-size:19px;flex:none}
+#section-tournaments .atc-metric-label{display:block;font-size:9px;color:#ddd;line-height:1.2}
+#section-tournaments .atc-metric-value{display:block;font-size:14px;font-weight:900;color:#fff;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
+#section-tournaments .atc-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+#section-tournaments .atc-slots{font-size:10px;color:#aaa}
+#section-tournaments .atc-actions{display:flex;gap:7px}
+#section-tournaments .atc-action{width:39px;height:34px;border:1.5px solid #ffd21b;border-radius:10px;background:#100e05;color:#ffdf24;font-size:18px;display:grid;place-items:center}
+#section-tournaments .atc-action.delete{border-color:#ff3c54;color:#ff596b;background:#170609}
+#section-tournaments .atc-room{font-size:9px;color:#aaa;margin-top:5px}
+@media(max-width:430px){#section-tournaments .tournament-filter-group{padding:6px 8px 8px}#section-tournaments .tournament-filter-options{gap:5px}#section-tournaments .tournament-filter-btn{font-size:9px;padding:5px 3px;min-height:34px}#section-tournaments .atc-top{grid-template-columns:39px minmax(0,1fr) auto;gap:6px}#section-tournaments .atc-shield{width:38px;height:43px;font-size:12px}#section-tournaments .atc-pill.entry-pill{grid-column:2;grid-row:2;justify-self:start}#section-tournaments .atc-pill.status-pill{grid-column:3;grid-row:1/3;align-self:center;font-size:10px;padding:5px 7px}#section-tournaments .atc-metric{padding:7px 4px;gap:4px}#section-tournaments .atc-metric-icon{font-size:15px}#section-tournaments .atc-metric-label{font-size:8px}#section-tournaments .atc-metric-value{font-size:12px}#section-tournaments .atc-name{font-size:14px}}
+@media(min-width:760px){#section-tournaments .tournament-filter-options{grid-template-columns:repeat(4,minmax(0,1fr))}#section-tournaments .tournament-card-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 
@@ -2593,7 +2719,7 @@ table { border-collapse: collapse; width: 100%; }
       <!-- ========== SECTION: TOURNAMENTS ========== -->
       <div class="section-page" id="section-tournaments">
         <div class="page-header">
-          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">★</span>Tournaments</h1>
+          <div class="tournaments-heading-wrap"><h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">🏆</span>Tournaments</h1><div class="tournaments-heading-subtitle">Create, manage and monitor all matches</div></div>
           <div class="page-actions tournaments-action-row">
             <button class="btn btn-primary btn-sm" id="create-tournament-btn">🏆 Create Tournament</button>
             <button class="btn btn-outline btn-sm" style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,140,0,0.08));border-color:var(--primary);color:var(--primary);font-weight:800;" id="bulk-create-btn">⚡ Bulk Match Create</button>
@@ -2601,34 +2727,53 @@ table { border-collapse: collapse; width: 100%; }
           </div>
         </div>
 
-        <div class="panel">
+        <div class="tournament-filter-stack" id="tournament-filter-stack">
+          <div class="tournament-filter-group" id="tournament-type-filters" role="group" aria-label="Filter tournaments by entry type">
+            <div class="tournament-filter-heading">Match Type (Entry Type)</div>
+            <div class="tournament-filter-options">
+              <button type="button" class="tournament-filter-btn active" data-filter="all" onclick="filterTourneyType('all')">▦ &nbsp; All Matches <span id="tourney-count-all">0</span></button>
+              <button type="button" class="tournament-filter-btn" data-filter="paid" onclick="filterTourneyType('paid')">₹ &nbsp; Real Money <span id="tourney-count-paid">0</span></button>
+              <button type="button" class="tournament-filter-btn" data-filter="coin" onclick="filterTourneyType('coin')">▤ &nbsp; Coin Matches <span id="tourney-count-coin">0</span></button>
+            </div>
+          </div>
+          <div class="tournament-filter-group" id="tournament-status-filters" role="group" aria-label="Filter tournaments by match status">
+            <div class="tournament-filter-heading">Match Status</div>
+            <div class="tournament-filter-options">
+              <button type="button" class="tournament-filter-btn" data-status-filter="upcoming" onclick="filterTourneyStatus('upcoming')">▣ &nbsp; Upcoming <span id="tourney-status-upcoming">0</span></button>
+              <button type="button" class="tournament-filter-btn" data-status-filter="live" onclick="filterTourneyStatus('live')">◉ &nbsp; Live <span id="tourney-status-live">0</span></button>
+              <button type="button" class="tournament-filter-btn" data-status-filter="completed" onclick="filterTourneyStatus('completed')">✓ &nbsp; Completed <span id="tourney-status-completed">0</span></button>
+            </div>
+          </div>
+          <div class="tournament-filter-group" id="tournament-mode-filters" role="group" aria-label="Filter tournaments by game mode">
+            <div class="tournament-filter-heading">Game Mode</div>
+            <div class="tournament-filter-options">
+              <button type="button" class="tournament-filter-btn" data-mode-filter="battle royale" onclick="filterTourneyMode('battle royale')">♜ &nbsp; Battle Royale</button>
+              <button type="button" class="tournament-filter-btn" data-mode-filter="clash squad" onclick="filterTourneyMode('clash squad')">♜ &nbsp; Clash Squad</button>
+              <button type="button" class="tournament-filter-btn" data-mode-filter="lone wolf" onclick="filterTourneyMode('lone wolf')">♜ &nbsp; Lone Wolf</button>
+            </div>
+          </div>
+          <div class="tournament-filter-group" id="tournament-team-filters" role="group" aria-label="Filter tournaments by team size">
+            <div class="tournament-filter-heading">Match Type (Team Size)</div>
+            <div class="tournament-filter-options">
+              <button type="button" class="tournament-filter-btn active" data-team-filter="all" onclick="filterTourneyTeam('all')">♟ &nbsp; All</button>
+              <button type="button" class="tournament-filter-btn" data-team-filter="solo" onclick="filterTourneyTeam('solo')">♟ &nbsp; Solo</button>
+              <button type="button" class="tournament-filter-btn" data-team-filter="duo" onclick="filterTourneyTeam('duo')">♟♟ &nbsp; Duo</button>
+              <button type="button" class="tournament-filter-btn" data-team-filter="squad" onclick="filterTourneyTeam('squad')">♟♟♟ &nbsp; Squad</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel tournament-cards-panel">
           <div class="table-wrapper">
             <div id="tournaments-loading" class="table-loading">
               <div class="table-loading-spinner"></div>
               <span class="table-loading-text">Loading tournaments...</span>
             </div>
-            <table class="data-table" id="tournaments-table" style="display:none;">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Mode</th>
-                  <th>Map</th>
-                  <th>Entry</th>
-                  <th>Prize</th>
-                  <th>Slots</th>
-                  <th>Time</th>
-                  <th>Status</th>
-                  <th>Room</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="tournaments-tbody"></tbody>
-            </table>
+            <div class="tournament-card-list" id="tournaments-table" style="display:none;"></div>
             <div class="table-empty" id="tournaments-empty" style="display:none;">
-                <div style="font-size:40px;margin-bottom:12px;">🏆</div>
-                <div style="font-size:15px;font-weight:700;color:#888;margin-bottom:6px;">No Tournaments Yet</div>
-                <div style="font-size:12px;color:#555;">Create karo pehla tournament!</div>
-              </div>
+              <div style="font-size:40px;margin-bottom:12px;">🏆</div>
+              <div style="font-size:15px;font-weight:700;color:#888;margin-bottom:6px;">No Tournaments Found</div>
+              <div style="font-size:12px;color:#555;">Try changing filters or create a tournament.</div>
             </div>
           </div>
           <div class="panel-footer" id="tournaments-footer" style="display:none;">
@@ -3106,22 +3251,30 @@ table { border-collapse: collapse; width: 100%; }
 
       <!-- ========== SECTION: REFERRAL MANAGEMENT ========== -->
       <div class="section-page" id="section-referral-management">
-        <div class="page-header">
-          <h1 class="page-title"><span class="page-title-icon" style="color:var(--primary)">⊛</span>Referral Management</h1>
-          <div class="page-actions">
+        <div class="referral-hero">
+          <div class="referral-heading">
+            <div class="referral-hero-icon" aria-hidden="true">♟</div>
+            <div class="referral-heading-copy">
+              <h1>Referral <span>Management</span></h1>
+              <p>Track and manage all referral records.</p>
+            </div>
+          </div>
+          <div class="referral-toolbar">
+            <div class="referral-total-card"><span class="referral-total-icon">♟</span><span class="referral-total-copy"><small>Total Referrals</small><strong id="referral-total-count">0</strong></span></div>
+            <label class="referral-filter"><span aria-hidden="true">▦</span><select id="referral-date-filter" aria-label="Filter referrals by date" onchange="loadReferrals()"><option value="all">All Time</option><option value="today">Today</option><option value="7">Last 7 Days</option><option value="30">Last 30 Days</option></select></label>
+            <button class="referral-refresh" type="button" onclick="loadReferrals()" aria-label="Refresh referrals" title="Refresh">↻</button>
           </div>
         </div>
-        <div class="panel">
-          <div class="panel-body">
-            <div id="referral-loading" class="table-loading"><div class="table-loading-spinner"></div><span class="table-loading-text">Loading...</span></div>
-            <div id="referral-table" style="display:none;">
-              <table class="data-table">
-                <thead><tr><th>User UID</th><th>Used Code</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="referral-tbody"></tbody>
-              </table>
-            </div>
-            <div id="referral-empty" class="table-empty" style="display:none;"><div class="table-empty-icon">⊛</div></div>
+        <div class="referral-panel">
+          <div id="referral-loading" class="table-loading"><div class="table-loading-spinner"></div><span class="table-loading-text">Loading referrals...</span></div>
+          <div id="referral-table" style="display:none;">
+            <div class="referral-desktop-table-wrap"><table class="referral-data-table">
+              <thead><tr><th>#</th><th>Referrer (Sender)</th><th aria-label="Referral direction"></th><th>Referred User (Receiver)</th><th>Referral Code</th><th>Date &amp; Time</th></tr></thead>
+              <tbody id="referral-tbody"></tbody>
+            </table></div>
+            <div id="referral-mobile-list" class="referral-mobile-list"></div>
           </div>
+          <div id="referral-empty" class="table-empty" style="display:none;"><div class="table-empty-icon">♟</div><div>No referral records found</div></div>
         </div>
       </div>
 
@@ -4292,6 +4445,17 @@ function setupBadgeListeners() {
   _badgePollIntervalId = setInterval(pollAllBadges, 20000); // single consolidated poll, lightweight count-only queries
 }
 
+// Deposit request list helper: keep large payment-proof base64 out of routine list queries.
+// Proofs are fetched separately by viewDepositProof() only when an admin opens one.
+async function fetchDepositRequestRows() {
+  const {data,error} = await _sb.from('add_money_requests')
+    .select('id,uid,ign,amount,utr,upi_ref,status,approved_at,created_at')
+    .order('created_at', {ascending:false})
+    .limit(500);
+  if(error) throw error;
+  return data || [];
+}
+
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
@@ -4306,7 +4470,8 @@ async function loadDashboard() {
       db.ref('profileRequests').once('value'),
       db.ref('profileUpdateRequests').once('value'),
       db.ref('joinRequests').once('value'),
-      db.ref('addMoneyRequests').once('value'),
+      // Excludes screenshot_base64 payment proofs; those are fetched only when viewed.
+      fetchDepositRequestRows().then(rows => makeSnap(rows)),
       db.ref('withdrawRequests').once('value'),
       _sb.from('team_members').select('uid,mode')
     ]);
@@ -4662,81 +4827,109 @@ function deleteUser(uid, name) {
 }
 
 // ═══════════════════════════════════════════
+
+
+
 // TOURNAMENTS
 // ═══════════════════════════════════════════
 let toursData = [];
-let tourneyCurFilter = 'paid';
-function filterTourneyType(type) {
-  tourneyCurFilter = type;
-  const pb=document.getElementById('tourney-btn-paid');
-  const cb=document.getElementById('tourney-btn-coin');
-  if(type==='paid'){
-    if(pb){pb.style.opacity='1';pb.style.borderColor='var(--primary)';}
-    if(cb){cb.style.opacity='.5';cb.style.borderColor='rgba(100,200,255,0.2)';}
-  } else {
-    if(cb){cb.style.opacity='1';cb.style.borderColor='#64c8ff';}
-    if(pb){pb.style.opacity='.5';pb.style.borderColor='rgba(255,215,0,0.2)';}
-  }
+let tourneyCurFilter = 'all';
+let tourneyStatusFilter = 'all';
+let tourneyModeFilter = 'all';
+let tourneyTeamFilter = 'all';
+let _tournamentSortRefreshTimer = null;
+function normalizeTournamentEntryType(t) {
+  const raw = String(t?.entryType ?? t?.entry_type ?? 'paid').trim().toLowerCase();
+  return (raw === 'coin' || raw === 'coins' || raw === 'free') ? 'coin' : 'paid';
+}
+function normalizeTournamentMode(t){
+  const raw=String(t?.matchCategory??t?.match_category??t?.category??t?.gameModeCategory??t?.game_mode_category??'').trim().toLowerCase().replace(/[^a-z]/g,' ');
+  if(raw.includes('clash')) return 'clash squad';
+  if(raw.includes('lone')||raw.includes('wolf')) return 'lone wolf';
+  if(raw.includes('battle')||raw==='br'||raw.includes('royale')) return 'battle royale';
+  return raw || 'other';
+}
+function normalizeTournamentTeam(t){
+  const raw=String(t?.gameMode??t?.game_mode??t?.teamMode??t?.team_mode??t?.matchType??t?.match_type??'').trim().toLowerCase();
+  if(raw.includes('squad')||raw.includes('4v4')) return 'squad';
+  if(raw.includes('duo')||raw.includes('2v2')) return 'duo';
+  if(raw.includes('solo')||raw.includes('1v1')) return 'solo';
+  return 'all';
+}
+function sortAdminTournaments(rows) {
+  return [...(rows||[])].sort((a,b)=>{
+    const aTime=Number(a.matchTime??a.match_time)||0, bTime=Number(b.matchTime??b.match_time)||0;
+    const rank={upcoming:0,live:1,completed:2};
+    const aStatus=computeStatus(aTime),bStatus=computeStatus(bTime);
+    const diff=(rank[aStatus]??3)-(rank[bStatus]??3);
+    if(diff) return diff;
+    if(aStatus==='completed'&&bStatus==='completed') return bTime-aTime;
+    return aTime-bTime;
+  });
+}
+function updateTournamentFilterCounts(data){
+  const rows=data||[], statusOf=t=>computeStatus(Number(t.matchTime??t.match_time)||0);
+  const counts={all:rows.length,paid:rows.filter(t=>normalizeTournamentEntryType(t)==='paid').length,coin:rows.filter(t=>normalizeTournamentEntryType(t)==='coin').length};
+  Object.entries(counts).forEach(([k,v])=>{const el=document.getElementById('tourney-count-'+k);if(el)el.textContent=String(v)});
+  const statuses={upcoming:rows.filter(t=>statusOf(t)==='upcoming').length,live:rows.filter(t=>statusOf(t)==='live').length,completed:rows.filter(t=>statusOf(t)==='completed').length};
+  Object.entries(statuses).forEach(([k,v])=>{const el=document.getElementById('tourney-status-'+k);if(el)el.textContent=String(v)});
+}
+function setTournamentFilterGroup(selector,attr,value){
+  document.querySelectorAll(selector+' .tournament-filter-btn').forEach(b=>{const active=b.getAttribute(attr)===value;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active?'true':'false')});
   renderTournaments(toursData);
 }
-async function loadTournaments() {
-  showLoading('tournaments-loading',true); showTable('tournaments-table',false); showEmpty('tournaments-empty',false);
-  try {
-    const snap = await db.ref('tournaments').once('value');
-    toursData = [];
-    if(snap.exists()) snap.forEach(c=>toursData.push({id:c.key,...c.val()}));
-    toursData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    // Auto-update stale statuses
-    toursData.forEach(t=>{
-      const live=computeStatus(t.matchTime||0);
-      if(t.status!==live && t.id){ _sb.from('tournaments').update({status:live}).eq('id',t.id).then(()=>{}).catch(()=>{}); t.status=live; }
-    });
-    if(typeof filterTourneyType==='function') filterTourneyType(tourneyCurFilter||'paid');
-    else renderTournaments(toursData);
-  } catch(e) { toast('Failed',true); }
+function filterTourneyType(type){tourneyCurFilter=['all','paid','coin'].includes(type)?type:'all';setTournamentFilterGroup('#tournament-type-filters','data-filter',tourneyCurFilter)}
+function filterTourneyStatus(type){tourneyStatusFilter=['all','upcoming','live','completed'].includes(type)?type:'all';setTournamentFilterGroup('#tournament-status-filters','data-status-filter',tourneyStatusFilter)}
+function filterTourneyMode(type){tourneyModeFilter=['all','battle royale','clash squad','lone wolf'].includes(type)?type:'all';setTournamentFilterGroup('#tournament-mode-filters','data-mode-filter',tourneyModeFilter)}
+function filterTourneyTeam(type){tourneyTeamFilter=['all','solo','duo','squad'].includes(type)?type:'all';setTournamentFilterGroup('#tournament-team-filters','data-team-filter',tourneyTeamFilter)}
+function formatTournamentStart(ts){if(!ts)return 'Time not set';const d=new Date(Number(ts));if(Number.isNaN(d.getTime()))return 'Time not set';const today=new Date();const same=d.toDateString()===today.toDateString();return (same?'Today':d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}))+', '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}
+async function loadTournaments(){
+  showLoading('tournaments-loading',true);showCardGrid('tournaments-table',false);showEmpty('tournaments-empty',false);
+  try{
+    const snap=await db.ref('tournaments').once('value');toursData=[];
+    if(snap.exists())snap.forEach(c=>toursData.push({id:c.key,...c.val()}));
+    toursData=sortAdminTournaments(toursData);updateTournamentFilterCounts(toursData);
+    toursData.forEach(t=>{const live=computeStatus(Number(t.matchTime??t.match_time)||0);if(t.status!==live&&t.id){_sb.from('tournaments').update({status:live}).eq('id',t.id).then(()=>{}).catch(()=>{});t.status=live;}});
+    renderTournaments(toursData);
+    if(_tournamentSortRefreshTimer)clearInterval(_tournamentSortRefreshTimer);
+    _tournamentSortRefreshTimer=setInterval(()=>{const section=document.getElementById('section-tournaments');if(section&&section.classList.contains('active')){toursData=sortAdminTournaments(toursData);toursData.forEach(t=>{const st=computeStatus(Number(t.matchTime??t.match_time)||0);if(t.status!==st){t.status=st;if(t.id)_sb.from('tournaments').update({status:st}).eq('id',t.id).then(()=>{}).catch(()=>{});}});renderTournaments(toursData);}},30000);
+  }catch(e){console.error('Tournament load failed',e);toast('Failed to load tournaments: '+(e.message||'Unknown error'),true)}
   showLoading('tournaments-loading',false);
 }
-
-function computeStatus(mt) {
-  const now = Date.now(), live=20*60*1000;
-  if(now < mt) return 'upcoming';
-  if(now < mt+live) return 'live';
-  return 'completed';
-}
-
-function renderTournaments(data) {
-  let filtered;
-  if(typeof tourneyCurFilter !== 'undefined' && tourneyCurFilter === 'coin') {
-    filtered = data.filter(t => (t.entryType||'paid') !== 'paid');
-  } else {
-    filtered = data.filter(t => (t.entryType||'paid') === 'paid');
-  }
-  const tbody = document.getElementById('tournaments-tbody');
-  if(!filtered.length) { showEmpty('tournaments-empty',true); showTable('tournaments-table',false); showFooter('tournaments-footer',false); return; }
-  showEmpty('tournaments-empty',false); showTable('tournaments-table',true); showFooter('tournaments-footer',true);
-  document.getElementById('tournaments-info').textContent = 'Showing '+filtered.length+' tournaments';
-  tbody.innerHTML = filtered.map(t=>`
-    <tr>
-      <td><strong>${sanitize(t.name||'-')}</strong></td>
-      <td>${sanitize(t.gameMode||'-')}</td>
-      <td>${sanitize(t.map||'-')}</td>
-      <td>${t.entryType==='paid'?'₹'+t.entryFee:'🪙 '+t.entryFee}</td>
-      <td>₹${t.prizePool||0}</td>
-      <td>${t.filledSlots||0}/${t.maxSlots||12}</td>
-      <td style="font-size:12px">${fmtDate(t.matchTime)}</td>
-      <td>${statusBadge(computeStatus(t.matchTime||0))}</td>
-      <td>${(()=>{ const mins=Math.round(((t.matchTime||0)-Date.now())/60000); return mins<=15?'🔓 Auto-Unlocked':'🔒 In '+(mins>60?Math.round(mins/60)+'h':mins+'m'); })()}</td>
-      <td>
-        <div class="t-action-row">
-          <button class="t-action-btn" onclick="openMatchAnalytics('${t.id}')" title="Match Analytics">📊</button>
-          <button class="t-action-btn" onclick="openEditTournament('${t.id}')" title="Edit">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="t-action-btn" onclick="openRoomDetails('${t.id}')" title="Room Details">🔑</button>
-          <button class="t-action-btn t-action-danger" onclick="deleteTournament('${t.id}','${sanitize(t.name)}')" title="Delete">❌</button>
-        </div>
-      </td>
-    </tr>`).join('');
+function computeStatus(mt){const now=Date.now(),live=20*60*1000;mt=Number(mt)||0;if(now<mt)return 'upcoming';if(now<mt+live)return 'live';return 'completed'}
+function renderTournaments(data){
+  const sorted=sortAdminTournaments(data||[]);updateTournamentFilterCounts(sorted);
+  const search=(document.getElementById('search-tournaments')?.value||'').trim().toLowerCase();
+  const filtered=sorted.filter(t=>{
+    const st=computeStatus(Number(t.matchTime??t.match_time)||0);
+    if(tourneyCurFilter!=='all'&&normalizeTournamentEntryType(t)!==tourneyCurFilter)return false;
+    if(tourneyStatusFilter!=='all'&&st!==tourneyStatusFilter)return false;
+    if(tourneyModeFilter!=='all'&&normalizeTournamentMode(t)!==tourneyModeFilter)return false;
+    if(tourneyTeamFilter!=='all'&&normalizeTournamentTeam(t)!==tourneyTeamFilter)return false;
+    if(search&&!String([t.name,t.gameMode,t.map,t.matchCategory,t.entryType].join(' ')).toLowerCase().includes(search))return false;
+    return true;
+  });
+  const list=document.getElementById('tournaments-table');
+  if(!filtered.length){showEmpty('tournaments-empty',true);showCardGrid('tournaments-table',false);showFooter('tournaments-footer',false);return}
+  showEmpty('tournaments-empty',false);showCardGrid('tournaments-table',true);showFooter('tournaments-footer',true);
+  const info=document.getElementById('tournaments-info');if(info)info.textContent='Showing '+filtered.length+' of '+sorted.length+' tournaments';
+  list.innerHTML=filtered.map(t=>{
+    const entry=normalizeTournamentEntryType(t),st=computeStatus(Number(t.matchTime??t.match_time)||0),mode=normalizeTournamentMode(t),team=normalizeTournamentTeam(t);
+    const modeLabel=mode==='battle royale'?'BR':mode==='clash squad'?'CS':mode==='lone wolf'?'LW':'ES';
+    const modeName=mode==='battle royale'?'Battle Royale':mode==='clash squad'?'Clash Squad':mode==='lone wolf'?'Lone Wolf':sanitize(t.gameMode||'Tournament');
+    const fee=Number(t.entryFee??t.entry_fee)||0,prize=Number(t.prizePool??t.prize_pool)||0,slots=Number(t.filledSlots??t.filled_slots)||0,max=Number(t.maxSlots??t.max_slots)||12;
+    const statusText=st==='upcoming'?'Upcoming':st==='live'?'Live':'Completed';
+    const statusIcon=st==='upcoming'?'⌛':st==='live'?'◉':'✓';
+    const entryLabel=entry==='coin'?'🪙 Coin':'₹ Real Money';
+    const mapName=sanitize(t.map||'Map not set');
+    const time= formatTournamentStart(t.matchTime??t.match_time);
+    const id=String(t.id||'').replace(/[^a-zA-Z0-9_-]/g,'');
+    return `<article class="admin-tournament-card ${entry==='coin'?'entry-coin':''}">
+      <div class="atc-top"><div class="atc-shield">${modeLabel}</div><div><div class="atc-name">${sanitize(t.name||'Untitled Tournament')}</div><div class="atc-sub">${modeName} &nbsp; | &nbsp; 🗺️ ${mapName}${team!=='all'?' &nbsp; | &nbsp; '+team.toUpperCase():''}</div></div><span class="atc-pill entry-pill">${entryLabel}</span><span class="atc-pill status-pill status-${st}">${statusIcon} ${statusText}</span></div>
+      <div class="atc-metrics"><div class="atc-metric"><span class="atc-metric-icon">🏆</span><div><span class="atc-metric-label">Prize Pool</span><strong class="atc-metric-value">${entry==='coin'?'🪙 ':'₹'}${prize.toLocaleString('en-IN')}</strong></div></div><div class="atc-metric"><span class="atc-metric-icon">🪙</span><div><span class="atc-metric-label">Entry Fee</span><strong class="atc-metric-value">${entry==='coin'?'🪙 ':'₹'}${fee.toLocaleString('en-IN')}</strong></div></div><div class="atc-metric"><span class="atc-metric-icon">▦</span><div><span class="atc-metric-label">Start Time</span><strong class="atc-metric-value">${time}</strong></div></div></div>
+      <div class="atc-bottom"><div class="atc-slots">👥 Slots ${slots}/${max} &nbsp; · &nbsp; ${st==='completed'?'Match Ended':st==='live'?'In Progress':'Room '+(Number(t.matchTime??t.match_time)-Date.now()<=15*60*1000?'Unlocking soon':'Locked')}</div><div class="atc-actions"><button class="atc-action" onclick="openEditTournament('${id}')" title="Edit tournament" aria-label="Edit tournament">✎</button><button class="atc-action delete" onclick="deleteTournament('${id}')" title="Delete tournament" aria-label="Delete tournament">▤</button></div></div>
+    </article>`;
+  }).join('');
 }
 
 document.getElementById('search-tournaments')?.addEventListener('input', ()=>renderTournaments(toursData));
@@ -5322,6 +5515,7 @@ document.getElementById('analytics-export-btn')?.addEventListener('click', ()=>{
 });
 
 function deleteTournament(id, name) {
+  name = name || toursData.find(t=>String(t.id)===String(id))?.name || 'Tournament';
   showConfirm('Delete tournament "'+name+'"?', async ()=>{
     try { await db.ref('tournaments/'+id).remove(); toast('Deleted'); loadTournaments(); }
     catch(e) { toast('Failed',true); }
@@ -5466,30 +5660,40 @@ async function approveJoin(id) {
 // ═══════════════════════════════════════════
 let walletAddData=[], walletWithdrawData=[];
 async function loadWalletRequests() {
-  // Add Money
+  // Add Money: fetch lightweight metadata first; large proof images load on demand.
   showLoading('wallet-add-loading',true); showTable('wallet-add-table',false); showEmpty('wallet-add-empty',false);
   try {
-    db.ref('addMoneyRequests').once('value').then(async snap=>{
-      walletAddData = [];
-      if(snap.exists()) snap.forEach(c=>walletAddData.push({id:c.key,...c.val()}));
-      walletAddData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-      await enrichWithUserNames(walletAddData);
-      showLoading('wallet-add-loading',false);
-      renderWalletAdd();
-    }).catch(()=>showLoading('wallet-add-loading',false));
-  } catch(e) { showLoading('wallet-add-loading',false); }
+    const rows = await fetchDepositRequestRows();
+    walletAddData = rows.map(r=>({id:r.id,...toCamel(r)}));
+    await enrichWithUserNames(walletAddData);
+    showLoading('wallet-add-loading',false);
+    renderWalletAdd();
+  } catch(e) { showLoading('wallet-add-loading',false); toast('Could not load deposit requests: '+e.message,true); }
+
   // Withdraw
   showLoading('wallet-withdraw-loading',true); showTable('wallet-withdraw-table',false); showEmpty('wallet-withdraw-empty',false);
   try {
-    db.ref('withdrawRequests').once('value').then(async snap2=>{
-      walletWithdrawData = [];
-      if(snap2.exists()) snap2.forEach(c=>walletWithdrawData.push({id:c.key,...c.val()}));
-      walletWithdrawData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-      await enrichWithUserNames(walletWithdrawData);
-      showLoading('wallet-withdraw-loading',false);
-      renderWalletWithdraw();
-    }).catch(()=>showLoading('wallet-withdraw-loading',false));
-  } catch(e) { showLoading('wallet-withdraw-loading',false); }
+    const snap2 = await db.ref('withdrawRequests').once('value');
+    walletWithdrawData = [];
+    if(snap2.exists()) snap2.forEach(c=>walletWithdrawData.push({id:c.key,...c.val()}));
+    walletWithdrawData.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    await enrichWithUserNames(walletWithdrawData);
+    showLoading('wallet-withdraw-loading',false);
+    renderWalletWithdraw();
+  } catch(e) { showLoading('wallet-withdraw-loading',false); toast('Could not load withdrawal requests: '+e.message,true); }
+}
+
+async function viewDepositProof(requestId) {
+  try {
+    const {data,error} = await _sb.from('add_money_requests').select('screenshot_base64').eq('id',requestId).maybeSingle();
+    if(error) throw error;
+    if(!data?.screenshot_base64) { toast('No payment proof attached to this request.',true); return; }
+    const img = document.getElementById('img-preview-img');
+    const overlay = document.getElementById('img-preview-overlay');
+    if(!img || !overlay) throw new Error('Image preview is unavailable.');
+    img.src = data.screenshot_base64;
+    overlay.style.display = 'flex';
+  } catch(e) { toast('Could not load payment proof: '+e.message,true); }
 }
 
 // Attaches each request's CURRENT display name/email/IGN from the users table
@@ -5524,7 +5728,7 @@ function renderWalletAdd() {
       <div class="uc-row"><span class="uc-icon">💰</span><span style="color:var(--primary);font-weight:800;font-size:15px;">₹${r.amount||0}</span></div>
       <div class="uc-row"><span class="uc-icon">🧾</span><span style="font-family:monospace;">${sanitize(r.utr||r.upiRef||'-')}</span></div>
       <div class="uc-row"><span class="uc-icon">🕒</span>${fmtDate(r.createdAt)}</div>
-      ${r.screenshotBase64?`<div style="margin-top:8px;"><img src="${r.screenshotBase64}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid rgba(255,215,0,0.2);" onclick="document.getElementById('img-preview-img').src='${r.screenshotBase64}';document.getElementById('img-preview-overlay').style.display='flex'"></div>`:''}
+      <div style="margin-top:8px;"><button class="btn btn-outline btn-xs" type="button" onclick="viewDepositProof('${r.id}')">🖼 VIEW PAYMENT PROOF</button></div>
       ${r.status==='pending'
         ?`<div class="uc-actions">
             <button class="btn btn-primary btn-xs" onclick="approveAddMoney('${r.id}','${r.uid}',${r.amount||0})">✓ Approve</button>
@@ -6229,31 +6433,78 @@ async function loadReferrals() {
   showTable('referral-table', false);
   showEmpty('referral-empty', false);
   try {
-    const snap = await db.ref('referrals').once('value');
-    const refs = [];
-    if(snap.exists()) snap.forEach(c => refs.push({id: c.key, ...c.val()}));
-    refs.sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
-    // Update badge
+    if(!_sb) throw new Error('Supabase is not initialized');
+    const {data: referralRows, error} = await _sb.from('referrals')
+      .select('id,uid,referred_uid,code,status,created_at')
+      .order('created_at', {ascending:false}).limit(1000);
+    if(error) throw error;
+    const refs = referralRows || [];
+    const uids = [...new Set(refs.flatMap(r => [r.uid, r.referred_uid]).filter(Boolean))];
+    let userMap = {};
+    if(uids.length) {
+      const {data: users, error:userError} = await _sb.from('users')
+        .select('id,display_name,ign,ffuid,photo_url').in('id', uids);
+      if(userError) throw userError;
+      (users||[]).forEach(u => { userMap[u.id] = u; });
+    }
+    const filter = document.getElementById('referral-date-filter')?.value || 'all';
+    const now = new Date();
+    let visibleRefs = refs;
+    if(filter === 'today') {
+      const dayStart = new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+      visibleRefs = refs.filter(r => Number(r.created_at||0) >= dayStart);
+    } else if(filter === '7' || filter === '30') {
+      const cutoff = Date.now() - Number(filter)*24*60*60*1000;
+      visibleRefs = refs.filter(r => Number(r.created_at||0) >= cutoff);
+    }
+    const totalEl = document.getElementById('referral-total-count');
+    if(totalEl) totalEl.textContent = visibleRefs.length.toLocaleString('en-IN');
     const pending = refs.filter(r => r.status==='pending').length;
     const badge = document.getElementById('badge-referrals');
     if(badge) { badge.textContent = pending; badge.style.display = pending>0?'flex':'none'; }
     showLoading('referral-loading', false);
-    if(!refs.length) { showEmpty('referral-empty', true); return; }
-    showTable('referral-table', true);
-    document.getElementById('referral-tbody').innerHTML = refs.map(r => `
-      <tr>
-        <td style="font-size:11px;color:var(--text-secondary);">${sanitize(r.uid||'-').slice(0,16)}...</td>
-        <td><strong style="color:var(--primary)">${sanitize(r.code||'-')}</strong></td>
-        <td>${fmtDate(r.createdAt)}</td>
-        <td>${statusBadge(r.status)}</td>
-        <td>
-          ${r.status==='pending'?`<button class="btn btn-primary btn-xs" onclick="approveReferral('${r.id}','${r.uid}')">✓ Approve</button>
-          <button class="btn btn-outline-danger btn-xs" onclick="rejectReferral('${r.id}')">✕</button>`:'—'}
-        </td>
-      </tr>`).join('');
-  } catch(e) { toast('Failed: '+e.message, true); showLoading('referral-loading', false); }
-}
+    if(!visibleRefs.length) { showEmpty('referral-empty', true); return; }
 
+    const esc = value => sanitize(value == null ? '' : String(value));
+    const person = (uid, role) => {
+      const u = userMap[uid] || {};
+      const name = u.display_name || u.ign || (uid ? 'Player' : 'Unknown User');
+      const ign = u.ign || 'IGN not set';
+      const ffuid = u.ffuid || 'UID not set';
+      const avatar = u.photo_url || '';
+      const initial = esc((name.trim().charAt(0) || 'P').toUpperCase());
+      return `<div class="referral-person" title="${esc(role)}"><div class="referral-avatar">${avatar?`<img src="${esc(avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:''}<span style="${avatar?'display:none;':''}">${initial}</span></div><div class="referral-person-copy"><strong>${esc(name)}</strong><span>IGN: ${esc(ign)}</span><span>UID: ${esc(ffuid)}</span></div></div>`;
+    };
+    const dateParts = ts => {
+      if(!ts) return {date:'-',time:'-'};
+      const d = new Date(Number(ts));
+      return {date:d.toLocaleDateString('en-GB'),time:d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false})};
+    };
+    const actionMarkup = r => r.status==='pending'
+      ? `<div class="referral-actions"><button class="btn btn-primary btn-xs" onclick="approveReferral('${esc(r.id)}','${esc(r.uid)}')">✓ Approve</button><button class="btn btn-outline-danger btn-xs" onclick="rejectReferral('${esc(r.id)}')">✕ Reject</button></div>`
+      : statusBadge(r.status || 'pending');
+    document.getElementById('referral-tbody').innerHTML = visibleRefs.map((r,i) => {
+      const dt = dateParts(r.created_at);
+      return `<tr>
+        <td><span class="referral-index">${i+1}</span></td>
+        <td>${person(r.uid,'Referrer / Sender')}</td>
+        <td><div class="referral-arrow">»</div></td>
+        <td>${person(r.referred_uid,'Referred User / Receiver')}</td>
+        <td style="text-align:center"><span class="referral-code">${esc(r.code||'-')}</span><div class="referral-code-meta">${actionMarkup(r)}</div></td>
+        <td><div class="referral-date"><span class="referral-date-icon">▦</span><span>${esc(dt.date)}<br>${esc(dt.time)}</span></div></td>
+      </tr>`;
+    }).join('');
+    const mobile = document.getElementById('referral-mobile-list');
+    if(mobile) mobile.innerHTML = visibleRefs.map((r,i) => {
+      const dt = dateParts(r.created_at);
+      return `<article class="referral-mobile-card"><div class="referral-mobile-top"><span class="referral-index">${i+1}</span><span class="referral-code-mobile-state">${actionMarkup(r)}</span></div><div class="referral-mobile-people">${person(r.uid,'Referrer / Sender')}<span class="referral-arrow">»</span>${person(r.referred_uid,'Referred User / Receiver')}</div><div class="referral-mobile-meta"><span class="referral-mobile-code">CODE: ${esc(r.code||'-')}</span><span class="referral-mobile-date">▦ ${esc(dt.date)} · ${esc(dt.time)}</span></div></article>`;
+    }).join('');
+    showTable('referral-table', true);
+  } catch(e) {
+    toast('Failed: '+(e.message||'Unable to load referrals'), true);
+    showLoading('referral-loading', false);
+  }
+}
 async function approveReferral(id, uid) {
   try {
     const {data,error}=await _sb.rpc('admin_approve_referral',{p_referral_id:id});
@@ -6315,11 +6566,12 @@ async function loadFinancialReport() {
   document.getElementById('fr-loading').style.display='flex';
   document.getElementById('fr-table').style.display='none';
   try {
-    const [depSnap, wdSnap, usersSnap] = await Promise.all([
-      db.ref('addMoneyRequests').once('value'),
+    const [depositRows, wdSnap, usersSnap] = await Promise.all([
+      fetchDepositRequestRows(),
       db.ref('withdrawRequests').once('value'),
       db.ref('users').once('value')
     ]);
+    const depSnap = makeSnap(depositRows);
     let totalDep=0, totalWd=0, totalPrizes=0;
     const rows = [];
     if(depSnap.exists()) depSnap.forEach(c => {
